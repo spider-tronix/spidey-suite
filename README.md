@@ -14,7 +14,7 @@ OTA (Over the Air) Programming is a process which allows devices to upgrade thei
 
 # Team:
   - Aditya Kumar Singh [https://github.com/adityasingh3007] 
-  - Miriam 
+  - Miriam [https://github.com/Githubmsk]
   - Arunesh Saddish
   - N Srikrishna
 
