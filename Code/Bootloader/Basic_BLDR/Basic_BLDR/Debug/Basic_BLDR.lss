@@ -1,0 +1,266 @@
+
+Basic_BLDR.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         000000b4  00800100  00007d70  000001e4  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000170  00007c00  00007c00  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  00000298  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000002c8  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000028  00000000  00000000  00000308  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000083a  00000000  00000000  00000330  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000712  00000000  00000000  00000b6a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000031c  00000000  00000000  0000127c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000050  00000000  00000000  00001598  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000003ca  00000000  00000000  000015e8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000249  00000000  00000000  000019b2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000018  00000000  00000000  00001bfb  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00007c00 <__vectors>:
+    7c00:	0c 94 34 3e 	jmp	0x7c68	; 0x7c68 <__ctors_end>
+    7c04:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c08:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c0c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c10:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c14:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c18:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c1c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c20:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c24:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c28:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c2c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c30:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c34:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c38:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c3c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c40:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c44:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c48:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c4c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c50:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c54:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c58:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c5c:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c60:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+    7c64:	0c 94 49 3e 	jmp	0x7c92	; 0x7c92 <__bad_interrupt>
+
+00007c68 <__ctors_end>:
+    7c68:	11 24       	eor	r1, r1
+    7c6a:	1f be       	out	0x3f, r1	; 63
+    7c6c:	cf ef       	ldi	r28, 0xFF	; 255
+    7c6e:	d8 e0       	ldi	r29, 0x08	; 8
+    7c70:	de bf       	out	0x3e, r29	; 62
+    7c72:	cd bf       	out	0x3d, r28	; 61
+
+00007c74 <__do_copy_data>:
+    7c74:	11 e0       	ldi	r17, 0x01	; 1
+    7c76:	a0 e0       	ldi	r26, 0x00	; 0
+    7c78:	b1 e0       	ldi	r27, 0x01	; 1
+    7c7a:	e0 e7       	ldi	r30, 0x70	; 112
+    7c7c:	fd e7       	ldi	r31, 0x7D	; 125
+    7c7e:	02 c0       	rjmp	.+4      	; 0x7c84 <__do_copy_data+0x10>
+    7c80:	05 90       	lpm	r0, Z+
+    7c82:	0d 92       	st	X+, r0
+    7c84:	a4 3b       	cpi	r26, 0xB4	; 180
+    7c86:	b1 07       	cpc	r27, r17
+    7c88:	d9 f7       	brne	.-10     	; 0x7c80 <__do_copy_data+0xc>
+    7c8a:	0e 94 8e 3e 	call	0x7d1c	; 0x7d1c <main>
+    7c8e:	0c 94 b6 3e 	jmp	0x7d6c	; 0x7d6c <_exit>
+
+00007c92 <__bad_interrupt>:
+    7c92:	0c 94 00 3e 	jmp	0x7c00	; 0x7c00 <__vectors>
+
+00007c96 <boot_program_page>:
+	0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0x15, 0xB8, 0x2F, 0xEF, 0x33, 0xED,
+	0x90, 0xE3, 0x21, 0x50, 0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0xEB, 0xCF,
+	0xF8, 0x94, 0xFF, 0xCF
+};
+
+void boot_program_page(uint32_t page, uint8_t *buf){
+    7c96:	ff 92       	push	r15
+    7c98:	0f 93       	push	r16
+    7c9a:	1f 93       	push	r17
+    7c9c:	cf 93       	push	r28
+    7c9e:	df 93       	push	r29
+	uint16_t i;
+	uint8_t sreg;
+	sreg = SREG;
+    7ca0:	cf b7       	in	r28, 0x3f	; 63
+	cli();
+    7ca2:	f8 94       	cli
+	eeprom_busy_wait();
+    7ca4:	f9 99       	sbic	0x1f, 1	; 31
+    7ca6:	fe cf       	rjmp	.-4      	; 0x7ca4 <boot_program_page+0xe>
+	boot_page_erase(page);
+    7ca8:	8b 01       	movw	r16, r22
+    7caa:	23 e0       	ldi	r18, 0x03	; 3
+    7cac:	fb 01       	movw	r30, r22
+    7cae:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7cb2:	e8 95       	spm
+	boot_spm_busy_wait();
+    7cb4:	07 b6       	in	r0, 0x37	; 55
+    7cb6:	00 fc       	sbrc	r0, 0
+    7cb8:	fd cf       	rjmp	.-6      	; 0x7cb4 <boot_program_page+0x1e>
+    7cba:	9a 01       	movw	r18, r20
+    7cbc:	20 58       	subi	r18, 0x80	; 128
+    7cbe:	3f 4f       	sbci	r19, 0xFF	; 255
+    7cc0:	da 01       	movw	r26, r20
+	for (i = 0; i < SPM_PAGESIZE; i += 2){
+		uint16_t w = *buf++;
+		w += (*buf++) << 8;
+		boot_page_fill(page + i, w);
+    7cc2:	d1 e0       	ldi	r29, 0x01	; 1
+    7cc4:	a8 01       	movw	r20, r16
+    7cc6:	4a 1b       	sub	r20, r26
+    7cc8:	5b 0b       	sbc	r21, r27
+	cli();
+	eeprom_busy_wait();
+	boot_page_erase(page);
+	boot_spm_busy_wait();
+	for (i = 0; i < SPM_PAGESIZE; i += 2){
+		uint16_t w = *buf++;
+    7cca:	fc 90       	ld	r15, X
+		w += (*buf++) << 8;
+		boot_page_fill(page + i, w);
+    7ccc:	fa 01       	movw	r30, r20
+    7cce:	ea 0f       	add	r30, r26
+    7cd0:	fb 1f       	adc	r31, r27
+    7cd2:	11 96       	adiw	r26, 0x01	; 1
+    7cd4:	1c 91       	ld	r17, X
+    7cd6:	11 97       	sbiw	r26, 0x01	; 1
+    7cd8:	01 2f       	mov	r16, r17
+    7cda:	10 e0       	ldi	r17, 0x00	; 0
+    7cdc:	10 2f       	mov	r17, r16
+    7cde:	00 27       	eor	r16, r16
+    7ce0:	0f 0d       	add	r16, r15
+    7ce2:	11 1d       	adc	r17, r1
+    7ce4:	08 01       	movw	r0, r16
+    7ce6:	d0 93 57 00 	sts	0x0057, r29	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7cea:	e8 95       	spm
+    7cec:	11 24       	eor	r1, r1
+    7cee:	12 96       	adiw	r26, 0x02	; 2
+	sreg = SREG;
+	cli();
+	eeprom_busy_wait();
+	boot_page_erase(page);
+	boot_spm_busy_wait();
+	for (i = 0; i < SPM_PAGESIZE; i += 2){
+    7cf0:	a2 17       	cp	r26, r18
+    7cf2:	b3 07       	cpc	r27, r19
+    7cf4:	51 f7       	brne	.-44     	; 0x7cca <boot_program_page+0x34>
+		uint16_t w = *buf++;
+		w += (*buf++) << 8;
+		boot_page_fill(page + i, w);
+	}
+	boot_page_write(page);
+    7cf6:	25 e0       	ldi	r18, 0x05	; 5
+    7cf8:	fb 01       	movw	r30, r22
+    7cfa:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7cfe:	e8 95       	spm
+	boot_spm_busy_wait();
+    7d00:	07 b6       	in	r0, 0x37	; 55
+    7d02:	00 fc       	sbrc	r0, 0
+    7d04:	fd cf       	rjmp	.-6      	; 0x7d00 <boot_program_page+0x6a>
+	boot_rww_enable ();
+    7d06:	81 e1       	ldi	r24, 0x11	; 17
+    7d08:	80 93 57 00 	sts	0x0057, r24	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d0c:	e8 95       	spm
+	SREG = sreg;
+    7d0e:	cf bf       	out	0x3f, r28	; 63
+}
+    7d10:	df 91       	pop	r29
+    7d12:	cf 91       	pop	r28
+    7d14:	1f 91       	pop	r17
+    7d16:	0f 91       	pop	r16
+    7d18:	ff 90       	pop	r15
+    7d1a:	08 95       	ret
+
+00007d1c <main>:
+
+int main(void) {
+	unsigned char flag = 0x00;
+	DDRB = 0xFF;
+    7d1c:	8f ef       	ldi	r24, 0xFF	; 255
+    7d1e:	84 b9       	out	0x04, r24	; 4
+    7d20:	84 e6       	ldi	r24, 0x64	; 100
+    7d22:	90 e0       	ldi	r25, 0x00	; 0
+	for(int i=0;i<100;i++){
+		PORTB = 0xFF;
+    7d24:	2f ef       	ldi	r18, 0xFF	; 255
+    7d26:	25 b9       	out	0x05, r18	; 5
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+    7d28:	3f ef       	ldi	r19, 0xFF	; 255
+    7d2a:	49 e6       	ldi	r20, 0x69	; 105
+    7d2c:	58 e1       	ldi	r21, 0x18	; 24
+    7d2e:	31 50       	subi	r19, 0x01	; 1
+    7d30:	40 40       	sbci	r20, 0x00	; 0
+    7d32:	50 40       	sbci	r21, 0x00	; 0
+    7d34:	e1 f7       	brne	.-8      	; 0x7d2e <main+0x12>
+    7d36:	00 c0       	rjmp	.+0      	; 0x7d38 <main+0x1c>
+    7d38:	00 00       	nop
+		_delay_ms(500);
+		PORTB = 0x00;
+    7d3a:	15 b8       	out	0x05, r1	; 5
+    7d3c:	3f ef       	ldi	r19, 0xFF	; 255
+    7d3e:	49 e6       	ldi	r20, 0x69	; 105
+    7d40:	58 e1       	ldi	r21, 0x18	; 24
+    7d42:	31 50       	subi	r19, 0x01	; 1
+    7d44:	40 40       	sbci	r20, 0x00	; 0
+    7d46:	50 40       	sbci	r21, 0x00	; 0
+    7d48:	e1 f7       	brne	.-8      	; 0x7d42 <main+0x26>
+    7d4a:	00 c0       	rjmp	.+0      	; 0x7d4c <main+0x30>
+    7d4c:	00 00       	nop
+    7d4e:	01 97       	sbiw	r24, 0x01	; 1
+}
+
+int main(void) {
+	unsigned char flag = 0x00;
+	DDRB = 0xFF;
+	for(int i=0;i<100;i++){
+    7d50:	51 f7       	brne	.-44     	; 0x7d26 <main+0xa>
+		PORTB = 0xFF;
+		_delay_ms(500);
+		PORTB = 0x00;
+		_delay_ms(500);
+	}
+	DDRB = 0x00;
+    7d52:	14 b8       	out	0x04, r1	; 4
+	boot_program_page( 0, prog);
+    7d54:	40 e0       	ldi	r20, 0x00	; 0
+    7d56:	51 e0       	ldi	r21, 0x01	; 1
+    7d58:	60 e0       	ldi	r22, 0x00	; 0
+    7d5a:	70 e0       	ldi	r23, 0x00	; 0
+    7d5c:	cb 01       	movw	r24, r22
+    7d5e:	0e 94 4b 3e 	call	0x7c96	; 0x7c96 <boot_program_page>
+	flag = flag + 1;
+	asm("jmp 0x00000");
+    7d62:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
+	return 0;
+    7d66:	80 e0       	ldi	r24, 0x00	; 0
+    7d68:	90 e0       	ldi	r25, 0x00	; 0
+    7d6a:	08 95       	ret
+
+00007d6c <_exit>:
+    7d6c:	f8 94       	cli
+
+00007d6e <__stop_program>:
+    7d6e:	ff cf       	rjmp	.-2      	; 0x7d6e <__stop_program>
