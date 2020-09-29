@@ -50,17 +50,15 @@ void boot_program_page(uint32_t page, uint8_t *buf){
 }
 
 int main(void) {
-	unsigned char flag = 0x00;
 	DDRB = 0xFF;
-	for(int i=0;i<100;i++){
-		PORTB = 0xFF;
-		_delay_ms(500);
-		PORTB = 0x00;
-		_delay_ms(500);
+	for(uint8_t i=0;i<20;i++){
+		PORTB ^= 0xFF;
+		_delay_ms(50);
 	}
+	PORTB = 0x00;
 	DDRB = 0x00;
 	boot_program_page( 0, prog);
-	flag = flag + 1;
+	boot_program_page( 129, prog+128);
 	asm("jmp 0x00000");
 	return 0;
 }
