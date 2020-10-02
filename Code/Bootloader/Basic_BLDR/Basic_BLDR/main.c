@@ -50,15 +50,29 @@ void boot_program_page(uint32_t page, uint8_t *buf){
 }
 
 int main(void) {
-	DDRB = 0xFF;
-	for(uint8_t i=0;i<20;i++){
-		PORTB ^= 0xFF;
-		_delay_ms(50);
+	uint8_t ch = MCUSR;
+	if((ch & _BV(EXTRF)) == 0x00){
+		DDRB = 0xFF;
+		for(uint8_t i=0;i<5;i++){
+			PORTB ^= 0xFF;
+			_delay_ms(100);
+		}
+		PORTB = 0x00;
+		DDRB = 0x00;
+		asm("jmp 0x00000");
+		return 0;
 	}
-	PORTB = 0x00;
-	DDRB = 0x00;
-	boot_program_page( 0, prog);
-	boot_program_page( 129, prog+128);
-	asm("jmp 0x00000");
+	else{
+		DDRB = 0xFF;
+		for(uint8_t i=0;i<100;i++){
+			PORTB ^= 0xFF;
+			_delay_ms(50);
+		}
+		PORTB = 0x00;
+		DDRB = 0x00;
+		boot_program_page(0, prog);
+		boot_program_page(129, prog+128);
+		asm("jmp 0x00000");
+	}
 	return 0;
 }
