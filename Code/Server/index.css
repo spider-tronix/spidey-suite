@@ -1,0 +1,106 @@
+* {
+    box-sizing: border-box;
+    position: relative;
+}
+
+html,body{
+    width:100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    text-align:center;
+    font-family: 'Poppins';
+    overflow: auto;
+    min-width: 380px !important;
+}
+
+.container{
+    font-family: 'Poppins';
+    position: fixed;
+    width:100vw;
+    height: 100vh;
+    top:0;left:0;
+    background: #333;
+    text-align: center;
+    z-index: 2147483647;
+}
+
+.loginWrapper{
+    min-width:350px;
+    padding:20px 50px;
+    background: #fff;
+    border-radius: 10px;
+    display: inline-flex;
+    position: absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+}
+.loginWrapper h1{
+    margin-bottom: 10px;
+    user-select: none;
+    color:#777;
+}
+
+.pinContainer{
+    display: block;
+    width:100%;
+    margin-top:20px;
+}
+
+#file-input {
+    display: block;
+    border: 1px solid #bbb;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    color: #aaa;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+#file-input:hover {
+    border-color: #777;
+    color: #777;
+}
+.btn{
+    background:#3498db;
+    color:#fff;
+    padding:15px 10px;
+    width:100%;
+    border-radius: 5px;
+    margin-top:15px;
+    font-size:18px;
+    font-weight:bold;
+    transition:all 0.5s;
+    border:none;
+    outline: none;
+    cursor: pointer;
+}
+.btn:hover{
+    background:rgba(52, 152, 219, 0.8);
+}
+.btn:disabled{
+    cursor: not-allowed;
+}
+#prg{
+    font-size:15px;
+    color:#777;
+    user-select: none;
+    margin-bottom:7px;
+}
+#bar,#prgbar{
+    background-color:#f1f1f1;
+    border-radius:10px
+}
+#bar{
+    background-color:#3498db;
+    width:0%;
+    height:10px
+}
+.svg_container svg{
+    width:100px;
+    height:90px;
+}
+@media(max-width:650px){
+    .loginWrapper{padding:20px;}
+}
