@@ -3,29 +3,29 @@ Basic_BLDR.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         000000b4  00800100  00007d9a  0000020e  2**0
+  0 .data         000000b4  00800100  00007da4  00000218  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000019a  00007c00  00007c00  00000074  2**1
+  1 .text         000001a4  00007c00  00007c00  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000002c2  2**0
+  2 .comment      00000030  00000000  00000000  000002cc  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000002f4  2**2
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000002fc  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000028  00000000  00000000  00000334  2**0
+  4 .debug_aranges 00000038  00000000  00000000  0000033c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000879  00000000  00000000  0000035c  2**0
+  5 .debug_info   000008f5  00000000  00000000  00000374  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 0000071b  00000000  00000000  00000bd5  2**0
+  6 .debug_abbrev 000007ba  00000000  00000000  00000c69  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000348  00000000  00000000  000012f0  2**0
+  7 .debug_line   000003bd  00000000  00000000  00001423  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000050  00000000  00000000  00001638  2**2
+  8 .debug_frame  00000070  00000000  00000000  000017e0  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000003c5  00000000  00000000  00001688  2**0
+  9 .debug_str    000003ff  00000000  00000000  00001850  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000026a  00000000  00000000  00001a4d  2**0
+ 10 .debug_loc    000001fc  00000000  00000000  00001c4f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000018  00000000  00000000  00001cb7  2**0
+ 11 .debug_ranges 00000028  00000000  00000000  00001e4b  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -70,7 +70,7 @@ Disassembly of section .text:
     7c74:	11 e0       	ldi	r17, 0x01	; 1
     7c76:	a0 e0       	ldi	r26, 0x00	; 0
     7c78:	b1 e0       	ldi	r27, 0x01	; 1
-    7c7a:	ea e9       	ldi	r30, 0x9A	; 154
+    7c7a:	e4 ea       	ldi	r30, 0xA4	; 164
     7c7c:	fd e7       	ldi	r31, 0x7D	; 125
     7c7e:	02 c0       	rjmp	.+4      	; 0x7c84 <__do_copy_data+0x10>
     7c80:	05 90       	lpm	r0, Z+
@@ -78,40 +78,33 @@ Disassembly of section .text:
     7c84:	a4 3b       	cpi	r26, 0xB4	; 180
     7c86:	b1 07       	cpc	r27, r17
     7c88:	d9 f7       	brne	.-10     	; 0x7c80 <__do_copy_data+0xc>
-    7c8a:	0e 94 8e 3e 	call	0x7d1c	; 0x7d1c <main>
-    7c8e:	0c 94 cb 3e 	jmp	0x7d96	; 0x7d96 <_exit>
+    7c8a:	0e 94 bb 3e 	call	0x7d76	; 0x7d76 <main>
+    7c8e:	0c 94 d0 3e 	jmp	0x7da0	; 0x7da0 <_exit>
 
 00007c92 <__bad_interrupt>:
     7c92:	0c 94 00 3e 	jmp	0x7c00	; 0x7c00 <__vectors>
 
 00007c96 <boot_program_page>:
-	0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0x15, 0xB8, 0x2F, 0xEF, 0x33, 0xED,
-	0x90, 0xE3, 0x21, 0x50, 0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0xEB, 0xCF,
-	0xF8, 0x94, 0xFF, 0xCF
-};
+	boot_rww_enable ();
+	SREG = sreg;
+}
 
-void boot_program_page(uint32_t page, uint8_t *buf){
+void appStart(){
+	asm("jmp 0x00000");
     7c96:	ff 92       	push	r15
     7c98:	0f 93       	push	r16
     7c9a:	1f 93       	push	r17
     7c9c:	cf 93       	push	r28
     7c9e:	df 93       	push	r29
-	uint16_t i;
-	uint8_t sreg;
-	sreg = SREG;
     7ca0:	cf b7       	in	r28, 0x3f	; 63
-	cli();
     7ca2:	f8 94       	cli
-	eeprom_busy_wait();
     7ca4:	f9 99       	sbic	0x1f, 1	; 31
     7ca6:	fe cf       	rjmp	.-4      	; 0x7ca4 <boot_program_page+0xe>
-	boot_page_erase(page);
     7ca8:	8b 01       	movw	r16, r22
     7caa:	23 e0       	ldi	r18, 0x03	; 3
     7cac:	fb 01       	movw	r30, r22
     7cae:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
     7cb2:	e8 95       	spm
-	boot_spm_busy_wait();
     7cb4:	07 b6       	in	r0, 0x37	; 55
     7cb6:	00 fc       	sbrc	r0, 0
     7cb8:	fd cf       	rjmp	.-6      	; 0x7cb4 <boot_program_page+0x1e>
@@ -119,23 +112,11 @@ void boot_program_page(uint32_t page, uint8_t *buf){
     7cbc:	20 58       	subi	r18, 0x80	; 128
     7cbe:	3f 4f       	sbci	r19, 0xFF	; 255
     7cc0:	da 01       	movw	r26, r20
-	for (i = 0; i < SPM_PAGESIZE; i += 2){
-		uint16_t w = *buf++;
-		w += (*buf++) << 8;
-		boot_page_fill(page + i, w);
     7cc2:	d1 e0       	ldi	r29, 0x01	; 1
     7cc4:	a8 01       	movw	r20, r16
     7cc6:	4a 1b       	sub	r20, r26
     7cc8:	5b 0b       	sbc	r21, r27
-	cli();
-	eeprom_busy_wait();
-	boot_page_erase(page);
-	boot_spm_busy_wait();
-	for (i = 0; i < SPM_PAGESIZE; i += 2){
-		uint16_t w = *buf++;
     7cca:	fc 90       	ld	r15, X
-		w += (*buf++) << 8;
-		boot_page_fill(page + i, w);
     7ccc:	fa 01       	movw	r30, r20
     7cce:	ea 0f       	add	r30, r26
     7cd0:	fb 1f       	adc	r31, r27
@@ -153,35 +134,20 @@ void boot_program_page(uint32_t page, uint8_t *buf){
     7cea:	e8 95       	spm
     7cec:	11 24       	eor	r1, r1
     7cee:	12 96       	adiw	r26, 0x02	; 2
-	sreg = SREG;
-	cli();
-	eeprom_busy_wait();
-	boot_page_erase(page);
-	boot_spm_busy_wait();
-	for (i = 0; i < SPM_PAGESIZE; i += 2){
     7cf0:	a2 17       	cp	r26, r18
     7cf2:	b3 07       	cpc	r27, r19
     7cf4:	51 f7       	brne	.-44     	; 0x7cca <boot_program_page+0x34>
-		uint16_t w = *buf++;
-		w += (*buf++) << 8;
-		boot_page_fill(page + i, w);
-	}
-	boot_page_write(page);
     7cf6:	25 e0       	ldi	r18, 0x05	; 5
     7cf8:	fb 01       	movw	r30, r22
     7cfa:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
     7cfe:	e8 95       	spm
-	boot_spm_busy_wait();
     7d00:	07 b6       	in	r0, 0x37	; 55
     7d02:	00 fc       	sbrc	r0, 0
     7d04:	fd cf       	rjmp	.-6      	; 0x7d00 <boot_program_page+0x6a>
-	boot_rww_enable ();
     7d06:	81 e1       	ldi	r24, 0x11	; 17
     7d08:	80 93 57 00 	sts	0x0057, r24	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
     7d0c:	e8 95       	spm
-	SREG = sreg;
     7d0e:	cf bf       	out	0x3f, r28	; 63
-}
     7d10:	df 91       	pop	r29
     7d12:	cf 91       	pop	r28
     7d14:	1f 91       	pop	r17
@@ -189,122 +155,127 @@ void boot_program_page(uint32_t page, uint8_t *buf){
     7d18:	ff 90       	pop	r15
     7d1a:	08 95       	ret
 
-00007d1c <main>:
-
-int main(void) {
-	uint8_t ch = MCUSR;
-	if((ch & _BV(EXTRF)) == 0x00){
-		DDRB = 0xFF;
-    7d1c:	8f ef       	ldi	r24, 0xFF	; 255
-	SREG = sreg;
+00007d1c <bootLoader>:
 }
 
-int main(void) {
-	uint8_t ch = MCUSR;
-	if((ch & _BV(EXTRF)) == 0x00){
-    7d1e:	04 b6       	in	r0, 0x34	; 52
-    7d20:	01 fc       	sbrc	r0, 1
-    7d22:	13 c0       	rjmp	.+38     	; 0x7d4a <main+0x2e>
-		DDRB = 0xFF;
-    7d24:	84 b9       	out	0x04, r24	; 4
-    7d26:	85 e0       	ldi	r24, 0x05	; 5
-		for(uint8_t i=0;i<5;i++){
-			PORTB ^= 0xFF;
-    7d28:	95 b1       	in	r25, 0x05	; 5
-    7d2a:	90 95       	com	r25
-    7d2c:	95 b9       	out	0x05, r25	; 5
+void bootLoader(){
+	DDRB = 0xFF;
+    7d1c:	8f ef       	ldi	r24, 0xFF	; 255
+    7d1e:	84 b9       	out	0x04, r24	; 4
+    7d20:	84 e1       	ldi	r24, 0x14	; 20
+	for(uint8_t i=0;i<20;i++){
+		PORTB ^= 0xFF;
+    7d22:	95 b1       	in	r25, 0x05	; 5
+    7d24:	90 95       	com	r25
+    7d26:	95 b9       	out	0x05, r25	; 5
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-    7d2e:	2f ef       	ldi	r18, 0xFF	; 255
-    7d30:	31 ee       	ldi	r19, 0xE1	; 225
-    7d32:	94 e0       	ldi	r25, 0x04	; 4
-    7d34:	21 50       	subi	r18, 0x01	; 1
-    7d36:	30 40       	sbci	r19, 0x00	; 0
-    7d38:	90 40       	sbci	r25, 0x00	; 0
-    7d3a:	e1 f7       	brne	.-8      	; 0x7d34 <main+0x18>
-    7d3c:	00 c0       	rjmp	.+0      	; 0x7d3e <main+0x22>
-    7d3e:	00 00       	nop
-    7d40:	81 50       	subi	r24, 0x01	; 1
+    7d28:	2f ef       	ldi	r18, 0xFF	; 255
+    7d2a:	30 e7       	ldi	r19, 0x70	; 112
+    7d2c:	92 e0       	ldi	r25, 0x02	; 2
+    7d2e:	21 50       	subi	r18, 0x01	; 1
+    7d30:	30 40       	sbci	r19, 0x00	; 0
+    7d32:	90 40       	sbci	r25, 0x00	; 0
+    7d34:	e1 f7       	brne	.-8      	; 0x7d2e <bootLoader+0x12>
+    7d36:	00 c0       	rjmp	.+0      	; 0x7d38 <bootLoader+0x1c>
+    7d38:	00 00       	nop
+    7d3a:	81 50       	subi	r24, 0x01	; 1
+	asm("jmp 0x00000");
+}
+
+void bootLoader(){
+	DDRB = 0xFF;
+	for(uint8_t i=0;i<20;i++){
+    7d3c:	91 f7       	brne	.-28     	; 0x7d22 <bootLoader+0x6>
+		PORTB ^= 0xFF;
+		_delay_ms(50);
+	}
+	PORTB = 0x00;
+    7d3e:	15 b8       	out	0x05, r1	; 5
+	DDRB = 0x00;
+    7d40:	14 b8       	out	0x04, r1	; 4
+	boot_program_page(0, prog);
+    7d42:	40 e0       	ldi	r20, 0x00	; 0
+    7d44:	51 e0       	ldi	r21, 0x01	; 1
+    7d46:	60 e0       	ldi	r22, 0x00	; 0
+    7d48:	70 e0       	ldi	r23, 0x00	; 0
+    7d4a:	cb 01       	movw	r24, r22
+    7d4c:	0e 94 4b 3e 	call	0x7c96	; 0x7c96 <boot_program_page>
+	boot_program_page(129, prog+128);
+    7d50:	40 e8       	ldi	r20, 0x80	; 128
+    7d52:	51 e0       	ldi	r21, 0x01	; 1
+    7d54:	61 e8       	ldi	r22, 0x81	; 129
+    7d56:	70 e0       	ldi	r23, 0x00	; 0
+    7d58:	80 e0       	ldi	r24, 0x00	; 0
+    7d5a:	90 e0       	ldi	r25, 0x00	; 0
+    7d5c:	0e 94 4b 3e 	call	0x7c96	; 0x7c96 <boot_program_page>
+				: "r0"
+		);
+	}
+	else
+	{
+		__asm__ __volatile__ (
+    7d60:	98 e0       	ldi	r25, 0x08	; 8
+    7d62:	88 e1       	ldi	r24, 0x18	; 24
+    7d64:	0f b6       	in	r0, 0x3f	; 63
+    7d66:	f8 94       	cli
+    7d68:	a8 95       	wdr
+    7d6a:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d6e:	0f be       	out	0x3f, r0	; 63
+    7d70:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d74:	ff cf       	rjmp	.-2      	; 0x7d74 <bootLoader+0x58>
+
+00007d76 <main>:
+	wdt_enable(WDTO_15MS);
+	while(1);
+}
 
 int main(void) {
 	uint8_t ch = MCUSR;
-	if((ch & _BV(EXTRF)) == 0x00){
-		DDRB = 0xFF;
-		for(uint8_t i=0;i<5;i++){
-    7d42:	91 f7       	brne	.-28     	; 0x7d28 <main+0xc>
-			PORTB ^= 0xFF;
-			_delay_ms(100);
-		}
-		PORTB = 0x00;
-    7d44:	15 b8       	out	0x05, r1	; 5
-		DDRB = 0x00;
-    7d46:	14 b8       	out	0x04, r1	; 4
-    7d48:	21 c0       	rjmp	.+66     	; 0x7d8c <main+0x70>
-		asm("jmp 0x00000");
-		return 0;
+    7d76:	84 b7       	in	r24, 0x34	; 52
+	MCUSR = 0;
+    7d78:	14 be       	out	0x34, r1	; 52
+		);
+	}
+	else
+	{
+        uint8_t register temp_reg;
+		__asm__ __volatile__ (
+    7d7a:	0f b6       	in	r0, 0x3f	; 63
+    7d7c:	f8 94       	cli
+    7d7e:	a8 95       	wdr
+    7d80:	90 91 60 00 	lds	r25, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d84:	98 61       	ori	r25, 0x18	; 24
+    7d86:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d8a:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d8e:	0f be       	out	0x3f, r0	; 63
+	wdt_disable();
+	if ((ch & _BV(EXTRF))){
+    7d90:	81 fd       	sbrc	r24, 1
+		bootLoader();
+    7d92:	0e 94 8e 3e 	call	0x7d1c	; 0x7d1c <bootLoader>
+	boot_rww_enable ();
+	SREG = sreg;
+}
+
+void appStart(){
+	asm("jmp 0x00000");
+    7d96:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
 	}
 	else{
-		DDRB = 0xFF;
-    7d4a:	84 b9       	out	0x04, r24	; 4
-    7d4c:	84 e6       	ldi	r24, 0x64	; 100
-		for(uint8_t i=0;i<100;i++){
-			PORTB ^= 0xFF;
-    7d4e:	95 b1       	in	r25, 0x05	; 5
-    7d50:	90 95       	com	r25
-    7d52:	95 b9       	out	0x05, r25	; 5
-    7d54:	2f ef       	ldi	r18, 0xFF	; 255
-    7d56:	30 e7       	ldi	r19, 0x70	; 112
-    7d58:	92 e0       	ldi	r25, 0x02	; 2
-    7d5a:	21 50       	subi	r18, 0x01	; 1
-    7d5c:	30 40       	sbci	r19, 0x00	; 0
-    7d5e:	90 40       	sbci	r25, 0x00	; 0
-    7d60:	e1 f7       	brne	.-8      	; 0x7d5a <main+0x3e>
-    7d62:	00 c0       	rjmp	.+0      	; 0x7d64 <main+0x48>
-    7d64:	00 00       	nop
-    7d66:	81 50       	subi	r24, 0x01	; 1
-		asm("jmp 0x00000");
-		return 0;
-	}
-	else{
-		DDRB = 0xFF;
-		for(uint8_t i=0;i<100;i++){
-    7d68:	91 f7       	brne	.-28     	; 0x7d4e <main+0x32>
-			PORTB ^= 0xFF;
-			_delay_ms(50);
-		}
-		PORTB = 0x00;
-    7d6a:	15 b8       	out	0x05, r1	; 5
-		DDRB = 0x00;
-    7d6c:	14 b8       	out	0x04, r1	; 4
-		boot_program_page(0, prog);
-    7d6e:	40 e0       	ldi	r20, 0x00	; 0
-    7d70:	51 e0       	ldi	r21, 0x01	; 1
-    7d72:	60 e0       	ldi	r22, 0x00	; 0
-    7d74:	70 e0       	ldi	r23, 0x00	; 0
-    7d76:	cb 01       	movw	r24, r22
-    7d78:	0e 94 4b 3e 	call	0x7c96	; 0x7c96 <boot_program_page>
-		boot_program_page(129, prog+128);
-    7d7c:	40 e8       	ldi	r20, 0x80	; 128
-    7d7e:	51 e0       	ldi	r21, 0x01	; 1
-    7d80:	61 e8       	ldi	r22, 0x81	; 129
-    7d82:	70 e0       	ldi	r23, 0x00	; 0
-    7d84:	80 e0       	ldi	r24, 0x00	; 0
-    7d86:	90 e0       	ldi	r25, 0x00	; 0
-    7d88:	0e 94 4b 3e 	call	0x7c96	; 0x7c96 <boot_program_page>
-		asm("jmp 0x00000");
-    7d8c:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
+		appStart();
 	}
 	return 0;
-    7d90:	80 e0       	ldi	r24, 0x00	; 0
-    7d92:	90 e0       	ldi	r25, 0x00	; 0
-    7d94:	08 95       	ret
+    7d9a:	80 e0       	ldi	r24, 0x00	; 0
+    7d9c:	90 e0       	ldi	r25, 0x00	; 0
+    7d9e:	08 95       	ret
 
-00007d96 <_exit>:
-    7d96:	f8 94       	cli
+00007da0 <_exit>:
+    7da0:	f8 94       	cli
 
-00007d98 <__stop_program>:
-    7d98:	ff cf       	rjmp	.-2      	; 0x7d98 <__stop_program>
+00007da2 <__stop_program>:
+    7da2:	ff cf       	rjmp	.-2      	; 0x7da2 <__stop_program>
