@@ -1,0 +1,37 @@
+********** verifySpace *************
+- if getch() is not ' ' #Space Char
+	- set watchdog at 8 clk time
+	- wait for watchdog reset
+- else 
+	- send 'STK_INSYNC' => ' ' #Void char 0x14
+- return
+
+********** main ********************
+- repeat infinite times //for(;;)
+	- Reads a character from USART. Store in ch
+	- if ch == 'A'   // STK_GET_Parameter
+		- Read from UART. Store in which.
+		- call verifyspace()
+		- if which is STK_Version_min send version min
+		- else if which is STK_version_max send version max
+		- else send '0x03'
+	- else if ch == 'B' //STK_SET_DEVICE
+		- we ignore it, read simply 20 chars and then call verifySpace()
+	- else if ch == 'E' //STK_SET_DEVICE_EXT
+		- we ignore it, read simply 3 chars and then call verifySpace()
+	- else if ch == 'U'  //STK_LOAD_ADDRESS
+	- else if ch == 'V'  //STK_UNIVERSAL
+	- else if ch == 'd'  //STK_PROG_PAGE
+	- else if ch == 't'  //STK_READ_PAGE
+	- else if ch == 'u'  //STK_READ_SIGN
+		- call verifySpace()
+		- send (SIGROW_DEVICEID0);
+		- send (SIGROW_DEVICEID1);
+		- send (SIGROW_DEVICEID2);
+	- else if ch == 'Q'  //STK_LEAVE_PROGMODE
+		- Watchdog set to 8 clk cycle time
+		- call verifySpace()
+	- else
+		- //This covers the response to commands like STK_ENTER_PROGMODE
+		- call verifySpace()
+	- send '0x10'
