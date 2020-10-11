@@ -4,9 +4,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>App Lock</title>
+    <title>Spider OTA Programmer</title>
     <link rel="stylesheet" href="index.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="icon" type="image/ico" href="./favicon.ico"/>
   </head>
   <body>
       <div class="container">
@@ -169,10 +169,10 @@
                     </div>
                     <div style="display: block;width:100%"><h1>OTA Programmer</h1></div>
                     <div class="pinContainer">
-                        <form method="POST" action="#" enctype="multipart/form-data" id="upload_form">
+                        <form method="POST" action="" enctype="multipart/form-data" id="upload_form">
                             <input type="file" name="update" id="file" onchange="sub(this)" style="display:none">
                             <label id="file-input" for="file">   Choose file...</label>
-                            <input type="submit" class="btn" value="Upload" disabled>
+                            <input type="submit" class="btn" id="btn" value="Upload" disabled>
                             <br><br>
                             <div id="prg"></div>
                             <div id="prgbar">
@@ -202,37 +202,53 @@
                     return;
                 }
             }
-            $("#file-input").html('   '+ file[0].name);
-            $(".btn").prop('disabled',false);
+            document.getElementById("file-input").innerHTML = " "+ file[0].name;
+            document.getElementById("btn").disabled = false;
         };
-        $('form').submit(function(e){
-            e.preventDefault();
-            var form = $('#upload_form')[0];
-            var data = new FormData(form);
-            $.ajax({
-                url: './',
-                type: 'POST',
-                data: data,
-                contentType: false,
-                processData:false,
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener('progress', function(evt) {
-                        if (evt.lengthComputable) {
-                            var per = evt.loaded / evt.total;
-                            $('#prg').html('Progress: ' + Math.round(per*100) + '%');
-                            $('#bar').css('width',Math.round(per*100) + '%');
-                        }
-                    }, false);
-                    return xhr;
-                },
-                success:function(d, s) {
-                    console.log('success!') 
-                },
-                error: function (a, b, c) {
+        document.getElementById("upload_form").onsubmit = function(event) {
+            event.preventDefault();
+            let files = document.getElementById("file").files;
+            let file = files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+            console.log(formData);
+            let xmlhttp="";
+            if(window.XMLHttpRequest) {
+                xmlhttp=new XMLHttpRequest();
+            }
+            else {
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        console.log(xmlhttp.responseText);
+                        document.getElementById("prg").innerHTML = "Uploaded Succesfully";
+                    }
+                    else if (xmlhttp.status == 0) {
+                        alert("Server closed the connection abruptly!");
+                        //location.reload()
+                    }
+                    else {
+                        console.log(xmlhttp.status + " Error!\n" + xmlhttp.responseText);
+                        document.getElementById("prg").innerHTML = "Error in Uploading";
+                        //location.reload()
+                    }
+                }
+            };
+            xmlhttp.upload.addEventListener('progress', function(evt) {
+                if (evt.lengthComputable) {
+                    let per = evt.loaded / evt.total;
+                    document.getElementById("prg").innerHTML = "Progress: " + Math.round(per*100) + "%";
+                    document.getElementById("bar").style.width = Math.round(per*100) + "%";
+                }
+                else{
+                    console.log("Unable to compute progress information since the total size is unknown");
                 }
             });
-        });
-        </script>
+            xmlhttp.open("POST", "upload/index.php", true);
+            xmlhttp.send(formData);
+        }
+    </script>
   </body>
 </html>
