@@ -9,8 +9,8 @@
  * USER SHOULD CHANGE THIS PART OF CODE ONLY 
  * Replace with your network credentials
 */
-const char* ssid = "MaataRaani";
-const char* password = "698630LAK";
+const char* ssid = "NETWORK_SSID_HERE";
+const char* password = "NETWORK_PASSWORD";
 /*
  * USER CHANGEABLE AREA ENDED  
 */
