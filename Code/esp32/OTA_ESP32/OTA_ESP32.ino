@@ -35,8 +35,8 @@
    network credentials.
 */
 #if (OTA_WIFI_MODE == 1)
-const char* ssid = "NETWORK_SSID_HERE";
-const char* password = "NETWORK_PASSWORD_HERE";
+  const char* ssid = "NETWORK_SSID_HERE";
+  const char* password = "NETWORK_PASSWORD_HERE";
 #endif
 /*
                       USER CHANGEABLE AREA ENDED
@@ -50,8 +50,8 @@ const char* password = "NETWORK_PASSWORD_HERE";
    Password = spider.123
 */
 #if (OTA_WIFI_MODE == 0)
-const char* ssid = "SpiderOTA";
-const char* password = "spider.123";
+  const char* ssid = "SpiderOTA";
+  const char* password = "spider.123";
 #endif
 
 const char* host = "spiderOTA";                                  // Host name for mDNS server
@@ -59,31 +59,52 @@ const char* host = "spiderOTA";                                  // Host name fo
 AsyncWebServer server(80);                                       // Create AsyncWebServer object on port 80
 
 /*
+   Function to send RST signal to the ext connected device on PIN D21
+*/
+void ResetExtDevice() {
+  pinMode(21, OUTPUT);
+  digitalWrite(21, LOW);
+  delay(500);
+  digitalWrite(21, HIGH);
+  pinMode(21, INPUT);
+}
+
+/*
    Function to handle File upload to the server.
 */
 void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
-  Serial.println("\n============== Starting Upload ==============");
+  #ifdef DEBUG_MODE
+    Serial.println("\n============== Starting Upload ==============");
+  #endif
   if (!index) {
-    Serial.printf("File Name: %s\n", filename.c_str());
+  #ifdef DEBUG_MODE
+      Serial.printf("File Name: %s\n", filename.c_str());
+  #endif
   }
-  Serial.println("File Contents: ");
+  #ifdef DEBUG_MODE
+    Serial.println("File Contents: ");
+  #endif
   for (size_t i = 0; i < len; i++) {
     Serial.write(data[i]);
   }
   if (final) {
-    Serial.printf("Size of the file %s is %u Bytes\n", filename.c_str(), index + len);
+  #ifdef DEBUG_MODE
+      Serial.printf("Size of the file %s is %u Bytes\n", filename.c_str(), index + len);
+  #endif
   }
-  Serial.println("============== Upload Ended ==============\n\n");
+  #ifdef DEBUG_MODE
+    Serial.println("============== Upload Ended ==============\n\n");
+  #endif
 }
 
 void setup() {
   Serial.begin(115200);
   #ifdef DEBUG_MODE
-      Serial.println("\n");
+    Serial.println("\n");
   #endif
   if (!SPIFFS.begin(true)) {                                        // Initialize SPIFFS
     #ifdef DEBUG_MODE
-      Serial.println("An Error has occurred while mounting SPIFFS");
+        Serial.println("An Error has occurred while mounting SPIFFS");
     #endif
     return;
   }
@@ -104,9 +125,9 @@ void setup() {
       WiFi.begin(ssid, password);
       while (WiFi.status() != WL_CONNECTED) {
         delay(500);
-        #ifdef DEBUG_MODE
+      #ifdef DEBUG_MODE
           Serial.print(".");
-        #endif
+      #endif
       }
       #ifdef DEBUG_MODE
         Serial.print(".");
@@ -122,9 +143,9 @@ void setup() {
   #endif
   // Using mDNS for host name resolution
   if (!MDNS.begin(host)) {
-    #ifdef DEBUG_MODE
-        Serial.println("Error setting up MDNS responder!");
-    #endif
+  #ifdef DEBUG_MODE
+      Serial.println("Error setting up MDNS responder!");
+  #endif
     while (1) {
       delay(500);
     }
@@ -132,7 +153,7 @@ void setup() {
   #ifdef DEBUG_MODE
     Serial.print("mDNS responder started. Serving at http://"); Serial.print(host); Serial.println(".local");
   #endif
-  
+
   // Route for favicon icon
   server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/favicon.ico", "image/ico");
@@ -145,23 +166,28 @@ void setup() {
   server.on("/index.css", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.css", "text/css");
   });
-  // Route to upload /upload handler
+  // Route to /upload handler for GET Request
+  server.on("/upload", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send(404);
+  });
+  // Route to /upload handler for POST Request
   server.on("/upload", HTTP_POST, [](AsyncWebServerRequest * request) {
     request->send(200, "File Uploaded Succesfully", "text/plain");
   }, [](AsyncWebServerRequest * request, const String & filename, size_t index, uint8_t *data, size_t len, bool final) {
     handleFileUpload(request, filename, index, data, len, final);
-  }
-           );
+  });
+  // Route to handle not found
+  server.onNotFound([](AsyncWebServerRequest * request) {
+    request->send(404);
+  });
   // Start server
   server.begin();
   #ifdef DEBUG_MODE
     Serial.println("Server Started.");
   #endif
-  //To Show that Server started. 
-  pinMode(2,OUTPUT);
-  digitalWrite(2,HIGH);
+  //To Show that Server started.
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
 }
 
-void loop() {
-
-}
+void loop() {}
