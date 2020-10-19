@@ -14,7 +14,6 @@
     Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
     ( Send the addrH and addrH )
 	MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - acknow 
-
 3) Program Mode Signal -  ASCII CHARACTER TO BE SENT BY ESP - STX - HEXADECIMAL VALUE - 0X02 - IDENTIFIER USED IN THIS CODE - progmode
    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
    ( Send the pageL and pageH then send ibytes)
@@ -173,6 +172,3 @@ int main(void)
    	}
    	return 0;
 }
-
-
-

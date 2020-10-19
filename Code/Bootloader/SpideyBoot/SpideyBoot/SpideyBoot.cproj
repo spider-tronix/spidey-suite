@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>Spidey.Boot</AssemblyName>
-    <Name>Spidey.Boot</Name>
-    <RootNamespace>Spidey.Boot</RootNamespace>
+    <AssemblyName>SpideyBoot</AssemblyName>
+    <Name>SpideyBoot</Name>
+    <RootNamespace>SpideyBoot</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
