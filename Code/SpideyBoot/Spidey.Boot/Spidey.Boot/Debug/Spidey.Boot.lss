@@ -1,0 +1,357 @@
+
+Spidey.Boot.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  000002ce  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000025a  00007c00  00007c00  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000100  00800100  00800100  000002ce  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000002ce  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000300  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000058  00000000  00000000  00000340  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00000a8d  00000000  00000000  00000398  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000822  00000000  00000000  00000e25  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000004f0  00000000  00000000  00001647  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000000a4  00000000  00000000  00001b38  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000462  00000000  00000000  00001bdc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00000364  00000000  00000000  0000203e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000048  00000000  00000000  000023a2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00007c00 <__vectors>:
+    7c00:	0c 94 34 3e 	jmp	0x7c68	; 0x7c68 <__ctors_end>
+    7c04:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c08:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c0c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c10:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c14:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c18:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c1c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c20:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c24:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c28:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c2c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c30:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c34:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c38:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c3c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c40:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c44:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c48:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c4c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c50:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c54:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c58:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c5c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c60:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c64:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+
+00007c68 <__ctors_end>:
+    7c68:	11 24       	eor	r1, r1
+    7c6a:	1f be       	out	0x3f, r1	; 63
+    7c6c:	cf ef       	ldi	r28, 0xFF	; 255
+    7c6e:	d8 e0       	ldi	r29, 0x08	; 8
+    7c70:	de bf       	out	0x3e, r29	; 62
+    7c72:	cd bf       	out	0x3d, r28	; 61
+
+00007c74 <__do_clear_bss>:
+    7c74:	22 e0       	ldi	r18, 0x02	; 2
+    7c76:	a0 e0       	ldi	r26, 0x00	; 0
+    7c78:	b1 e0       	ldi	r27, 0x01	; 1
+    7c7a:	01 c0       	rjmp	.+2      	; 0x7c7e <.do_clear_bss_start>
+
+00007c7c <.do_clear_bss_loop>:
+    7c7c:	1d 92       	st	X+, r1
+
+00007c7e <.do_clear_bss_start>:
+    7c7e:	a0 30       	cpi	r26, 0x00	; 0
+    7c80:	b2 07       	cpc	r27, r18
+    7c82:	e1 f7       	brne	.-8      	; 0x7c7c <.do_clear_bss_loop>
+    7c84:	0e 94 16 3f 	call	0x7e2c	; 0x7e2c <main>
+    7c88:	0c 94 2b 3f 	jmp	0x7e56	; 0x7e56 <_exit>
+
+00007c8c <__bad_interrupt>:
+    7c8c:	0c 94 00 3e 	jmp	0x7c00	; 0x7c00 <__vectors>
+
+00007c90 <usart_init>:
+		}
+	}
+}
+
+void appStart(){
+	asm("jmp 0x00000");
+    7c90:	88 e9       	ldi	r24, 0x98	; 152
+    7c92:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__DATA_REGION_ORIGIN__+0x61>
+    7c96:	86 e0       	ldi	r24, 0x06	; 6
+    7c98:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
+    7c9c:	88 e0       	ldi	r24, 0x08	; 8
+    7c9e:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__DATA_REGION_ORIGIN__+0x64>
+    7ca2:	08 95       	ret
+
+00007ca4 <acknowledge_uart>:
+    7ca4:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7ca8:	95 ff       	sbrs	r25, 5
+    7caa:	fc cf       	rjmp	.-8      	; 0x7ca4 <acknowledge_uart>
+    7cac:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+    7cb0:	08 95       	ret
+
+00007cb2 <read_uart>:
+    7cb2:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7cb6:	87 ff       	sbrs	r24, 7
+    7cb8:	fc cf       	rjmp	.-8      	; 0x7cb2 <read_uart>
+    7cba:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+    7cbe:	08 95       	ret
+
+00007cc0 <boot_program_page>:
+    7cc0:	1f 93       	push	r17
+    7cc2:	cf 93       	push	r28
+    7cc4:	df 93       	push	r29
+    7cc6:	4f b7       	in	r20, 0x3f	; 63
+    7cc8:	f8 94       	cli
+    7cca:	f9 99       	sbic	0x1f, 1	; 31
+    7ccc:	fe cf       	rjmp	.-4      	; 0x7cca <boot_program_page+0xa>
+    7cce:	23 e0       	ldi	r18, 0x03	; 3
+    7cd0:	fc 01       	movw	r30, r24
+    7cd2:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7cd6:	e8 95       	spm
+    7cd8:	07 b6       	in	r0, 0x37	; 55
+    7cda:	00 fc       	sbrc	r0, 0
+    7cdc:	fd cf       	rjmp	.-6      	; 0x7cd8 <boot_program_page+0x18>
+    7cde:	eb 01       	movw	r28, r22
+    7ce0:	c0 58       	subi	r28, 0x80	; 128
+    7ce2:	df 4f       	sbci	r29, 0xFF	; 255
+    7ce4:	db 01       	movw	r26, r22
+    7ce6:	51 e0       	ldi	r21, 0x01	; 1
+    7ce8:	bc 01       	movw	r22, r24
+    7cea:	6a 1b       	sub	r22, r26
+    7cec:	7b 0b       	sbc	r23, r27
+    7cee:	1c 91       	ld	r17, X
+    7cf0:	fb 01       	movw	r30, r22
+    7cf2:	ea 0f       	add	r30, r26
+    7cf4:	fb 1f       	adc	r31, r27
+    7cf6:	11 96       	adiw	r26, 0x01	; 1
+    7cf8:	2c 91       	ld	r18, X
+    7cfa:	11 97       	sbiw	r26, 0x01	; 1
+    7cfc:	30 e0       	ldi	r19, 0x00	; 0
+    7cfe:	32 2f       	mov	r19, r18
+    7d00:	22 27       	eor	r18, r18
+    7d02:	21 0f       	add	r18, r17
+    7d04:	31 1d       	adc	r19, r1
+    7d06:	09 01       	movw	r0, r18
+    7d08:	50 93 57 00 	sts	0x0057, r21	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d0c:	e8 95       	spm
+    7d0e:	11 24       	eor	r1, r1
+    7d10:	12 96       	adiw	r26, 0x02	; 2
+    7d12:	ca 17       	cp	r28, r26
+    7d14:	db 07       	cpc	r29, r27
+    7d16:	59 f7       	brne	.-42     	; 0x7cee <boot_program_page+0x2e>
+    7d18:	25 e0       	ldi	r18, 0x05	; 5
+    7d1a:	fc 01       	movw	r30, r24
+    7d1c:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d20:	e8 95       	spm
+    7d22:	07 b6       	in	r0, 0x37	; 55
+    7d24:	00 fc       	sbrc	r0, 0
+    7d26:	fd cf       	rjmp	.-6      	; 0x7d22 <boot_program_page+0x62>
+    7d28:	81 e1       	ldi	r24, 0x11	; 17
+    7d2a:	80 93 57 00 	sts	0x0057, r24	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d2e:	e8 95       	spm
+    7d30:	4f bf       	out	0x3f, r20	; 63
+    7d32:	df 91       	pop	r29
+    7d34:	cf 91       	pop	r28
+    7d36:	1f 91       	pop	r17
+    7d38:	08 95       	ret
+
+00007d3a <readcode>:
+    7d3a:	9f e0       	ldi	r25, 0x0F	; 15
+    7d3c:	88 e1       	ldi	r24, 0x18	; 24
+    7d3e:	0f b6       	in	r0, 0x3f	; 63
+    7d40:	f8 94       	cli
+    7d42:	a8 95       	wdr
+    7d44:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d48:	0f be       	out	0x3f, r0	; 63
+    7d4a:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7d4e:	c0 e0       	ldi	r28, 0x00	; 0
+    7d50:	d0 e0       	ldi	r29, 0x00	; 0
+    7d52:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d56:	81 30       	cpi	r24, 0x01	; 1
+    7d58:	29 f4       	brne	.+10     	; 0x7d64 <readcode+0x2a>
+    7d5a:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d5e:	89 30       	cpi	r24, 0x09	; 9
+    7d60:	c1 f7       	brne	.-16     	; 0x7d52 <readcode+0x18>
+    7d62:	0d c0       	rjmp	.+26     	; 0x7d7e <readcode+0x44>
+    7d64:	85 30       	cpi	r24, 0x05	; 5
+    7d66:	79 f4       	brne	.+30     	; 0x7d86 <readcode+0x4c>
+    7d68:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d6c:	89 30       	cpi	r24, 0x09	; 9
+    7d6e:	89 f7       	brne	.-30     	; 0x7d52 <readcode+0x18>
+    7d70:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d74:	c8 2f       	mov	r28, r24
+    7d76:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d7a:	d0 e0       	ldi	r29, 0x00	; 0
+    7d7c:	d8 2b       	or	r29, r24
+    7d7e:	86 e0       	ldi	r24, 0x06	; 6
+    7d80:	0e 94 52 3e 	call	0x7ca4	; 0x7ca4 <acknowledge_uart>
+    7d84:	e6 cf       	rjmp	.-52     	; 0x7d52 <readcode+0x18>
+    7d86:	82 30       	cpi	r24, 0x02	; 2
+    7d88:	21 f5       	brne	.+72     	; 0x7dd2 <readcode+0x98>
+    7d8a:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d8e:	89 30       	cpi	r24, 0x09	; 9
+    7d90:	01 f7       	brne	.-64     	; 0x7d52 <readcode+0x18>
+    7d92:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d96:	08 2f       	mov	r16, r24
+    7d98:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7d9c:	10 e0       	ldi	r17, 0x00	; 0
+    7d9e:	18 2b       	or	r17, r24
+    7da0:	80 e0       	ldi	r24, 0x00	; 0
+    7da2:	e8 2e       	mov	r14, r24
+    7da4:	81 e0       	ldi	r24, 0x01	; 1
+    7da6:	f8 2e       	mov	r15, r24
+    7da8:	c7 01       	movw	r24, r14
+    7daa:	80 50       	subi	r24, 0x00	; 0
+    7dac:	91 40       	sbci	r25, 0x01	; 1
+    7dae:	80 17       	cp	r24, r16
+    7db0:	91 07       	cpc	r25, r17
+    7db2:	30 f4       	brcc	.+12     	; 0x7dc0 <readcode+0x86>
+    7db4:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7db8:	f7 01       	movw	r30, r14
+    7dba:	81 93       	st	Z+, r24
+    7dbc:	7f 01       	movw	r14, r30
+    7dbe:	f4 cf       	rjmp	.-24     	; 0x7da8 <readcode+0x6e>
+    7dc0:	83 e0       	ldi	r24, 0x03	; 3
+    7dc2:	0e 94 52 3e 	call	0x7ca4	; 0x7ca4 <acknowledge_uart>
+    7dc6:	60 e0       	ldi	r22, 0x00	; 0
+    7dc8:	71 e0       	ldi	r23, 0x01	; 1
+    7dca:	ce 01       	movw	r24, r28
+    7dcc:	0e 94 60 3e 	call	0x7cc0	; 0x7cc0 <boot_program_page>
+    7dd0:	d6 cf       	rjmp	.-84     	; 0x7d7e <readcode+0x44>
+    7dd2:	84 30       	cpi	r24, 0x04	; 4
+    7dd4:	09 f0       	breq	.+2      	; 0x7dd8 <readcode+0x9e>
+    7dd6:	bd cf       	rjmp	.-134    	; 0x7d52 <readcode+0x18>
+    7dd8:	0e 94 59 3e 	call	0x7cb2	; 0x7cb2 <read_uart>
+    7ddc:	89 30       	cpi	r24, 0x09	; 9
+    7dde:	09 f0       	breq	.+2      	; 0x7de2 <readcode+0xa8>
+    7de0:	b8 cf       	rjmp	.-144    	; 0x7d52 <readcode+0x18>
+    7de2:	86 e0       	ldi	r24, 0x06	; 6
+    7de4:	0e 94 52 3e 	call	0x7ca4	; 0x7ca4 <acknowledge_uart>
+    7de8:	98 e0       	ldi	r25, 0x08	; 8
+    7dea:	88 e1       	ldi	r24, 0x18	; 24
+    7dec:	0f b6       	in	r0, 0x3f	; 63
+    7dee:	f8 94       	cli
+    7df0:	a8 95       	wdr
+    7df2:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7df6:	0f be       	out	0x3f, r0	; 63
+    7df8:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7dfc:	ff cf       	rjmp	.-2      	; 0x7dfc <readcode+0xc2>
+
+00007dfe <bootLoader>:
+}
+
+void bootLoader(){
+	usart_init();
+    7dfe:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <usart_init>
+	DDRB = 0xFF;
+    7e02:	8f ef       	ldi	r24, 0xFF	; 255
+    7e04:	84 b9       	out	0x04, r24	; 4
+    7e06:	84 e1       	ldi	r24, 0x14	; 20
+	for(uint8_t i=0;i<20;i++){
+		PORTB ^= 0xFF;
+    7e08:	95 b1       	in	r25, 0x05	; 5
+    7e0a:	90 95       	com	r25
+    7e0c:	95 b9       	out	0x05, r25	; 5
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+    7e0e:	2f ef       	ldi	r18, 0xFF	; 255
+    7e10:	30 e7       	ldi	r19, 0x70	; 112
+    7e12:	92 e0       	ldi	r25, 0x02	; 2
+    7e14:	21 50       	subi	r18, 0x01	; 1
+    7e16:	30 40       	sbci	r19, 0x00	; 0
+    7e18:	90 40       	sbci	r25, 0x00	; 0
+    7e1a:	e1 f7       	brne	.-8      	; 0x7e14 <bootLoader+0x16>
+    7e1c:	00 c0       	rjmp	.+0      	; 0x7e1e <bootLoader+0x20>
+    7e1e:	00 00       	nop
+    7e20:	81 50       	subi	r24, 0x01	; 1
+}
+
+void bootLoader(){
+	usart_init();
+	DDRB = 0xFF;
+	for(uint8_t i=0;i<20;i++){
+    7e22:	91 f7       	brne	.-28     	; 0x7e08 <bootLoader+0xa>
+		PORTB ^= 0xFF;
+		_delay_ms(50);
+	}
+	PORTB = 0x00;
+    7e24:	15 b8       	out	0x05, r1	; 5
+	DDRB = 0x00;
+    7e26:	14 b8       	out	0x04, r1	; 4
+    readcode();
+    7e28:	0e 94 9d 3e 	call	0x7d3a	; 0x7d3a <readcode>
+
+00007e2c <main>:
+}
+
+int main(void)
+{
+   	uint8_t ch = MCUSR;
+    7e2c:	84 b7       	in	r24, 0x34	; 52
+   	MCUSR = 0;
+    7e2e:	14 be       	out	0x34, r1	; 52
+		);
+	}
+	else
+	{
+        uint8_t register temp_reg;
+		__asm__ __volatile__ (
+    7e30:	0f b6       	in	r0, 0x3f	; 63
+    7e32:	f8 94       	cli
+    7e34:	a8 95       	wdr
+    7e36:	90 91 60 00 	lds	r25, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7e3a:	98 61       	ori	r25, 0x18	; 24
+    7e3c:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7e40:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
+    7e44:	0f be       	out	0x3f, r0	; 63
+   	wdt_disable();
+   	if ((ch & _BV(EXTRF))){
+    7e46:	81 fd       	sbrc	r24, 1
+	   	bootLoader();
+    7e48:	0e 94 ff 3e 	call	0x7dfe	; 0x7dfe <bootLoader>
+		}
+	}
+}
+
+void appStart(){
+	asm("jmp 0x00000");
+    7e4c:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
+   	}
+   	else{
+	   	appStart();
+   	}
+   	return 0;
+}
+    7e50:	80 e0       	ldi	r24, 0x00	; 0
+    7e52:	90 e0       	ldi	r25, 0x00	; 0
+    7e54:	08 95       	ret
+
+00007e56 <_exit>:
+    7e56:	f8 94       	cli
+
+00007e58 <__stop_program>:
+    7e58:	ff cf       	rjmp	.-2      	; 0x7e58 <__stop_program>
