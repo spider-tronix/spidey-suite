@@ -1,6 +1,6 @@
-#include "spideyboot.h"
+#include "spideydude.h"
 
-void SpideyBoot::ResetExtDevice() {
+void Spideydude::ResetExtDevice() {
   pinMode(21, OUTPUT);
   digitalWrite(21, LOW);
   delayMicroseconds(200);
@@ -8,20 +8,20 @@ void SpideyBoot::ResetExtDevice() {
   pinMode(21, INPUT);
 }
 
-void SpideyBoot::Verbose(const char* msg){
-  Serial.print("spideyboot: ");
+void Spideydude::Verbose(const char* msg){
+  Serial.print("spideydude: ");
   Serial.println(msg);
 }
 
-void SpideyBoot::RW(const char* type){
+void Spideydude::RW(const char* type){
   Serial.println(F(""));Serial.print(F(type));Serial.print(F(" | "));
 }
 
-void SpideyBoot::Done(){
-  Serial.println(F("\nspideyboot done. Thank you."));
+void Spideydude::Done(){
+  Serial.println(F("\nspideydude done. Thank you."));
 }
 
-void SpideyBoot::sync(){
+void Spideydude::sync(){
   Serial2.flush();
   unsigned long startTime = millis();
   while(1){
@@ -49,9 +49,9 @@ void SpideyBoot::sync(){
   }
 }
 
-void SpideyBoot::writeFlash(){
-  Serial.printf("spideyboot: Reading hex file %s\n",details.fileName.c_str());
-  Serial.printf("spideyboot: Writing flash (%d bytes):\n",details.len);
+void Spideydude::writeFlash(){
+  Serial.printf("spideydude: Reading hex file %s\n",details.fileName.c_str());
+  Serial.printf("spideydude: Writing flash (%d bytes):\n",details.len);
   unsigned long startTime = millis();
   RW("Writing");
   uint16_t pageSize = details.pageSize;
@@ -109,7 +109,7 @@ void SpideyBoot::writeFlash(){
       Serial.print(elapsedTime, 2);
       Serial.print(F("s)"));
       Serial.println(F("\n"));
-      Serial.printf("spideyboot: %d bytes of flash written.\n",details.len);
+      Serial.printf("spideydude: %d bytes of flash written.\n",details.len);
       Serial2.flush();
       Serial2.write((byte)0x04);
       Serial2.write((byte)0x09);
@@ -126,17 +126,17 @@ void SpideyBoot::writeFlash(){
   }
 }
 
-void SpideyBoot::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+void Spideydude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
   details.fileName = file;
   details.progData = pg;
   details.len = len;
   details.pageSize = pageLen;
   Serial.begin(115200);
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
-  String stmnt = "\nspideyboot: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);
+  String stmnt = "\nspideydude: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);
   Serial.println(F(stmnt.c_str()));
   Serial.println(F("            Copyright (c) 2020 Tronix Division"));
-  Serial.println(F("            Copyright (c) 2020 Spider R&D Club"));
+  Serial.println(F("            Copyright (c) 2020 Spider R&D Club, NIT Trichy"));
   ResetExtDevice();
   sync();
   Done();

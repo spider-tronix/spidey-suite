@@ -1,4 +1,4 @@
-#include "spideyboot.h"
+#include "spideydude.h"
 
 uint8_t prog[] = {
   0x0C, 0x94, 0x34, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
@@ -15,14 +15,14 @@ uint8_t prog[] = {
   0xF8, 0x94, 0xFF, 0xCF
 };
 
-SpideyBoot spideyboot;
+Spideydude spideydude;
 
 void setup(){
   size_t len = 180;
   uint8_t *pg = prog;
   String file = "Blink.ino.hex";
   uint16_t page = 0x0080;
-  spideyboot.begin(file,pg,len,page);
+  spideydude.begin(file,pg,len,page);
   pinMode(2, OUTPUT);
   digitalWrite(2, HIGH);
 }

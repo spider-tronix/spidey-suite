@@ -1,10 +1,10 @@
-#ifndef __SPIDEY_BOOT_H__
-#define __SPIDEY_BOOT_H__
+#ifndef __SPIDEY_DUDE_H__
+#define __SPIDEY_DUDE_H__
+
+#include <Arduino.h>
 
 #define RXD2 16
 #define TXD2 17
-
-#include <Arduino.h>
 
 #define _MAJOR_VERSION_ 0
 #define _MINOR_VERSION_ 1
@@ -17,7 +17,7 @@ struct PROG {
   uint16_t pageSize;
 };
 
-class SpideyBoot{
+class Spideydude{
   private:
     PROG details;
     void ResetExtDevice();
