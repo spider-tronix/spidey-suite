@@ -11,14 +11,17 @@ void Spideydude::ResetExtDevice() {
 void Spideydude::Verbose(const char* msg){
   Serial.print("spideydude: ");
   Serial.println(msg);
+  response += "spideydude: " + String(msg) + "\n";
 }
 
 void Spideydude::RW(const char* type){
   Serial.println(F(""));Serial.print(F(type));Serial.print(F(" | "));
+  response += "\n"+ String(type) +" | ";
 }
 
 void Spideydude::Done(){
   Serial.println(F("\nspideydude done. Thank you."));
+  response += "\nspideydude done. Thank you.";
 }
 
 void Spideydude::sync(){
@@ -51,12 +54,15 @@ void Spideydude::sync(){
 
 void Spideydude::writeFlash(){
   Serial.printf("spideydude: Reading hex file %s\n",details.fileName.c_str());
+  response += "spideydude: Reading hex file " + details.fileName +"\n";
   Serial.printf("spideydude: Writing flash (%d bytes):\n",details.len);
+  response += "spideydude: Writing flash (" + String(details.len) +" bytes):\n";
   unsigned long startTime = millis();
   RW("Writing");
   uint16_t pageSize = details.pageSize;
   uint16_t address = 0x0000;
   Serial.print(F("####"));
+  response += "####";
   int pageCount = 0;
   Serial2.flush();
   while(1){
@@ -71,6 +77,7 @@ void Spideydude::writeFlash(){
     byte res1 = Serial2.read();
     if(res1 == 0x06){
       Serial.print(F("######"));
+      response += "######";
       Serial2.flush();
       while(1){
         // Sending pgm data
@@ -105,11 +112,14 @@ void Spideydude::writeFlash(){
     }
     if(pageCount>=2){
       Serial.print(F("###### | 100% ("));
+      response += "###### | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
       Serial.print(elapsedTime, 2);
-      Serial.print(F("s)"));
-      Serial.println(F("\n"));
+      response += String(elapsedTime);
+      Serial.println(F("s)\n"));
+      response += "s)\n\n";
       Serial.printf("spideydude: %d bytes of flash written.\n",details.len);
+      response += "spideydude: "+ String(details.len) +" bytes of flash written.\n";
       Serial2.flush();
       Serial2.write((byte)0x04);
       Serial2.write((byte)0x09);
@@ -126,7 +136,8 @@ void Spideydude::writeFlash(){
   }
 }
 
-void Spideydude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+String Spideydude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+  response = "";
   details.fileName = file;
   details.progData = pg;
   details.len = len;
@@ -137,7 +148,9 @@ void Spideydude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
   Serial.println(F(stmnt.c_str()));
   Serial.println(F("            Copyright (c) 2020 Tronix Division"));
   Serial.println(F("            Copyright (c) 2020 Spider R&D Club, NIT Trichy"));
+  response += stmnt + "\n            Copyright (c) 2020 Tronix Division\n" + "            Copyright (c) 2020 Spider R&D Club, NIT Trichy\n";
   ResetExtDevice();
   sync();
   Done();
+  return response;
 }

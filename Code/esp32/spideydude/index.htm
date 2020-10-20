@@ -136,6 +136,17 @@ html,body{
     font-size: 15px;
     font-family: consolas;
 }
+.con_info{
+    margin: 10px;
+}
+.ckere {
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.5s;
+}
+.ckere:hover {
+    text-decoration: underline;
+}
 @media(max-width:650px){
     .loginWrapper{padding:20px;}
     .window{ padding:0px 18px;}
@@ -322,9 +333,16 @@ html,body{
             <div class="window" id="cmdContainer">
                 <div style="display: block;"><h3>Console Log</h3></div>
                 <div class="consoleWindow" id="consoleWindowCont"></div>
+                <div class="con_info">Click <label class="ckere" onclick="closeConsole();">here</label> to close this window. After you close, the page will automatically reload in 2 seconds</div>
             </div>
       </div>
       <script>
+        function closeConsole(){
+            document.getElementById("cmdContainer").style.display="none";
+            setTimeout(function(){
+                location.reload();
+            },3000);
+        }
         function processResponse(res){
             let ans="";
             for(i=0;i<res.length;i++){
@@ -382,12 +400,18 @@ html,body{
                     }
                     else if (xmlhttp.status == 0) {
                         alert("Server closed the connection abruptly!");
-                        /*location.reload()*/
+                        setTimeout(function(){
+                            alert("Reloading Now...");
+                            location.reload();
+                        },1500);
                     }
                     else {
                         console.log(xmlhttp.status + " Error!\\n" + xmlhttp.responseText);
                         document.getElementById("prg").innerHTML = "Error in Uploading";
-                        /*location.reload()*/
+                        setTimeout(function(){
+                            alert("Reloading Now...");
+                            location.reload();
+                        },1500);
                     }
                 }
             };

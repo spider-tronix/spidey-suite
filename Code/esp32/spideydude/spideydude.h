@@ -1,3 +1,11 @@
+/*
+**************************************************************************************
+                       spideydude.h for ESP32
+                   ================================
+  Library header file for communication with spideyboot bootloader. Custom protocol
+  inspired by stk500v1 is used. spideydude is inspired by avrdude.  
+***************************************************************************************
+*/
 #ifndef __SPIDEY_DUDE_H__
 #define __SPIDEY_DUDE_H__
 
@@ -19,6 +27,7 @@ struct PROG {
 
 class Spideydude{
   private:
+    String response;
     PROG details;
     void ResetExtDevice();
     void Verbose(const char*);
@@ -27,6 +36,6 @@ class Spideydude{
     void sync();
     void writeFlash();
   public:
-    void begin(String, uint8_t*, size_t, uint16_t);
+    String begin(String, uint8_t*, size_t, uint16_t);
 };
 #endif 

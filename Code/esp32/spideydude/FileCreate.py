@@ -35,7 +35,7 @@ def createContent(start,style,body,script,end):
     cont = cont +"String body = \""+ body.replace("\"","\\\"") + "\";\n"
     cont = cont +"String script = \""+ script.replace("\"","\\\"") + "\";\n"
     cont = cont +"String end = \""+ end.replace("\"","\\\"") + "\";\n"
-    cont = cont + "String root(){ return start+style+body+script+end;}\n"
+    cont = cont + "\nString root(){ return start+style+body+script+end;}\n\n"
     cont = cont + "#endif\n"
     return cont
 
@@ -53,5 +53,6 @@ if __name__=="__main__":
     start,style,body,script,end = ProcessContent(htmlFileContent)
     print("Creating the content for header file...")
     headerFileContent = createContent(start,style,body,script,end)
+    writeFile(headerFileContent)
     print("File spideyserver.h created.")
     

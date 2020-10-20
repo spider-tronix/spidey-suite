@@ -3,7 +3,7 @@
                        Spideydude for ESP32
                    ================================
    Filename: Spideydude.ino
-   Version: 0.1.0
+   Version: 0.8.0
    Date: October 19, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
@@ -57,6 +57,8 @@ const char* host = "spideydude";                                  // Host name f
 
 WebServer server(80);                                            // Creating WebServer object on port 80
 
+String resp = "Some error occured. Please re-try";               // Response from spideydude will be stored here 
+
 void setup(void) {
   Serial.begin(115200);
   Serial.println("");
@@ -84,7 +86,7 @@ void setup(void) {
   #else
     #error WiFi mode not defined
   #endif
-  /*use mdns for host name resolution*/
+  /* Using mdns for host name resolution */
   if (!MDNS.begin(host)) {                                 
     Serial.println("Error setting up MDNS responder!");
     while (1) {
@@ -106,7 +108,7 @@ void setup(void) {
   // Route to /upload handler for POST Request
   server.on("/upload", HTTP_POST, []() {
     server.sendHeader("Connection", "close");
-    server.send(200, "text/plain", "OK");
+    server.send(200, "text/plain", resp);
   }, []() {
     HTTPUpload& upload = server.upload();
     if (upload.status == UPLOAD_FILE_START) {
@@ -120,12 +122,12 @@ void setup(void) {
         Serial.write(upload.buf[i]);
       }
       Serial.println("");
-      Serial.printf("\nUploading Success: %u bytes transferred.\n", upload.totalSize);
-      Serial.println("Starting Spideydude......");
-      // Call the Spiderdude here
+      Serial.printf("\nUploading Success: %d bytes transferred.\n", upload.totalSize);
+      Serial.println("Starting Spideydude......\n\n");
+      // Call the Spideydude here to upload the file
       Spideydude spideydude;
       uint16_t page = 0x0080;
-      spideydude.begin(upload.filename, upload.buf, upload.totalSize, page);
+      resp = spideydude.begin(upload.filename, upload.buf, upload.totalSize, page);
     }
   });
   // Route to handle not found
