@@ -35,3 +35,24 @@
 		- //This covers the response to commands like STK_ENTER_PROGMODE
 		- call verifySpace()
 	- send '0x10'
+
+
+
+
+Notes:
+ The virtual boot partition is a feature needed for those models like the  attiny1634,
+which doesn't support a separate boot section, meaning that you'd have to use optiboot's "virtual boot partition support".
+
+What this does is, first it stores the appplication start vector into any unused vector and goes to that vector location
+and write the address of the start of the optiboot code, so once it reset the optiboot vode is run first and if it decides
+to go to run the application it will fetch the address at unused vector which was stored initially,and the the application code is run.
+
+
+However, the Atmega328P has a dedicated NRWW section where the bootloader size can be varied of our choice.
+
+
+
+# Different baud rates are selected, also the error tolerances are calculated to give a warning or and error message.
+
+
+
