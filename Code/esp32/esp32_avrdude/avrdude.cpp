@@ -1,20 +1,5 @@
 #include "avrdude.h"
 
-uint8_t prog[] = {
-  0x0C, 0x94, 0x34, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00,
-  0x0C, 0x94, 0x3E, 0x00, 0x0C, 0x94, 0x3E, 0x00, 0x11, 0x24, 0x1F, 0xBE, 0xCF, 0xEF, 0xD8, 0xE0,
-  0xDE, 0xBF, 0xCD, 0xBF, 0x0E, 0x94, 0x40, 0x00, 0x0C, 0x94, 0x58, 0x00, 0x0C, 0x94, 0x00, 0x00,
-  0x8F, 0xEF, 0x84, 0xB9, 0x15, 0xB8, 0x85, 0xB9, 0x2F, 0xEF, 0x33, 0xED, 0x90, 0xE3, 0x21, 0x50,
-  0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0x15, 0xB8, 0x2F, 0xEF, 0x33, 0xED,
-  0x90, 0xE3, 0x21, 0x50, 0x30, 0x40, 0x90, 0x40, 0xE1, 0xF7, 0x00, 0xC0, 0x00, 0x00, 0xEB, 0xCF,
-  0xF8, 0x94, 0xFF, 0xCF
-};
-
 // ========================  Utility function's definition starts =================================
 /*
  * Serial omits HEX numbers starting from 0. Ex: 0A will be 
@@ -50,6 +35,7 @@ void Avrdude::ResetExtDevice() {
 void Avrdude::Verbose(const char* msg){
   Serial.print("avrdude: ");
   Serial.println(msg);
+  response += "avrdude: " + String(msg) + "\n";
 }
 
 /*
@@ -58,6 +44,7 @@ void Avrdude::Verbose(const char* msg){
 */
 void Avrdude::RW(const char* type){
   Serial.println(F(""));Serial.print(F(type));Serial.print(F(" | "));
+  response += "\n"+ String(type) +" | ";
 }
 
 /*
@@ -65,6 +52,7 @@ void Avrdude::RW(const char* type){
 */
 void Avrdude::Done(){
   Serial.println(F("\navrdude done. Thank you."));
+  response += "\navrdude done. Thank you.";
 }
 // ==============================  Helper function's definition ends =================================
 // ==============================  Essential function's definition ends =================================
@@ -73,14 +61,21 @@ void Avrdude::Done(){
  * for debugging and verbose output. Serial2 i.e, RX2 and TX2 communicates with the UART 
  * for the connected uC. Appropriate BAUDRATE is selected basd on the uC. 
 */
-void Avrdude::begin(){
+String Avrdude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+  response = "";
+  details.fileName = file;
+  details.progData = pg;
+  details.len = len;
+  details.pageSize = pageLen;
   // Initialising Serial comm. 
   Serial.begin(115200);
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
   // Printing basic info first
-  Serial.print(F("\navrdude: Version "));Serial.println(F(avrdudeVersion));
-  Serial.println(F("         Copyright (c) 2020 Tronix Profile"));
-  Serial.println(F("         Copyright (c) 2020 Spider R&D Club"));
+  String stmnt = "\navrdude: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);
+  Serial.println(F(stmnt.c_str()));
+  Serial.println(F("         Copyright (c) 2020 Tronix Division"));
+  Serial.println(F("         Copyright (c) 2020 Spider R&D Club, NIT Trichy"));
+  response += stmnt + "\n         Copyright (c) 2020 Tronix Division\n" + "         Copyright (c) 2020 Spider R&D Club, NIT Trichy\n";
   // Start the process by sending RESET signal first
   ResetExtDevice();
   // Synchronise with AVR Device. If synchronisation succeeds, it will automatically
@@ -88,6 +83,7 @@ void Avrdude::begin(){
   syncAVR();
   // After everything is done print the final msg and terminate process. 
   Done();
+  return response;
 }
 
 /*
@@ -146,6 +142,7 @@ void Avrdude::syncAVR(){
     }
     else{
       Verbose("Error: AVR Device not in sync().  No in_sync() for 1st try");
+      response += String(res1) + "  " + String(res2) + "\n";
     }
     break;
   }
@@ -157,8 +154,10 @@ void Avrdude::syncAVR(){
  * And then continues writing flash and finally exits the programming mode. 
 */
 void Avrdude::readDevice(){
+  unsigned long startTime = millis();
   RW("Reading");
   Serial.print(F("###"));
+  response += "###";
   Serial2.flush();
   while(1){
     //Reading SOFTWARE_MAJOR_VER
@@ -171,6 +170,7 @@ void Avrdude::readDevice(){
     byte res3 = Serial2.read();
     if(res1 ==  STK_INSYNC && res3 == STK_OK){      // If response is correct 
       Serial.print(F("######"));
+      response += "######";
       Serial2.flush();
       while(1){
         //Reading SOFTWARE_MINOR_VER
@@ -183,6 +183,7 @@ void Avrdude::readDevice(){
         byte res3 = Serial2.read();
         if(res1 ==  STK_INSYNC && res3 == STK_OK){  // If the response is correct 
           Serial.print(F("#####"));
+          response += "#####";
           Serial2.flush();
           while(1){
             //Sending command to enter the PROG_MODE
@@ -193,6 +194,7 @@ void Avrdude::readDevice(){
             byte res2 = Serial2.read();
             if(res1 ==  STK_INSYNC && res3 == STK_OK){       // If correcct response 
               Serial.print(F("####"));
+              response += "####";
               Serial2.flush();
               while(1){
                 //Reading Signature
@@ -203,9 +205,18 @@ void Avrdude::readDevice(){
                 byte res3 = Serial2.read();byte res4 = Serial2.read();
                 byte res5 = Serial2.read();
                 if(res1 ==  STK_INSYNC && res5 == STK_OK){      // If correct response 
-                  Serial.print(F("##### | 100%\n\n"));
+                  Serial.print(F("##### | 100% ("));
+                  response += "##### | 100% (";
+                  float elapsedTime = (millis() - startTime)/1000;
+                  Serial.print(elapsedTime, 2);
+                  response += String(elapsedTime);
+                  Serial.println(F("s)\n"));
+                  response += "s)\n\n";
                   Serial.print(F("avrdude: Device Signature 0x"));
+                  response += "avrdude: Device Signature 0x";
                   showHEX(res2);showHEX(res3);showHEX(res4);// Print the signature 
+                  Serial.print(F("\n"));
+                  response += String(res2) + String(res3) + String(res4) + "\n";
                   // Now proceed to write the Flash data 
                   writeFlash();
                   // Finally, exit the programming mode 
@@ -240,12 +251,16 @@ void Avrdude::readDevice(){
  * Write the flash in page by page fashion as per the stk500 v1 protocol.
 */
 void Avrdude::writeFlash(){
-  Verbose("Reading hex file Blink.hex");
-  Verbose("Writing flash (180 bytes): ");
+  Serial.printf("avrdude: Reading hex file %s\n",details.fileName.c_str());
+  response += "avrdude: Reading hex file " + details.fileName +"\n";
+  Serial.printf("avrdude: Writing flash (%d bytes):\n",details.len);
+  response += "avrdude: Writing flash (" + String(details.len) +" bytes):\n";
+  unsigned long startTime = millis();
   RW("Writing");
-  uint16_t pageSize = 0x0080;
+  uint16_t pageSize = details.pageSize;
   uint16_t address = 0x0000;
   Serial.print(F("####"));
+  response += "####";
   int pageCount = 0;
   Serial2.flush();
   while(1){
@@ -261,6 +276,7 @@ void Avrdude::writeFlash(){
     byte res2 = Serial2.read();
     if(res1 ==  STK_INSYNC && res2 == STK_OK){    // If load address was succesfull 
       Serial.print(F("######"));
+      response += "######";
       Serial2.flush();
       while(1){
         // Sending programm data
@@ -271,7 +287,7 @@ void Avrdude::writeFlash(){
         Serial2.write((byte)pageSizeL);
         Serial2.write((byte)'F');
         for(uint16_t i = 0; i<pageSize;i++){
-          Serial2.write((byte)prog[pageCount*pageSize + i]);
+          Serial2.write((byte)details.progData[pageCount*pageSize + i]);
         }
         Serial2.write((byte)CRC_EOP);
         while(!Serial2.available());
@@ -294,9 +310,15 @@ void Avrdude::writeFlash(){
       break;
     }
     if(pageCount>=2){
-      Serial.print(F("###### | 100%\n"));
-      Serial.println("");
-      Verbose("180 bytes of flash written.");
+      Serial.print(F("###### | 100% ("));
+      response += "###### | 100% (";
+      float elapsedTime = (millis() - startTime)/1000;
+      Serial.print(elapsedTime, 2);
+      response += String(elapsedTime);
+      Serial.println(F("s)\n"));
+      response += "s)\n\n";
+      Serial.printf("avrdude: %d bytes of flash written.\n",details.len);
+      response += "avrdude: "+ String(details.len) +" bytes of flash written.\n";
       // Writing is complete. Now verify. 
       verifyFlash();
       break;
@@ -311,15 +333,18 @@ void Avrdude::writeFlash(){
 */
 void Avrdude::verifyFlash(){
   Verbose("Verifying flash memory against input hex file");
-  Verbose("Load flash data from input file .hex");
-  Verbose("Input file .hex 180 bytes");
+  Serial.printf("avrdude: Loading flash data from input file %s\n",details.fileName.c_str());
+  response += "avrdude: Loading flash data from input file " + details.fileName +"\n";
+  Serial.printf("avrdude: Input file has %d bytes of Flash\n",details.len);
+  response += "avrdude: Input file has " + String(details.len) +" bytes of Flash\n";
   Verbose("Reading on-chip flash data: ");
+  unsigned long startTime = millis();
   RW("Reading");
-  bool done = false;
   int error = 0;
-  uint16_t pageSize = 0x0080;
+  uint16_t pageSize = details.pageSize;
   uint16_t address = 0x0000;
   Serial.print(F("####"));
+  response += "####";
   int pageCount = 0;
   Serial2.flush();
   while(1){
@@ -335,6 +360,7 @@ void Avrdude::verifyFlash(){
     byte res2 = Serial2.read();
     if(res1 ==  STK_INSYNC && res2 == STK_OK){
       Serial.print(F("######"));
+      response += "######";
       Serial2.flush();
       while(1){
         // Reading pgm data
@@ -352,7 +378,7 @@ void Avrdude::verifyFlash(){
           while(curr < pageSize){
             while(!Serial2.available());
             byte data = Serial2.read();
-            if( data != prog[pageCount*pageSize + curr]){
+            if( data != details.progData[pageCount*pageSize + curr]){
               error++;
             }
             curr++;
@@ -380,13 +406,20 @@ void Avrdude::verifyFlash(){
       break;
     }
     if(pageCount>=2){
-      Serial.print(F("###### | 100%\n"));
-      Serial.println("");
+      Serial.print(F("###### | 100% ("));
+      response += "###### | 100% (";
+      float elapsedTime = (millis() - startTime)/1000;
+      Serial.print(elapsedTime, 2);
+      response += String(elapsedTime);
+      Serial.println(F("s)\n"));
+      response += "s)\n\n";
       Verbose("Verifying.....");
-      Serial.print("avrdude: 180 bytes of flash verified. (");
+      Serial.printf("avrdude: %d bytes of flash verified. (",details.len);
+      response += "avrdude: "+ String(details.len) + " bytes of flash verified. (";
       float perc = (error/180)*100;
       Serial.print(perc);
       Serial.println("% error) ");
+      response += String(perc) + "% error) \n";
       break;
     }
   }
