@@ -6,24 +6,40 @@
  
  PROTOCOL :
  
- 1) Handshake Signal -    ASCII CHARACTER TO BE SENT BY ESP - EOH - HEXADECIMAL VALUE - 0X01 - IDENTIFIER USED IN THIS CODE - startrans
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
-    MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - acknow 
+ 1) Handshake Signal -    ASCII CHARACTER TO BE SENT BY ESP - EOH - HEXADECIMAL VALUE - 0X01 - IDENTIFIER USED IN THIS CODE - spidey_start_tx
+    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 IDENTIFIER USED IN THIS CODE - spidey_node_ack
+    MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
 	
-2)  Load Address Signal - ASCII CHARACTER TO BE SENT BY ESP - ENQ - HEXADECIMAL VALUE - 0X05 - IDENTIFIER USED IN THIS CODE - laddress
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
+ 2) Get Signature Bytes - ASCII CHARATCTER TO BE SENT BY ESP - BEL - HEXADECIMAL VALUE - 0x07 - IDENTIFIER USED IN THIS CODE - spidey_getsigbyte
+    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 IDENTIFIER USED IN THIS CODE - spidey_node_ack
+    MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
+    
+	
+2)  Load Address Signal - ASCII CHARACTER TO BE SENT BY ESP - ENQ - HEXADECIMAL VALUE - 0X05 - IDENTIFIER USED IN THIS CODE - spidey_load_address
+    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
     ( Send the addrH and addrH )
-	MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - acknow 
-3) Program Mode Signal -  ASCII CHARACTER TO BE SENT BY ESP - STX - HEXADECIMAL VALUE - 0X02 - IDENTIFIER USED IN THIS CODE - progmode
-   Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
+	MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
+	
+3) Program Mode Signal -  ASCII CHARACTER TO BE SENT BY ESP - STX - HEXADECIMAL VALUE - 0X02 - IDENTIFIER USED IN THIS CODE - spidey_start_progmode
+   Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
    ( Send the pageL and pageH then send ibytes)
-   First MCU Acknowledge- ASCII CHARACTER TO BE RECEIEVD BY ESP - ETX - HEXADECIMAL VALUE - 0X03 - IDENTIFIER USED IN THIS CODE - enddata
+   First MCU Acknowledge- ASCII CHARACTER TO BE RECEIEVD BY ESP - ETX - HEXADECIMAL VALUE - 0x03 - IDENTIFIER USED IN THIS CODE - spidey_data_recieved
    (Code flashed )
-   MCU Acknowledge -      ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - acknow 
+   For (i=0; i< no of bytes in page ; i++)
+   { 
+	   MCU sends byte from flash page 
+	   if byte is correct :
+	   HEXADECIMAL VALUE TO BE SENT BY ESP - 0x09
+	   if byte is incorrect:
+	   ESP can send any value 
+	   HEXADECIMAL VALUE TO BE RECIEVED BY ESP - 0x08
+	   Exit Loop
+   }
+   At end if page write was successful with no error  - ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
    
- 4) Exit Programming Mode - ASCII CHARACTER TO BE SENT BY ESP - EOT - HEXADECIMAL VALUE - 0X04 - IDENTIFIER USED IN THIS CODE - endtrans
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0x09 - IDENTIFIER USED IN THIS CODE - safevar
-    MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - acknow 
+ 4) Exit Programming Mode - ASCII CHARACTER TO BE SENT BY ESP - EOT - HEXADECIMAL VALUE - 0X04 - IDENTIFIER USED IN THIS CODE - spidey_end_tx
+    Safety Signal -         ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack 
+    MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge 
   */ 
 
 #ifndef F_CPU
@@ -36,13 +52,8 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include <avr/wdt.h>
-#define startrans 0x01
-#define endtrans  0x04
-#define laddress  0x05
-#define progmode  0x02
-#define enddata   0x03
-#define acknow    0x06
-#define safevar   0x09
+#include <spideyprotocol.h>
+
 #define MAX 256
 
 uint8_t prog[MAX];
@@ -58,7 +69,7 @@ void usart_init()
 
 
 
-void acknowledge_uart(char character)
+void write_uart(char character)
 {
 	while(!(UCSR0A&(1<<UDRE0)));
 	UDR0=character ;
@@ -97,45 +108,70 @@ void readcode()
 	char ch;
 	wdt_enable(WDTO_2S);
 	uint16_t addrfinal=0;
+	uint8_t data;
 	for(;;)
 	{
 		
 		ch = read_uart();
-		if( ch == startrans){
+		if( ch == spidey_start_tx){
 			ch=read_uart();
-			if(ch==safevar)
-			{acknowledge_uart(acknow);}
+			if(ch==spidey_node_ack)
+			{write_uart(spidey_acknowledge);}
 		}
-		else if( ch == laddress){
+		else if(ch == spidey_getsigbyte)           /* Code to read Signature Bytes */
+		{   
+			ch=read_uart();
+			if(ch==spidey_node_ack)
+			{int i;
+			for(i=0;i<6;i+=2)                      /* Start for loop for 3 iterations to read the 3 signature bytes*/
+			{
+				write_uart(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
+			}
+			}
+		}  
+		else if( ch == spidey_load_address){
 			ch = read_uart();
-			if(ch==safevar)
+			if(ch==spidey_node_ack)
 			{ uint8_t addrL = read_uart();
 			  uint8_t addrH = read_uart();
 	          addrfinal = (addrH << 8)| addrL ;
-			 acknowledge_uart(acknow);
+			 write_uart(spidey_acknowledge);
 			}
 		}
-		else if( ch == progmode){
+		else if( ch == spidey_start_progmode){
 			ch = read_uart();
-			if(ch==safevar)
+			if(ch==spidey_node_ack)
 			{
 				uint8_t pageL = read_uart();
 			    uint8_t pageH = read_uart();
 			    uint16_t pageLen = (pageH << 8) | pageL;
 			    uint16_t i;
+				uint8_t flag=0;
 			    for(i=0;i<pageLen;i++){
 				prog[i] = read_uart();
 			    }
-			    acknowledge_uart(enddata); 
+			    write_uart(spidey_data_recieved); 
 			    boot_program_page(addrfinal, prog);
-			    acknowledge_uart(acknow);
+				for(i=0;i<pageLen;i++)               /* Code to check if page was written properly*/
+				{
+					data = pgm_read_byte(addrfinal+i);
+					write_uart(data);
+					flag=read_uart();       /*Send byte to ESP and wait for it confirm if its correct or not*/
+					if(flag!=spidey_data_correct)             /* If ESP says byte is incorrect enter condition*/
+					{   
+						write_uart(spidey_error_in_flash);     /*Tell ESP there was ERROR in Flash write */
+						break;                                       /* Exit the loop to check further pages*/
+					}
+				}
+				if(flag==spidey_data_correct)
+			    {write_uart(spidey_acknowledge);};
 			}
 		}
-		else if( ch == endtrans){
+		else if( ch == spidey_end_tx){
 			ch=read_uart();
-			if(ch==safevar)
+			if(ch==spidey_node_ack)
 			{
-			  acknowledge_uart(acknow);
+			  write_uart(spidey_acknowledge);
 			  wdt_enable(WDTO_15MS);
 			  while(1); 
 			}
