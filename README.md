@@ -12,6 +12,11 @@ OTA (Over the Air) Programming is a process which allows devices to upgrade thei
 - How to write a light weight custom bootloader which can be added on top of an existing bootloader so that the μC can still be programmed from Arduino IDE (if using Arduino boards). 
 - If that’s not feasible (considering memory consumption by two bootloaders), how to write a standalone bootloader. 
 
+#### Phase 2:
+- Implementing the understanding done in the previous phase in the UNO and Mega boards. 
+- Developing the portal
+- Generalising the code in order to target more than 1 μC with the same code if possible (due to same architecture) 
+
 # Team:
   - Aditya Kumar Singh [https://github.com/adityasingh3007] 
   - Miriam [https://github.com/Githubmsk]
