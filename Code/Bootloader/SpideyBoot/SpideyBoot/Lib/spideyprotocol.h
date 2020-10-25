@@ -15,8 +15,7 @@
 #define spidey_data_recieved   0x03
 #define spidey_acknowledge   0x06
 #define spidey_getsigbyte 0x07
-#define spidey_error_in_flash 0x08
-#define spidey_data_correct 0x09
+#define spidey_check_flash 0x09
 #define spidey_node_ack 0x10      /*Byte to be sent by ESP as the safety signal */
 
 

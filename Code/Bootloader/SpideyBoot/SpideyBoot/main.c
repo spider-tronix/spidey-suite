@@ -25,19 +25,15 @@
    ( Send the pageL and pageH then send ibytes)
    First MCU Acknowledge- ASCII CHARACTER TO BE RECEIEVD BY ESP - ETX - HEXADECIMAL VALUE - 0x03 - IDENTIFIER USED IN THIS CODE - spidey_data_recieved
    (Code flashed )
-   For (i=0; i< no of bytes in page ; i++)
-   { 
-	   MCU sends byte from flash page 
-	   if byte is correct :
-	   HEXADECIMAL VALUE TO BE SENT BY ESP - 0x09
-	   if byte is incorrect:
-	   ESP can send any value 
-	   HEXADECIMAL VALUE TO BE RECIEVED BY ESP - 0x08
-	   Exit Loop
-   }
-   At end if page write was successful with no error  - ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
+   At end of page write - ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
    
- 4) Exit Programming Mode - ASCII CHARACTER TO BE SENT BY ESP - EOT - HEXADECIMAL VALUE - 0X04 - IDENTIFIER USED IN THIS CODE - spidey_end_tx
+ 4)    Read Flash Page -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0X09 - IDENTIFIER USED IN THIS CODE - spidey_check_flash
+       Safety Signal -         ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
+	   (Send pageL and page H )
+	   (Bytes are sent repeatedly)
+       MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
+   
+ 5) Exit Programming Mode - ASCII CHARACTER TO BE SENT BY ESP - EOT - HEXADECIMAL VALUE - 0X04 - IDENTIFIER USED IN THIS CODE - spidey_end_tx
     Safety Signal -         ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack 
     MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge 
   */ 
@@ -127,6 +123,7 @@ void readcode()
 			{
 				write_uart(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
 			}
+			write_uart(spidey_acknowledge);
 			}
 		}  
 		else if( ch == spidey_load_address){
@@ -146,25 +143,28 @@ void readcode()
 			    uint8_t pageH = read_uart();
 			    uint16_t pageLen = (pageH << 8) | pageL;
 			    uint16_t i;
-				uint8_t flag=0;
 			    for(i=0;i<pageLen;i++){
 				prog[i] = read_uart();
 			    }
 			    write_uart(spidey_data_recieved); 
 			    boot_program_page(addrfinal, prog);
+			    write_uart(spidey_acknowledge);
+			}
+		}
+		else if (ch==spidey_check_flash)
+		{
+			if(ch==spidey_node_ack)
+			{   
+				uint8_t pageL = read_uart();
+				uint8_t pageH = read_uart();
+				uint16_t pageLen = (pageH << 8) | pageL;
+				uint16_t i;
 				for(i=0;i<pageLen;i++)               /* Code to check if page was written properly*/
 				{
 					data = pgm_read_byte(addrfinal+i);
 					write_uart(data);
-					flag=read_uart();       /*Send byte to ESP and wait for it confirm if its correct or not*/
-					if(flag!=spidey_data_correct)             /* If ESP says byte is incorrect enter condition*/
-					{   
-						write_uart(spidey_error_in_flash);     /*Tell ESP there was ERROR in Flash write */
-						break;                                       /* Exit the loop to check further pages*/
-					}
 				}
-				if(flag==spidey_data_correct)
-			    {write_uart(spidey_acknowledge);};
+				write_uart(spidey_acknowledge);
 			}
 		}
 		else if( ch == spidey_end_tx){
@@ -186,7 +186,7 @@ void appStart(){
 void bootLoader(){
 	usart_init();
 	DDRB = 0xFF;
-	for(uint8_t i=0;i<20;i++){
+	for(uint8_t i=0;i<5;i++){
 		PORTB ^= 0xFF;
 		_delay_ms(50);
 	}
