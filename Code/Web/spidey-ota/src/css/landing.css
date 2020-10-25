@@ -1,0 +1,86 @@
+section{
+    position: relative;
+}
+.layerWrapper{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 50%;
+}
+.layerbgcont {
+    position: absolute;
+    right: -485px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url('../assets/lander.png');
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: cover;
+}
+.ldg_wrapper{
+    position: relative;
+    padding:10px;
+    padding-top:320px;
+}
+.order-2 {
+    -ms-flex-order: 2;
+    order: 2;
+}
+.header-text-area{
+    font-family: Arial,Helvetica,sans-serif;
+    color:#4c4754;
+}
+.ldg_img_box{
+    position: relative;
+    margin-left:-100px;
+    margin-top:-100px;
+    padding-bottom: 200px;
+}
+.ldg_img_box img{
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+}
+.header-text-area h1{
+    font-size:50px;
+    font-family: "PopB";
+    line-height: 64px;
+}
+.header-text-area h3{
+    font-size:20px;
+    font-family: "PopM";
+    line-height: 32px;
+    font-weight: normal;
+}
+.action-wrap{
+    margin-top:30px;
+}
+.get_started_but{
+    color: #7478fa;
+    background: #fff;
+    border-color:#7478fa;
+    box-shadow: none;
+    text-align: center;
+    border: 2px solid #7478fa;
+    border-radius: 4px;
+    height: 54px;
+    min-width: 196px;
+    padding: 16px 18px 18px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -.25px;
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+    transition:all 0.5s;
+}
+.get_started_but:hover{
+    color: #fff;
+    background: #7478fa;
+}
+.action-wrap button{
+    margin:0px;
+}
