@@ -84,3 +84,46 @@ section{
 .action-wrap button{
     margin:0px;
 }
+@media(max-width:992px){
+    .order-2{
+        order: unset;
+    }
+    .ldg_wrapper {
+        padding-top: 40px;
+    }
+    .ldg_img_box {
+        position: relative;
+        margin-left: 0px;
+        margin-top: 80px;
+        padding-bottom: 200px;
+    }
+    .layerWrapper{
+        display: none;
+    }
+    .header-text-area{
+        text-align: center;
+    }
+}
+@media(max-width:800px){
+    .header-text-area h1{
+        font-size:40px;
+    }
+    .header-text-area h3{
+        font-size:18px;
+    }
+    .ldg_img_box img {
+        max-width: 60%;
+    }
+}
+@media(max-width:576px){
+    .header-text-area h1{
+        font-size:30px;
+        line-height: 40px;
+    }
+    .header-text-area h3{
+        font-size:17px;
+    }
+    .ldg_img_box img {
+        max-width: 80%;
+    }
+}

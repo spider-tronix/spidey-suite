@@ -1,0 +1,72 @@
+.collabSec {
+    position: relative;
+    padding: 80px 0 90px;
+    background-color: #7478fa;
+    overflow: hidden;
+}
+.collabWrapper {
+    padding:20px;
+}
+.collabSec .title-column h3 {
+    position: relative;
+    display: block;
+    font-size: 40px;
+    line-height: 1.4em;
+    color: #ffffff;
+    font-weight: 600;
+    font-family: 'PopB';
+}
+.collabSec .title-column p {
+    position: relative;
+    display: block;
+    font-size: 18px;
+    line-height: 1.7em;
+    color: #ffffff;
+    font-family: 'PopM';
+    margin-left:20px;
+}
+.collabSec .link-column .link-box {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.collabSec .link-column .link-box a {
+    position: relative;
+    font-size: 18px;
+    color: #7478fa;
+    padding: 18px 40px;
+    line-height: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+    vertical-align: middle;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.collabSec .link-column .link-box a i {
+    margin-left:10px;
+    transition: all 0.4s ease-in-out;
+}
+.btn-style-one {
+    position: relative;
+    color: #8a57de;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 600;
+    padding: 12px 35px;
+    border-radius: 3px;
+    background-color: #ffffff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    transition: all 0.5s;
+}
+.collabSec .link-column .link-box a:hover {
+    color: #ffffff;
+    background-color: #4c4754;
+}
+.collabSec .link-column .link-box a:hover i{
+    transform: translate(5px,-5px);
+}
+@media(max-width:768px){
+    .collabSec .link-column .link-box {
+        margin-top: 50px;
+    }
+}

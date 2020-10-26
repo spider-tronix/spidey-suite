@@ -22,6 +22,17 @@ a {
   text-decoration: none;
 }
 
+button, a:hover, a:focus, a:visited {
+  text-decoration: none;
+  outline: none !important;
+}
+
+ul, li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+
 @font-face {
   font-family:PopB;
   src: url("../fonts/PoppinsBold.ttf");
@@ -50,4 +61,19 @@ code {
   margin-right: auto;
   margin-left: auto;
   padding: 24px 10px;
+}
+.sec-title{
+  margin-bottom: 50px;
+  position: relative;
+}
+.sec-title .title {
+  position: relative;
+  display: block;
+  font-size: 16px;
+  line-height: 24px;
+  color: #7478fa;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  font-family: "PopM", sans-serif;
 }
