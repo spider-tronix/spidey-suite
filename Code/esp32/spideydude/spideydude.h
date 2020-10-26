@@ -36,10 +36,14 @@ class Spideydude{
     void RW(const char*);
     void Done();
     void sync();
+    void readDevice();
     void writeFlash();
     void verifyFlash();
     void endProg();
   public:
     String begin(String, uint8_t*, size_t, uint16_t);
 };
+
+void showHEX(const byte);   
+
 #endif 

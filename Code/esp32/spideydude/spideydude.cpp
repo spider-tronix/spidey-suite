@@ -1,5 +1,12 @@
 #include "spideydude.h"
 
+void showHEX(const byte B){
+  if(B<16){
+    Serial.print(F("0"));
+  }
+  Serial.print(B,HEX);
+}
+
 void Spideydude::ResetExtDevice() {
   pinMode(21, OUTPUT);
   digitalWrite(21, LOW);
@@ -42,11 +49,49 @@ void Spideydude::sync(){
     byte res1 = Serial2.read();
     if(res1 == spidey_acknowledge){
       Verbose("AVR device initialized and ready to send instructions.");
-      writeFlash();
+      readDevice();
     }
     else{
       String error = "Failed to sync() with the device, expected=0x06 but got=0x"+String(res1); 
       Verbose(error.c_str());
+    }
+    break;
+  }
+}
+
+void Spideydude::readDevice(){
+  unsigned long startTime = millis();
+  RW("Reading");
+  Serial.print(F("###"));
+  response += "###";
+  Serial2.flush();
+  while(1){
+    //Reading Signature
+    Serial2.write((byte)spidey_getsigbyte);
+    Serial2.write((byte)spidey_node_ack);
+    while(!Serial2.available());
+    byte res1 = Serial2.read();byte res2 = Serial2.read();
+    byte res3 = Serial2.read();byte res4 = Serial2.read();
+    if(res4 == spidey_acknowledge){      // If correct response 
+      Serial.print(F("########## | 100% ("));
+      response += "########## | 100% (";
+      float elapsedTime = (millis() - startTime)/1000;
+      Serial.print(elapsedTime, 2);
+      response += String(elapsedTime);
+      Serial.println(F("s)\n"));
+      response += "s)\n\n";
+      Serial.print(F("spideydude: Device Signature 0x"));
+      response += "spideydude: Device Signature 0x";
+      showHEX(res1);showHEX(res2);showHEX(res3);// Print the signature 
+      Serial.print(F("\n"));
+      response += String(res1) + String(res2) + String(res3) + "\n";
+      // Now proceed to write the Flash data 
+      writeFlash();
+      // Finally, exit the programming mode 
+      endProg();
+    }
+    else{
+      Verbose("Error: Can't get the device signature. ");
     }
     break;
   }
@@ -168,7 +213,6 @@ void Spideydude::verifyFlash(){
         while(curr < pageSize){
           while(!Serial2.available());
           byte data = Serial2.read();
-          Serial.println(data,HEX);
           if( data != details.progData[pageCount*pageSize + curr]){
             error++;
           }
@@ -206,7 +250,6 @@ void Spideydude::verifyFlash(){
       Serial.print(perc);
       Serial.println("% error) ");
       response += String(perc) + "% error) \n";
-      endProg();
       break;
     }
   }
