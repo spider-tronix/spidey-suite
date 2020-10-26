@@ -28,19 +28,19 @@ void Spideydude::sync(){
   Serial2.flush();
   unsigned long startTime = millis();
   while(1){
-    Serial2.write((byte)0x01);
-    Serial2.write((byte)0x09);
+    Serial2.write((byte)spidey_start_tx);
+    Serial2.write((byte)spidey_node_ack);
     while(!Serial2.available()){
       unsigned long currTime = millis();
       if(currTime-startTime >= 500){
          Serial2.flush();
-         Serial2.write((byte)0x01);
-         Serial2.write((byte)0x09);
+         Serial2.write((byte)spidey_start_tx);
+         Serial2.write((byte)spidey_node_ack);
          startTime = millis();
       }
     }
     byte res1 = Serial2.read();
-    if(res1 == 0x06){
+    if(res1 == spidey_acknowledge){
       Verbose("AVR device initialized and ready to send instructions.");
       writeFlash();
     }
@@ -69,13 +69,13 @@ void Spideydude::writeFlash(){
     //Load Address
     byte addrH = (address >> 8) && 0xFF;
     byte addrL = address & 0xFF;
-    Serial2.write((byte)0x05);
-    Serial2.write((byte)0x09);
+    Serial2.write((byte)spidey_load_address);
+    Serial2.write((byte)spidey_node_ack);
     Serial2.write((byte)addrL);
     Serial2.write((byte)addrH);
     while(!Serial2.available());
     byte res1 = Serial2.read();
-    if(res1 == 0x06){
+    if(res1 == spidey_acknowledge){
       Serial.print(F("######"));
       response += "######";
       Serial2.flush();
@@ -83,8 +83,8 @@ void Spideydude::writeFlash(){
         // Sending pgm data
         byte pageSizeH = (pageSize >> 8) && 0xFF;
         byte pageSizeL = pageSize & 0xFF;
-        Serial2.write((byte)0x02);
-        Serial2.write((byte)0x09);
+        Serial2.write((byte)spidey_start_progmode);
+        Serial2.write((byte)spidey_node_ack);
         Serial2.write((byte)pageSizeL);
         Serial2.write((byte)pageSizeH);
         for(uint16_t i = 0; i<pageSize;i++){
@@ -94,7 +94,7 @@ void Spideydude::writeFlash(){
         byte res1 = Serial2.read();
         while(!Serial2.available());
         byte res2 = Serial2.read();
-        if(res1 ==  0x03 && res2 == 0x06){
+        if(res1 ==  spidey_data_recieved && res2 == spidey_acknowledge){
           pageCount++;
           address += pageSize;
         }
@@ -120,19 +120,109 @@ void Spideydude::writeFlash(){
       response += "s)\n\n";
       Serial.printf("spideydude: %d bytes of flash written.\n",details.len);
       response += "spideydude: "+ String(details.len) +" bytes of flash written.\n";
-      Serial2.flush();
-      Serial2.write((byte)0x04);
-      Serial2.write((byte)0x09);
-      while(!Serial2.available()){}
-      byte res1 = Serial2.read();
-      if(res1 == 0x06){
-          Verbose("Exited programming mode. Process complete");
-      }
-      else{
-         Verbose(String(String("Error in exiting PROGRAMMING mode expected=0x06 but got=0x")+String(res1)).c_str());
-      }
+      verifyFlash();
       break;
     }
+  }
+}
+
+void Spideydude::verifyFlash(){
+  Verbose("Verifying flash memory against input hex file");
+  Serial.printf("spideydude: Loading flash data from input file %s\n",details.fileName.c_str());
+  response += "spideydude: Loading flash data from input file " + details.fileName +"\n";
+  Serial.printf("spideydude: Input file has %d bytes of Flash\n",details.len);
+  response += "spideydude: Input file has " + String(details.len) +" bytes of Flash\n";
+  Verbose("Reading on-chip flash data: ");
+  unsigned long startTime = millis();
+  RW("Reading");
+  int error = 0;
+  uint16_t pageSize = details.pageSize;
+  uint16_t address = 0x0000;
+  Serial.print(F("####"));
+  response += "####";
+  int pageCount = 0;
+  Serial2.flush();
+  while(1){
+    //Load Address
+     byte addrH = (address >> 8) && 0xFF;
+    byte addrL = address & 0xFF;
+    Serial2.write((byte)spidey_load_address);
+    Serial2.write((byte)spidey_node_ack);
+    Serial2.write((byte)addrL);
+    Serial2.write((byte)addrH);
+    while(!Serial2.available());
+    byte res1 = Serial2.read();
+    if(res1 == spidey_acknowledge){
+      Serial.print(F("######"));
+      response += "######";
+      Serial2.flush();
+      while(1){
+        // Reading pgm data
+        byte pageSizeH = (pageSize >> 8) && 0xFF;
+        byte pageSizeL = pageSize & 0xFF;
+        Serial2.write((byte)spidey_check_flash);
+        Serial2.write((byte)spidey_node_ack);
+        Serial2.write((byte)pageSizeL);
+        Serial2.write((byte)pageSizeH);
+        uint16_t curr = 0;
+        while(curr < pageSize){
+          while(!Serial2.available());
+          byte data = Serial2.read();
+          Serial.println(data,HEX);
+          if( data != details.progData[pageCount*pageSize + curr]){
+            error++;
+          }
+          curr++;
+        }
+        while(!Serial2.available());
+        byte res1 = Serial2.read();
+        if(res1 ==  spidey_acknowledge){
+          pageCount++;
+          address += pageSize/2;
+        }
+        else{
+          //Serial.println(res2,HEX);
+          Verbose("Error: SPIDEY_READ_PAGE. Can't read the PAGE");
+        }
+        break;
+      }
+    }
+    else{
+      Verbose("Error: SPIDEY_LOAD_ADDR. Can't load the address to read from");
+      break;
+    }
+    if(pageCount>=2){
+      Serial.print(F("###### | 100% ("));
+      response += "###### | 100% (";
+      float elapsedTime = (millis() - startTime)/1000;
+      Serial.print(elapsedTime, 2);
+      response += String(elapsedTime);
+      Serial.println(F("s)\n"));
+      response += "s)\n\n";
+      Verbose("Verifying.....");
+      Serial.printf("spideydude: %d bytes of flash verified. (",details.len);
+      response += "spideydude: "+ String(details.len) + " bytes of flash verified. (";
+      float perc = (error/180)*100;
+      Serial.print(perc);
+      Serial.println("% error) ");
+      response += String(perc) + "% error) \n";
+      endProg();
+      break;
+    }
+  }
+}
+
+void Spideydude::endProg(){
+  Serial2.flush();
+  Serial2.write((byte)spidey_end_tx);
+  Serial2.write((byte)spidey_node_ack);
+  while(!Serial2.available()){}
+  byte res1 = Serial2.read();
+  if(res1 == spidey_acknowledge){
+      Verbose("Exited programming mode. Process complete");
+  }
+  else{
+     Verbose(String(String("Error in exiting PROGRAMMING mode expected=0x06 but got=0x")+String(res1)).c_str());
   }
 }
 

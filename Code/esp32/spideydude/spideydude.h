@@ -11,6 +11,8 @@
 
 #include <Arduino.h>
 
+#include "spideyprotocol.h"
+
 #define RXD2 16
 #define TXD2 17
 
@@ -35,6 +37,8 @@ class Spideydude{
     void Done();
     void sync();
     void writeFlash();
+    void verifyFlash();
+    void endProg();
   public:
     String begin(String, uint8_t*, size_t, uint16_t);
 };

@@ -45,7 +45,7 @@
 /*
    If Wifi mode is selected as AP i.e 0, ESP32 will create its
    own Wifi Network. The credentials will be-
-   SSID = SpiderOTA
+   SSID = Spideydude
    Password = spider.123
 */
 #if (OTA_WIFI_MODE == 0)
