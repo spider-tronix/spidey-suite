@@ -18,11 +18,11 @@
 }
 .main-footer .footerMainSec{
     position: relative;
-    padding: 114px 10px 40px 10px;
+    padding: 70px 10px 5px 10px;
 }
 .main-footer .footerWidget {
     position: relative;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 .main-footer .widget-title {
     color: #4c4754;
@@ -30,10 +30,9 @@
     font-size: 20px;
     line-height: 1.2em;
     font-family: 'PopM';
-    margin-bottom: 30px;
 }
 .main-footer .footerTitle {
-    font-size: 25px;
+    font-size: 28px;
     font-family: 'PopB';
     font-weight: bold;
 }
@@ -43,7 +42,7 @@
     position: relative;
     font-size: 18px;
     line-height: 26px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 .main-footer .list a:hover {
     color: #7478fa;
@@ -67,6 +66,9 @@
     position: relative;
     font-size: 16px;
     font-family: 'PopM';
+}
+.main-footer .footer-bottom .sec_container{
+    padding-top:0px;
 }
 .main-footer .footer-bottom .outer-box {
     position: relative;
@@ -95,7 +97,7 @@
 .menu-item{
     display: inline-block;
     position: relative;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 25px;
     color: #92a2b6;
     font-weight: 400;
