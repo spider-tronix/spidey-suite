@@ -118,7 +118,7 @@ void verifySignature(struct device *D) {
       Serial.println(signatures [i].desc);
       Serial.print("Flash memory size = ");
       Serial.println(signatures [i].flashSize, DEC);
-      Serial.print("maximum bootloader size = ");
+      Serial.print("maximum bootloader size in words = ");
       Serial.println(signatures [i].maxBootSize, DEC);
       Serial.print("uses optiboot ? : ");
       if(signatures [i].sopti)
