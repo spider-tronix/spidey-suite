@@ -65,6 +65,10 @@ code {
 .sec-title{
   margin-bottom: 50px;
   position: relative;
+  font-family: "PopM", sans-serif;
+}
+.sec-title h2{
+  font-size:34px;
 }
 .sec-title .title {
   position: relative;
@@ -75,5 +79,4 @@ code {
   font-weight: 500;
   text-transform: uppercase;
   margin-bottom: 15px;
-  font-family: "PopM", sans-serif;
 }

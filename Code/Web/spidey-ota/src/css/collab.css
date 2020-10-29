@@ -67,6 +67,9 @@
 }
 @media(max-width:768px){
     .collabSec .link-column .link-box {
-        margin-top: 50px;
+        margin-top: 25px;
+    }
+    .collabSec .title-column h3 {
+        font-size: 35px;
     }
 }

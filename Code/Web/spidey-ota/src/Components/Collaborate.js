@@ -16,7 +16,7 @@ class Collab extends React.Component{
                                     </p>
                                     <p>
                                         To suggest changes/improvements, create a <span style={{"color":"black"}}>pull-request</span> with the modified files.
-                                        Upon successfully validating the changes by one of our team, the suggested changes will be added to the repository.
+                                        Upon successfully validating the changes by us, the suggested changes will be added to the repository.
                                     </p>
                                 </div>                
                                 <div className="link-column col-md-4">

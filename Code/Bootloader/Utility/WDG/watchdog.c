@@ -1,10 +1,22 @@
+/*
+ * watchdog.c
+ * Created: 10/10/2020 16:49:30 Hrs
+ * Author: Aditya Kumar Singh
+*/
 #include <avr/io.h>
 #include "watchdog.h"
 
+/*
+ * Function to reset the WATCHDOG timer
+ */
 void WATCHDOG_RST() {
   __asm__ __volatile__ ("wdr\n");
 }
 
+/*
+ * Function to configure the WATCHDOG timer with a particular
+ * time setting
+ */
 void WATCHDOG_CONFIG(uint8_t x) {
   #ifdef WDCE                                           // does it have a Watchdog Change Enable?
     #ifdef WDTCSR

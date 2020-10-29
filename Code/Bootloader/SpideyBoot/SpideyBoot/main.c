@@ -109,35 +109,35 @@ void readcode()
 	{
 		
 		ch = read_uart();
-		if( ch == spidey_start_tx){
+		if( ch == SPIDEY_START_TX){
 			ch=read_uart();
-			if(ch==spidey_node_ack)
-			{write_uart(spidey_acknowledge);}
+			if(ch==SPIDEY_NODE_ACK)
+			{write_uart(SPIDEY_ACKNOWLEDGE);}
 		}
-		else if(ch == spidey_getsigbyte)           /* Code to read Signature Bytes */
+		else if(ch == SPIDEY_GETSIGBYTES)           /* Code to read Signature Bytes */
 		{   
 			ch=read_uart();
-			if(ch==spidey_node_ack)
+			if(ch==SPIDEY_NODE_ACK)
 			{int i;
 			for(i=0;i<6;i+=2)                      /* Start for loop for 3 iterations to read the 3 signature bytes*/
 			{
 				write_uart(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
 			}
-			write_uart(spidey_acknowledge);
+			write_uart(SPIDEY_ACKNOWLEDGE);
 			}
 		}  
-		else if( ch == spidey_load_address){
+		else if( ch == SPIDEY_LOAD_ADDRESS){
 			ch = read_uart();
-			if(ch==spidey_node_ack)
+			if(ch==SPIDEY_NODE_ACK)
 			{ uint8_t addrL = read_uart();
 			  uint8_t addrH = read_uart();
 	          addrfinal = (addrH << 8)| addrL ;
-			 write_uart(spidey_acknowledge);
+			 write_uart(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-		else if( ch == spidey_start_progmode){
+		else if( ch == SPIDEY_START_PROGMODE){
 			ch = read_uart();
-			if(ch==spidey_node_ack)
+			if(ch==SPIDEY_NODE_ACK)
 			{
 				uint8_t pageL = read_uart();
 			    uint8_t pageH = read_uart();
@@ -146,14 +146,14 @@ void readcode()
 			    for(i=0;i<pageLen;i++){
 				prog[i] = read_uart();
 			    }
-			    write_uart(spidey_data_recieved); 
+			    write_uart(SPIDEY_DATA_RECIEVED); 
 			    boot_program_page(addrfinal, prog);
-			    write_uart(spidey_acknowledge);
+			    write_uart(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-		else if (ch==spidey_check_flash)
-		{
-			if(ch==spidey_node_ack)
+		else if (ch==SPIDEY_CHECK_FLASH)
+		{   ch = read_uart;
+			if(ch==SPIDEY_NODE_ACK)
 			{   
 				uint8_t pageL = read_uart();
 				uint8_t pageH = read_uart();
@@ -164,14 +164,14 @@ void readcode()
 					data = pgm_read_byte(addrfinal+i);
 					write_uart(data);
 				}
-				write_uart(spidey_acknowledge);
+				write_uart(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-		else if( ch == spidey_end_tx){
+		else if( ch == SPIDEY_END_TX){
 			ch=read_uart();
-			if(ch==spidey_node_ack)
+			if(ch==SPIDEY_NODE_ACK)
 			{
-			  write_uart(spidey_acknowledge);
+			  write_uart(SPIDEY_ACKNOWLEDGE);
 			  wdt_enable(WDTO_15MS);
 			  while(1); 
 			}
