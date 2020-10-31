@@ -219,7 +219,8 @@ void readcode()
 			}
 		}
 		else if (ch==SPIDEY_CHECK_FLASH)
-		{
+		{   
+			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{   
 				uint8_t pageL = readUSART();
