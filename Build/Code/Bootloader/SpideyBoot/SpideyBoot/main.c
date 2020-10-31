@@ -2,7 +2,7 @@
  * GccApplication2.c
  *
  * Created: 10/17/2020 12:05:29 AM
- * Author : hp
+ * Author : Aditya And Arunesh 
  
  PROTOCOL :
  
@@ -41,6 +41,15 @@
 #ifndef F_CPU
 #define F_CPU 16000000UL // 16 MHz clock speed
 #endif
+#if !defined(SOFTUART)
+#define SOFTUART 0
+#endif
+#if !defined(UART)
+#define UART 0
+#endif
+#if !defined(SINGLESPEED)
+#define SINGLESPEED 0
+#endif
 #include <avr/io.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
@@ -49,35 +58,93 @@
 #include <stdlib.h>
 #include <avr/wdt.h>
 #include <spideyprotocol.h>
+#include <bootuart.h>
+#include <watchdog.h>
+#ifndef BAUD_RATE
+#if F_CPU >= 8000000L
+#define BAUD_RATE   115200L  	// Highest rate Avrdude win32 can support
+#elif F_CPU >= 1000000L
+#define BAUD_RATE   9600L   	// 19200 also supported, but with significant error
+#elif F_CPU >= 128000L
+#define BAUD_RATE   4800L   	// Good for 128kHz internal RC
+#else
+#define BAUD_RATE 1200L     	// Good even at 32768Hz
+#endif
+#endif
+
+#if (SOFTUART == 0)
+#if SINGLESPEED
+/* Single speed option */
+#define BAUD_SETTING (( (F_CPU + BAUD_RATE * 8L) / ((BAUD_RATE * 16L))) - 1 )
+#define BAUD_ACTUAL (F_CPU/(16 * ((BAUD_SETTING)+1)))
+#else
+/* Normal U2X usage */
+#define BAUD_SETTING (( (F_CPU + BAUD_RATE * 4L) / ((BAUD_RATE * 8L))) - 1 )
+#define BAUD_ACTUAL (F_CPU/(8 * ((BAUD_SETTING)+1)))
+#endif
+#if BAUD_ACTUAL <= BAUD_RATE
+#define BAUD_ERROR (( 100*(BAUD_RATE - BAUD_ACTUAL) ) / BAUD_RATE)
+#if BAUD_ERROR >= 5
+#error BAUD_RATE off by greater than -5%
+#elif BAUD_ERROR >= 2  && !defined(PRODUCTION)
+#warning BAUD_RATE off by greater than -2%
+#endif
+#else
+#define BAUD_ERROR (( 100*(BAUD_ACTUAL - BAUD_RATE) ) / BAUD_RATE)
+#if BAUD_ERROR >= 5
+#error BAUD_RATE off by greater than 5%
+#elif BAUD_ERROR >= 2  && !defined(PRODUCTION)
+#warning BAUD_RATE off by greater than 2%
+#endif
+#endif
+#if BAUD_SETTING > 250
+#error Unachievable baud rate (too slow) BAUD_RATE
+#endif // baud rate slow check
+#if (BAUD_SETTING - 1) < 3
+#if BAUD_ERROR != 0 // permit high bitrates (ie 1Mbps@16MHz) if error is zero
+#error Unachievable baud rate (too fast) BAUD_RATE
+#endif
+#endif // baud rate fast check
+#endif // SOFTUART
+
+void UART_Setup(){
+	#if (SOFTUART == 0)
+	#if defined(__AVR_ATmega8__) || defined (__AVR_ATmega8515__) ||	\
+	defined (__AVR_ATmega8535__) || defined (__AVR_ATmega16__) ||	\
+	defined (__AVR_ATmega32__)
+	#if (SINGLESPEED == 0)
+	UCSRA = _BV(U2X); //Double speed mode USART
+	#endif //singlespeed
+	UCSRB = _BV(RXEN) | _BV(TXEN);  // enable Rx & Tx
+	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);  // config USART; 8N1
+	UBRRL = (uint8_t)BAUD_SETTING;
+	#else // mega8/etc
+	#ifdef LINUART
+	//DDRB|=3;
+	LINCR = (1 << LSWRES);
+	//LINBRRL = (((F_CPU * 10L / 32L / BAUD_RATE) + 5L) / 10L) - 1;
+	LINBRRL=(uint8_t)BAUD_SETTING;
+	LINBTR = (1 << LDISR) | (8 << LBT0);
+	LINCR = _BV(LENA) | _BV(LCMD2) | _BV(LCMD1) | _BV(LCMD0);
+	LINDAT=0;
+	#else
+	#if (SINGLESPEED == 0)
+	UART_SRA = _BV(U2X0); //Double speed mode USART0
+	#endif
+	UART_SRB = _BV(RXEN0) | _BV(TXEN0);
+	UART_SRC = _BV(UCSZ00) | _BV(UCSZ01);
+	UART_SRL = (uint8_t)BAUD_SETTING;
+	#endif // LINUART
+	#endif // mega8/etc
+	#endif // softUART
+}
+
+
 
 #define MAX 256
 
 uint8_t prog[MAX];
 
-void usart_init()
-{
-	UCSR0B = (1<<RXCIE0)|(1<<TXEN0)| (1<<RXEN0);   /* Enable transmission from USART and enable recieve interrupt */
-	UCSR0C = (1<<UCSZ01)|(1<<UCSZ00);              /* Set size of character to 8-bits*/
-	UBRR0L =  0x08;                                /* Set baud rate to 1,15,200*/
-}
-
-
-
-
-
-void write_uart(char character)
-{
-	while(!(UCSR0A&(1<<UDRE0)));
-	UDR0=character ;
-}
-
-uint8_t read_uart()
-{
-	uint8_t tempvar;
-	while(!(UCSR0A & (1<<RXC0)));
-	tempvar=UDR0;
-	return tempvar;
-}
 
 
 void boot_program_page(uint16_t page, uint8_t *buf){
@@ -108,70 +175,70 @@ void readcode()
 	for(;;)
 	{
 		
-		ch = read_uart();
+		ch = readUSART();
 		if( ch == SPIDEY_START_TX){
-			ch=read_uart();
+			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
-			{write_uart(SPIDEY_ACKNOWLEDGE);}
+			{writeUSART(SPIDEY_ACKNOWLEDGE);}
 		}
 		else if(ch == SPIDEY_GETSIGBYTES)           /* Code to read Signature Bytes */
 		{   
-			ch=read_uart();
+			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{int i;
 			for(i=0;i<6;i+=2)                      /* Start for loop for 3 iterations to read the 3 signature bytes*/
 			{
-				write_uart(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
+				writeUSART(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
 			}
-			write_uart(SPIDEY_ACKNOWLEDGE);
+			writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}  
 		else if( ch == SPIDEY_LOAD_ADDRESS){
-			ch = read_uart();
+			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
-			{ uint8_t addrL = read_uart();
-			  uint8_t addrH = read_uart();
+			{ uint8_t addrL = readUSART();
+			  uint8_t addrH = readUSART();
 	          addrfinal = (addrH << 8)| addrL ;
-			 write_uart(SPIDEY_ACKNOWLEDGE);
+			 writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
 		else if( ch == SPIDEY_START_PROGMODE){
-			ch = read_uart();
+			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{
-				uint8_t pageL = read_uart();
-			    uint8_t pageH = read_uart();
+				uint8_t pageL = readUSART();
+			    uint8_t pageH = readUSART();
 			    uint16_t pageLen = (pageH << 8) | pageL;
 			    uint16_t i;
 			    for(i=0;i<pageLen;i++){
-				prog[i] = read_uart();
+				prog[i] = readUSART();
 			    }
-			    write_uart(SPIDEY_DATA_RECIEVED); 
+			    writeUSART(SPIDEY_DATA_RECIEVED); 
 			    boot_program_page(addrfinal, prog);
-			    write_uart(SPIDEY_ACKNOWLEDGE);
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
 		else if (ch==SPIDEY_CHECK_FLASH)
-		{   ch = read_uart;
+		{
 			if(ch==SPIDEY_NODE_ACK)
 			{   
-				uint8_t pageL = read_uart();
-				uint8_t pageH = read_uart();
+				uint8_t pageL = readUSART();
+				uint8_t pageH = readUSART();
 				uint16_t pageLen = (pageH << 8) | pageL;
 				uint16_t i;
 				for(i=0;i<pageLen;i++)               /* Code to check if page was written properly*/
 				{
 					data = pgm_read_byte(addrfinal+i);
-					write_uart(data);
+					writeUSART(data);
 				}
-				write_uart(SPIDEY_ACKNOWLEDGE);
+				writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
 		else if( ch == SPIDEY_END_TX){
-			ch=read_uart();
+			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{
-			  write_uart(SPIDEY_ACKNOWLEDGE);
+			  writeUSART(SPIDEY_ACKNOWLEDGE);
 			  wdt_enable(WDTO_15MS);
 			  while(1); 
 			}
@@ -184,7 +251,7 @@ void appStart(){
 }
 
 void bootLoader(){
-	usart_init();
+    UART_Setup();
 	DDRB = 0xFF;
 	for(uint8_t i=0;i<5;i++){
 		PORTB ^= 0xFF;
