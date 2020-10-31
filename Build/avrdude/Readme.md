@@ -11,5 +11,5 @@ Where:
 Command: ``` avrdude -c usbasp -p m328p -P usb -U <fusename>:w:<data>:m ```
 
 Where:
-- ````<fusename>``` can be ```hfuse```,```lfuse```,```efuse```
+- ```<fusename>``` can be ```hfuse```,```lfuse```,```efuse```
 - ```<data>``` is the 8-bit data. Preferably write in hexadeciaml form i.e ```0xDE```
