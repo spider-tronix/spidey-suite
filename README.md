@@ -1,4 +1,4 @@
-# OTA Programming Module
+# spidey suite
 A module to add OTA Programming functionality to AVR Microcontrollers
 
 ## Abstract
