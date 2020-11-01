@@ -1,0 +1,76 @@
+.featureSec {
+    padding: 60px 0 80px;
+}
+
+.featureSec .layer-image {
+    position: absolute;
+    right: 0;
+    top: 200px;
+    height: 916px;
+    width: 534px;
+    background-image: url('../assets/collab-bg.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.autoContainer{
+    position: static;
+    max-width: 1200px;
+    padding: 0px 15px;
+    margin: 0 auto;
+}
+.featureSec .sec-title{
+    margin-bottom: 80px;
+}
+.featuerSec .sec-title h2{
+    font-family: 'PopM';
+}
+.feature-block{
+    position: relative;
+    margin-bottom: 100px;
+}
+.feature-block .inner-box {
+    position: relative;
+    padding-left: 100px;
+}
+.feature-block .icon-box {
+    position: absolute;
+    left: 20px;
+    top: 5px;
+}
+.feature-block .icon {
+    position: relative;
+    font-size: 58px;
+    line-height: 1em;
+    color: #755c9c;
+    font-weight: 400;
+    z-index: 9;
+}
+.feature-block h4 {
+    position: relative;
+    display: block;
+    font-size: 20px;
+    line-height: 1.2em;
+    color: #4c4754;
+    font-weight: 500;
+    margin-bottom: 18px;
+    font-family: 'PopM', sans-serif;
+}
+.feature-block .text {
+    position: relative;
+    display: block;
+    font-size: 18px;
+    line-height: 28px;
+    color: #75717b;
+}
+.feature-block .icon-box:before {
+    position: absolute;
+    left: -15px;
+    top: -13px;
+    height: 60px;
+    width: 60px;
+    background-position: center;
+    background-size: 100%;
+    background-image: url('../assets/feature-bg-comm.png');
+    background-repeat: no-repeat;
+    content: '';
+}

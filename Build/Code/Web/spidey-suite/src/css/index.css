@@ -11,6 +11,7 @@ html,body {
     sans-serif;
   position: relative;
   scroll-behavior: smooth;
+  min-width:360px;
 }
 
 body{

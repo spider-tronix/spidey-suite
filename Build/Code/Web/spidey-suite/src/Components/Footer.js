@@ -11,7 +11,7 @@ class Footer extends React.Component{
                             <div className="row">
                                 <div className="col-xl-3 col-lg-3 col-md-6 col-sm-12">
                                     <div className="footerWidget">
-                                        <h1 className="widget-title footerTitle">Spidey OTA</h1>
+                                        <h1 className="widget-title footerTitle">Spidey Suite</h1>
                                         <div className="widget-container">
                                             <div className="text">Spider Tronix, <br/>Spider R&D Lab, Ground floor, Old SAC, (Opposite to CCD), <br/>NIT Tiruchirappalli.</div>
                                         </div>
