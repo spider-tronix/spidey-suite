@@ -1,24 +1,26 @@
 {
   "files": {
-    "main.css": "/OTA_Programming_Module/static/css/main.28f6e825.chunk.css",
-    "main.js": "/OTA_Programming_Module/static/js/main.7001a1d6.chunk.js",
-    "main.js.map": "/OTA_Programming_Module/static/js/main.7001a1d6.chunk.js.map",
-    "runtime-main.js": "/OTA_Programming_Module/static/js/runtime-main.3ff127c0.js",
-    "runtime-main.js.map": "/OTA_Programming_Module/static/js/runtime-main.3ff127c0.js.map",
-    "static/js/2.e7503754.chunk.js": "/OTA_Programming_Module/static/js/2.e7503754.chunk.js",
-    "static/js/2.e7503754.chunk.js.map": "/OTA_Programming_Module/static/js/2.e7503754.chunk.js.map",
-    "index.html": "/OTA_Programming_Module/index.html",
-    "static/css/main.28f6e825.chunk.css.map": "/OTA_Programming_Module/static/css/main.28f6e825.chunk.css.map",
-    "static/js/2.e7503754.chunk.js.LICENSE.txt": "/OTA_Programming_Module/static/js/2.e7503754.chunk.js.LICENSE.txt",
-    "static/media/LanderImage.78dbf1d7.png": "/OTA_Programming_Module/static/media/LanderImage.78dbf1d7.png",
-    "static/media/index.css": "/OTA_Programming_Module/static/media/PoppinsMedium.b59f6a63.ttf",
-    "static/media/about.css": "/OTA_Programming_Module/static/media/collab-bg.e629b1b6.png",
-    "static/media/landing.css": "/OTA_Programming_Module/static/media/lander.85212b40.png"
+    "main.css": "/spidey-suite/static/css/main.86b6e337.chunk.css",
+    "main.js": "/spidey-suite/static/js/main.e46e0aad.chunk.js",
+    "main.js.map": "/spidey-suite/static/js/main.e46e0aad.chunk.js.map",
+    "runtime-main.js": "/spidey-suite/static/js/runtime-main.7be0dcd4.js",
+    "runtime-main.js.map": "/spidey-suite/static/js/runtime-main.7be0dcd4.js.map",
+    "static/js/2.135298b1.chunk.js": "/spidey-suite/static/js/2.135298b1.chunk.js",
+    "static/js/2.135298b1.chunk.js.map": "/spidey-suite/static/js/2.135298b1.chunk.js.map",
+    "index.html": "/spidey-suite/index.html",
+    "static/css/main.86b6e337.chunk.css.map": "/spidey-suite/static/css/main.86b6e337.chunk.css.map",
+    "static/js/2.135298b1.chunk.js.LICENSE.txt": "/spidey-suite/static/js/2.135298b1.chunk.js.LICENSE.txt",
+    "static/media/LanderImage.78dbf1d7.png": "/spidey-suite/static/media/LanderImage.78dbf1d7.png",
+    "static/media/index.css": "/spidey-suite/static/media/PoppinsMedium.b59f6a63.ttf",
+    "static/media/feature.css": "/spidey-suite/static/media/collab-bg.e629b1b6.png",
+    "static/media/landing.css": "/spidey-suite/static/media/lander.85212b40.png",
+    "static/media/spideydude.d9a31452.png": "/spidey-suite/static/media/spideydude.d9a31452.png",
+    "static/media/temp-image.834cacbc.png": "/spidey-suite/static/media/temp-image.834cacbc.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.3ff127c0.js",
-    "static/js/2.e7503754.chunk.js",
-    "static/css/main.28f6e825.chunk.css",
-    "static/js/main.7001a1d6.chunk.js"
+    "static/js/runtime-main.7be0dcd4.js",
+    "static/js/2.135298b1.chunk.js",
+    "static/css/main.86b6e337.chunk.css",
+    "static/js/main.e46e0aad.chunk.js"
   ]
 }
