@@ -1,42 +1,9 @@
 /*
- * GccApplication2.c
- *
+ * SpideyBoot.c
  * Created: 10/17/2020 12:05:29 AM
  * Author : Aditya And Arunesh 
- 
- PROTOCOL :
- 
- 1) Handshake Signal -    ASCII CHARACTER TO BE SENT BY ESP - EOH - HEXADECIMAL VALUE - 0X01 - IDENTIFIER USED IN THIS CODE - spidey_start_tx
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 IDENTIFIER USED IN THIS CODE - spidey_node_ack
-    MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
-	
- 2) Get Signature Bytes - ASCII CHARATCTER TO BE SENT BY ESP - BEL - HEXADECIMAL VALUE - 0x07 - IDENTIFIER USED IN THIS CODE - spidey_getsigbyte
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 IDENTIFIER USED IN THIS CODE - spidey_node_ack
-    MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
-    
-	
-2)  Load Address Signal - ASCII CHARACTER TO BE SENT BY ESP - ENQ - HEXADECIMAL VALUE - 0X05 - IDENTIFIER USED IN THIS CODE - spidey_load_address
-    Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
-    ( Send the addrH and addrH )
-	MCU Acknowledge -     ASCII CHARACTER TO BE RECIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
-	
-3) Program Mode Signal -  ASCII CHARACTER TO BE SENT BY ESP - STX - HEXADECIMAL VALUE - 0X02 - IDENTIFIER USED IN THIS CODE - spidey_start_progmode
-   Safety Signal -       ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
-   ( Send the pageL and pageH then send ibytes)
-   First MCU Acknowledge- ASCII CHARACTER TO BE RECEIEVD BY ESP - ETX - HEXADECIMAL VALUE - 0x03 - IDENTIFIER USED IN THIS CODE - spidey_data_recieved
-   (Code flashed )
-   At end of page write - ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
-   
- 4)    Read Flash Page -       ASCII CHARACTER TO BE SENT BY ESP - TAB - HEXADECIMAL VALUE - 0X09 - IDENTIFIER USED IN THIS CODE - spidey_check_flash
-       Safety Signal -         ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack
-	   (Send pageL and page H )
-	   (Bytes are sent repeatedly)
-       MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge
-   
- 5) Exit Programming Mode - ASCII CHARACTER TO BE SENT BY ESP - EOT - HEXADECIMAL VALUE - 0X04 - IDENTIFIER USED IN THIS CODE - spidey_end_tx
-    Safety Signal -         ASCII CHARACTER TO BE SENT BY ESP - BS - HEXADECIMAL VALUE - 0x10 - IDENTIFIER USED IN THIS CODE - spidey_node_ack 
-    MCU Acknowledge -       ASCII CHARACTER TO BE RECEIEVED BY ESP - ACK - HEXADECIMAL VALUE - 0X06 - IDENTIFIER USED IN THIS CODE - spidey_acknowledge 
-  */ 
+
+*/ 
 
 #ifndef F_CPU
 #define F_CPU 16000000UL // 16 MHz clock speed
@@ -60,6 +27,9 @@
 #include <spideyprotocol.h>
 #include <bootuart.h>
 #include <watchdog.h>
+
+/* NECCESSARY DEFINITION FOR UART COMMUNICATION*/
+
 #ifndef BAUD_RATE
 #if F_CPU >= 8000000L
 #define BAUD_RATE   115200L  	// Highest rate Avrdude win32 can support
@@ -107,6 +77,8 @@
 #endif // baud rate fast check
 #endif // SOFTUART
 
+/*FUNCTION TO INITIALISE UART COMMUNICATION*/
+
 void UART_Setup(){
 	#if (SOFTUART == 0)
 	#if defined(__AVR_ATmega8__) || defined (__AVR_ATmega8515__) ||	\
@@ -141,47 +113,52 @@ void UART_Setup(){
 
 
 
-#define MAX 256
+#define MAX 256  // Maximum number of bytes that can be written to page at a time */
 
-uint8_t prog[MAX];
+uint8_t prog[MAX];  //Buffer Array to temporaraily hold values recieved from node through UART*/
 
 
+/* Function to write values from buffer array to a page in flash
+   Parameters to be passed to the function are page address and buffer array */
 
 void boot_program_page(uint16_t page, uint8_t *buf){
 	uint16_t i;
 	uint8_t sreg;
-	sreg = SREG;
-	cli();
-	eeprom_busy_wait();
-	boot_page_erase(page);
-	boot_spm_busy_wait();
-	for (i = 0; i < SPM_PAGESIZE; i += 2){
-		uint16_t w = *buf++;
-		w += (*buf++) << 8;
-		boot_page_fill(page + i, w);
+	sreg = SREG;             /*Copy present state of SREG Register */
+	cli();                   /* Disable Interrupt to avoid any accidental interference during writing */
+	eeprom_busy_wait();      /* Wait for any ongoing eeprom operation to complete*/
+	boot_page_erase(page);   /* Erase the page to be written to */     
+	boot_spm_busy_wait();    /* Wait for any ongoing SPM operations to terminate */
+	for (i = 0; i < SPM_PAGESIZE; i += 2){ /* i is incremented by 2 to skip 2 bytes(16bits or 1 word) because each time 1 word is written to page*/
+		uint16_t w = *buf++;                             
+		w += (*buf++) << 8;                /* 2 bytes(1 word) are stored in the 16 bit w variable*/
+		boot_page_fill(page + i, w);       /* This word is flashed to buffer page */    
 	}
-	boot_page_write(page);
-	boot_spm_busy_wait();
-	boot_rww_enable ();
-	SREG = sreg;
+	boot_page_write(page);                 /* Write the buffer page into the actual page in flash */
+	boot_spm_busy_wait();                  /* Wait for SPM operation to complete*/
+	boot_rww_enable ();                    /* Enable Read-while-write(RWW) operations*/
+	SREG = sreg;                           /* Restore the state of SREG register as before */
 }
+
+/*Function to recieve the code via UART from Node and write it into a page in flash and read a page from flash and return it to Node */
 
 void readcode()
 {
 	char ch;
-	wdt_enable(WDTO_2S);
+	wdt_enable(WDTO_2S);   /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
 	uint16_t addrfinal=0;
 	uint8_t data;
 	for(;;)
 	{
-		
+		/* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted between Node and MCU */
 		ch = readUSART();
-		if( ch == SPIDEY_START_TX){
+		if( ch == SPIDEY_START_TX){                 
 			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{writeUSART(SPIDEY_ACKNOWLEDGE);}
 		}
-		else if(ch == SPIDEY_GETSIGBYTES)           /* Code to read Signature Bytes */
+        /* If SPIDEY_GETSIGBYTES is transmitted Code to read Signature Bytes is executed */
+		else if(ch == SPIDEY_GETSIGBYTES)           
 		{   
 			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
@@ -192,86 +169,92 @@ void readcode()
 			}
 			writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
-		}  
+		} 
+		/*If SPIDEY_LOAD_ADDRESS is transmitted then code to recieve 16 bit address is executed*/ 
 		else if( ch == SPIDEY_LOAD_ADDRESS){
 			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
-			{ uint8_t addrL = readUSART();
-			  uint8_t addrH = readUSART();
-	          addrfinal = (addrH << 8)| addrL ;
+			{ uint8_t addrL = readUSART();   /* Recieve high byte of address*/
+			  uint8_t addrH = readUSART();   /* Recieve Low byte of address*/
+	          addrfinal = (addrH << 8)| addrL ;  /*Put together high and low bytes */
 			 writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
+
+		/*If SPIDEY_START_PROGMODE is transmitted then execute code to recieve page length followed by code to be written to flash*/
 		else if( ch == SPIDEY_START_PROGMODE){
 			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{
-				uint8_t pageL = readUSART();
-			    uint8_t pageH = readUSART();
-			    uint16_t pageLen = (pageH << 8) | pageL;
+				uint8_t pageL = readUSART();     /* Recieve High byte of page length*/
+			    uint8_t pageH = readUSART();     /* Recieve Low byte of page Length*/
+			    uint16_t pageLen = (pageH << 8) | pageL;  /* Put together high and low bytes*/
 			    uint16_t i;
-			    for(i=0;i<pageLen;i++){
-				prog[i] = readUSART();
+			    for(i=0;i<pageLen;i++){              /* Loop as many times as pagelength to recieve as many bytes of code*/
+				prog[i] = readUSART();               /* Store Recieved code in buffer array*/
 			    }
-			    writeUSART(SPIDEY_DATA_RECIEVED); 
-			    boot_program_page(addrfinal, prog);
+			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been recieved correctly*/
+			    boot_program_page(addrfinal, prog);    /* Write contents of buffer array into page in flash whose address we earlier recieved*/
 			    writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
+		/* If SPIDEY_CHECK_FLASH is sent code to recieve page length followed by reading a page from flash and sending it to Node is executed*/
 		else if (ch==SPIDEY_CHECK_FLASH)
 		{   
 			ch = readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{   
-				uint8_t pageL = readUSART();
-				uint8_t pageH = readUSART();
-				uint16_t pageLen = (pageH << 8) | pageL;
+				uint8_t pageL = readUSART();           /* Recieve High byte of pagelength*/
+				uint8_t pageH = readUSART();           /* Recieve Low byte of Page length*/
+				uint16_t pageLen = (pageH << 8) | pageL; /*Put together high and Low Bytes*/
 				uint16_t i;
-				for(i=0;i<pageLen;i++)               /* Code to check if page was written properly*/
+				for(i=0;i<pageLen;i++)               /* Loop as many times as pagelength and send bytes continually to Node*/
 				{
-					data = pgm_read_byte(addrfinal+i);
-					writeUSART(data);
+					data = pgm_read_byte(addrfinal+i);//Read bytes from the page in flash whose address was passed earlier when SPIDEY_LOAD_ADDRESS was sent
+					writeUSART(data);                 /*Send the byte to Node*/
 				}
 				writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
+		/* If SPIDEY_END_TX is sent terminate the transmission*/
 		else if( ch == SPIDEY_END_TX){
 			ch=readUSART();
 			if(ch==SPIDEY_NODE_ACK)
 			{
-			  writeUSART(SPIDEY_ACKNOWLEDGE);
-			  wdt_enable(WDTO_15MS);
-			  while(1); 
+			  writeUSART(SPIDEY_ACKNOWLEDGE);  /* Acknowledge to the Node */
+			  wdt_enable(WDTO_15MS);           /* Set watchdog timer for 15 MS so that the MCU resets within 15MS without further delay*/
+			  while(1);                        /* Wait here for the 15MS period */
 			}
 		}
 	}
 }
 
-void appStart(){
+/*Function to start execution of application code from 0x00000*/
+void appStart(){  
 	asm("jmp 0x00000");
 }
-
+/* Function to modify application code by calling the bootloader code */
 void bootLoader(){
-    UART_Setup();
-	DDRB = 0xFF;
-	for(uint8_t i=0;i<5;i++){
+    UART_Setup();     /* Initialise UART for communication with Node*/
+	DDRB = 0xFF;      
+	for(uint8_t i=0;i<5;i++){     /*Blink LED 5 times to signal that bootloader code is being accessed */
 		PORTB ^= 0xFF;
-		_delay_ms(50);
+		_delay_ms(123);          /* Delay is (F_CPU/(8196*16)) */
 	}
-	PORTB = 0x00;
+	PORTB = 0x00;                
 	DDRB = 0x00;
-    readcode();
+    readcode(); /* Call function that executes the modification of flash page */
 }
 
 int main(void)
 {
-   	uint8_t ch = MCUSR;
+   	uint8_t ch = MCUSR;    /* Read MCUSR register to determine Source of Reset */
    	MCUSR = 0;
    	wdt_disable();
-   	if ((ch & _BV(EXTRF))){
+   	if ((ch & _BV(EXTRF))){   /* If it was External Reset go to function that calls code in bootloader to modify application code */
 	   	bootLoader();
    	}
-   	else{
+   	else{                     /* If it was any other type of Reset go to function that goes to start of application code */
 	   	appStart();
    	}
    	return 0;
