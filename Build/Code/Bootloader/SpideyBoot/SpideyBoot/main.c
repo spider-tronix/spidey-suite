@@ -1,12 +1,12 @@
 /*
  * SpideyBoot.c
  * Created: 10/17/2020 12:05:29 AM
- * Author : Aditya And Arunesh 
-
+ * Version: 0.5.0
+ * Author : Aditya and Arunesh 
 */ 
 
 #ifndef F_CPU
-#define F_CPU 16000000UL // 16 MHz clock speed
+#define F_CPU 16000000L              // 16 MHz clock speed for ATMEGA328p
 #endif
 #if !defined(SOFTUART)
 #define SOFTUART 0
@@ -17,22 +17,29 @@
 #if !defined(SINGLESPEED)
 #define SINGLESPEED 0
 #endif
+
+/* Including built-in library files */
+#include <inttypes.h>
 #include <avr/io.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
-#include <stdlib.h>
-#include <avr/wdt.h>
-#include <spideyprotocol.h>
-#include <bootuart.h>
-#include <watchdog.h>
+/* Including custom library files */
+#include "spideyprotocol.h"
+#include "bootuart.h"
+/* We are not using AVR's WDG lib file to avoid interrupt overhead. */
+#include "watchdog.h"                   
 
-/* NECCESSARY DEFINITION FOR UART COMMUNICATION*/
-
+/* Definition for flashing on board LED */
+#if !defined(LED_START_FLASHES)
+#define LED_START_FLASHES 3
+#endif
+#if !defined(LED_START_ON)
+#  define LED_START_ON 0
+#endif
+/* Definition for UART communication */
 #ifndef BAUD_RATE
 #if F_CPU >= 8000000L
-#define BAUD_RATE   115200L  	// Highest rate Avrdude win32 can support
+#define BAUD_RATE   115200L  	// Highest rate spideydude win32 can support
 #elif F_CPU >= 1000000L
 #define BAUD_RATE   9600L   	// 19200 also supported, but with significant error
 #elif F_CPU >= 128000L
@@ -71,23 +78,26 @@
 #error Unachievable baud rate (too slow) BAUD_RATE
 #endif // baud rate slow check
 #if (BAUD_SETTING - 1) < 3
-#if BAUD_ERROR != 0 // permit high bitrates (ie 1Mbps@16MHz) if error is zero
+#if BAUD_ERROR != 0 // permit high bit rates (i.e 1Mbps@16MHz) if error is zero
 #error Unachievable baud rate (too fast) BAUD_RATE
 #endif
 #endif // baud rate fast check
 #endif // SOFTUART
 
-/*FUNCTION TO INITIALISE UART COMMUNICATION*/
+#if LED_START_FLASHES > 0
+static inline void Flash_LED(uint8_t);
+#endif
 
-void UART_Setup(){
+/*FUNCTION TO INITIALISE UART COMMUNICATION*/
+void UART_Setup() {
 	#if (SOFTUART == 0)
 	#if defined(__AVR_ATmega8__) || defined (__AVR_ATmega8515__) ||	\
 	defined (__AVR_ATmega8535__) || defined (__AVR_ATmega16__) ||	\
 	defined (__AVR_ATmega32__)
 	#if (SINGLESPEED == 0)
 	UCSRA = _BV(U2X); //Double speed mode USART
-	#endif //singlespeed
-	UCSRB = _BV(RXEN) | _BV(TXEN);  // enable Rx & Tx
+	#endif //single speed
+	UCSRB = _BV(RXEN) | _BV(TXEN);  // enable RX & TX
 	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);  // config USART; 8N1
 	UBRRL = (uint8_t)BAUD_SETTING;
 	#else // mega8/etc
@@ -111,151 +121,173 @@ void UART_Setup(){
 	#endif // softUART
 }
 
-
-
-#define MAX 256  // Maximum number of bytes that can be written to page at a time */
-
-uint8_t prog[MAX];  //Buffer Array to temporaraily hold values recieved from node through UART*/
-
+#define MAX 256     // Maximum number of bytes that can be written to page at a time */
+uint8_t prog[MAX];  //Buffer Array to temporarily hold values received from node through UART*/
 
 /* Function to write values from buffer array to a page in flash
    Parameters to be passed to the function are page address and buffer array */
-
-void boot_program_page(uint16_t page, uint8_t *buf){
+void boot_program_page(uint16_t page, uint8_t *buf) {
 	uint16_t i;
 	uint8_t sreg;
-	sreg = SREG;             /*Copy present state of SREG Register */
-	cli();                   /* Disable Interrupt to avoid any accidental interference during writing */
-	eeprom_busy_wait();      /* Wait for any ongoing eeprom operation to complete*/
-	boot_page_erase(page);   /* Erase the page to be written to */     
-	boot_spm_busy_wait();    /* Wait for any ongoing SPM operations to terminate */
-	for (i = 0; i < SPM_PAGESIZE; i += 2){ /* i is incremented by 2 to skip 2 bytes(16bits or 1 word) because each time 1 word is written to page*/
+	sreg = SREG;                            /* Copy present state of SREG Register */
+	__asm__ __volatile__ ("cli" ::);        /* Disable Interrupt to avoid any accidental interference during writing */
+	eeprom_busy_wait();                     /* Wait for any ongoing eeprom operation to complete*/
+	boot_page_erase(page);                  /* Erase the page which is going to be re-programmed */     
+	boot_spm_busy_wait();                   /* Wait for any ongoing SPM operations to terminate */
+	for (i = 0; i < SPM_PAGESIZE; i += 2){  /* i is incremented by 2 to skip 2 bytes(16bits or 1 word) because each time 1 word is written to page*/
 		uint16_t w = *buf++;                             
-		w += (*buf++) << 8;                /* 2 bytes(1 word) are stored in the 16 bit w variable*/
-		boot_page_fill(page + i, w);       /* This word is flashed to buffer page */    
+		w += (*buf++) << 8;                 /* 2 bytes(1 word) are stored in the 16 bit w variable*/
+		boot_page_fill(page + i, w);        /* This word is flashed to buffer page */    
 	}
-	boot_page_write(page);                 /* Write the buffer page into the actual page in flash */
-	boot_spm_busy_wait();                  /* Wait for SPM operation to complete*/
-	boot_rww_enable ();                    /* Enable Read-while-write(RWW) operations*/
-	SREG = sreg;                           /* Restore the state of SREG register as before */
+	boot_page_write(page);                  /* Write the buffer page into the actual page in flash */
+	boot_spm_busy_wait();                   /* Wait for SPM operation to complete*/
+	boot_rww_enable ();                     /* Enable Read-while-write(RWW) operations*/
+	SREG = sreg;                            /* Restore the state of SREG register as before */
+	return;
 }
 
-/*Function to recieve the code via UART from Node and write it into a page in flash and read a page from flash and return it to Node */
-
-void readcode()
-{
+/*Function to receive the code via UART and */
+void readcode() {
 	char ch;
-	wdt_enable(WDTO_2S);   /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
-	uint16_t addrfinal=0;
-	uint8_t data;
-	for(;;)
-	{
-		/* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted between Node and MCU */
+	WATCHDOG_CONFIG(WATCHDOG_2S);                        /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
+	uint16_t addrfinal = 0;
+	/* Infinite for loop. The loop will only terminate when watchdog overflow occurs */ 
+	for(;;) {
 		ch = readUSART();
-		if( ch == SPIDEY_START_TX){                 
-			ch=readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{writeUSART(SPIDEY_ACKNOWLEDGE);}
-		}
-        /* If SPIDEY_GETSIGBYTES is transmitted Code to read Signature Bytes is executed */
-		else if(ch == SPIDEY_GETSIGBYTES)           
-		{   
-			ch=readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{int i;
-			for(i=0;i<6;i+=2)                      /* Start for loop for 3 iterations to read the 3 signature bytes*/
-			{
-				writeUSART(boot_signature_byte_get (i));    /*Read and send signature byte at locations 0 , 2 , 4 */
+		/* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted */
+		if(ch == SPIDEY_START_TX){                 
+			if(readUSART() == SPIDEY_NODE_ACK) {
+				writeUSART(SPIDEY_ACKNOWLEDGE);                 /*  Acknowledge back */
 			}
-			writeUSART(SPIDEY_ACKNOWLEDGE);
+		}
+        /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
+		else if(ch == SPIDEY_GETSIGBYTES) {   
+			if(readUSART() == SPIDEY_NODE_ACK) {
+				/* Start for loop for 3 iterations to read the 3 signature bytes*/
+				for(int i=0;i<6;i+=2) {
+					writeUSART(boot_signature_byte_get(i));    /* Read and send signature byte at locations 0 , 2 , 4 */
+				}
+				writeUSART(SPIDEY_ACKNOWLEDGE);                /*  Acknowledge back */
 			}
 		} 
-		/*If SPIDEY_LOAD_ADDRESS is transmitted then code to recieve 16 bit address is executed*/ 
-		else if( ch == SPIDEY_LOAD_ADDRESS){
-			ch = readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{ uint8_t addrL = readUSART();   /* Recieve high byte of address*/
-			  uint8_t addrH = readUSART();   /* Recieve Low byte of address*/
-	          addrfinal = (addrH << 8)| addrL ;  /*Put together high and low bytes */
-			 writeUSART(SPIDEY_ACKNOWLEDGE);
+		/* If SPIDEY_LOAD_ADDRESS is transmitted then code to receive 16 bit address is executed */ 
+		else if(ch == SPIDEY_LOAD_ADDRESS) {
+			if(readUSART() == SPIDEY_NODE_ACK) { 
+				uint8_t addrL = readUSART();		/* Receive HIGH byte of address */
+				uint8_t addrH = readUSART();		/* Receive LOW byte of address */
+				addrfinal = (addrH << 8) | addrL ;   /* Put together high and low bytes */
+				writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-
-		/*If SPIDEY_START_PROGMODE is transmitted then execute code to recieve page length followed by code to be written to flash*/
-		else if( ch == SPIDEY_START_PROGMODE){
-			ch = readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{
-				uint8_t pageL = readUSART();     /* Recieve High byte of page length*/
-			    uint8_t pageH = readUSART();     /* Recieve Low byte of page Length*/
-			    uint16_t pageLen = (pageH << 8) | pageL;  /* Put together high and low bytes*/
-			    uint16_t i;
-			    for(i=0;i<pageLen;i++){              /* Loop as many times as pagelength to recieve as many bytes of code*/
-				prog[i] = readUSART();               /* Store Recieved code in buffer array*/
+		/*If SPIDEY_START_PROGMODE is transmitted then execute code to receive page length followed by code to be written to flash*/
+		else if(ch == SPIDEY_START_PROGMODE) {
+			if(readUSART() == SPIDEY_NODE_ACK) {
+				uint8_t pageL = readUSART();				/* Receive HIGH byte of page length */
+			    uint8_t pageH = readUSART();				/* Receive LOW byte of page Length */
+			    uint16_t pageLen = (pageH << 8) | pageL;    /* Put together high and low bytes */
+			    /* Loop as many times as page length to receive as many bytes of code */
+			    for(uint16_t i=0;i<pageLen;i++) {              
+					prog[i] = readUSART();               /* Store Received code in buffer array */
 			    }
-			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been recieved correctly*/
-			    boot_program_page(addrfinal, prog);    /* Write contents of buffer array into page in flash whose address we earlier recieved*/
+			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been received correctly */
+			    boot_program_page(addrfinal, prog);    /* Write contents of buffer array into page in flash whose address we earlier received */
 			    writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-		/* If SPIDEY_CHECK_FLASH is sent code to recieve page length followed by reading a page from flash and sending it to Node is executed*/
-		else if (ch==SPIDEY_CHECK_FLASH)
-		{   
-			ch = readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{   
-				uint8_t pageL = readUSART();           /* Recieve High byte of pagelength*/
-				uint8_t pageH = readUSART();           /* Recieve Low byte of Page length*/
-				uint16_t pageLen = (pageH << 8) | pageL; /*Put together high and Low Bytes*/
-				uint16_t i;
-				for(i=0;i<pageLen;i++)               /* Loop as many times as pagelength and send bytes continually to Node*/
+		/* If SPIDEY_CHECK_FLASH is sent code to receive page length followed by reading a page from flash and sending it to Node is executed */
+		else if(ch == SPIDEY_CHECK_FLASH) {   
+			if(readUSART() == SPIDEY_NODE_ACK) {   
+				uint8_t pageL = readUSART();				/* Receive HIGH byte of page length */
+				uint8_t pageH = readUSART();				/* Receive LOW byte of page Length */
+				uint16_t pageLen = (pageH << 8) | pageL;    /* Put together high and low bytes */
+				/* Loop as many times as page length and send bytes continuously */
+				for(uint16_t i=0;i<pageLen;i++) 
 				{
-					data = pgm_read_byte(addrfinal+i);//Read bytes from the page in flash whose address was passed earlier when SPIDEY_LOAD_ADDRESS was sent
-					writeUSART(data);                 /*Send the byte to Node*/
+					/* Read bytes from the page in flash whose address was passed earlier when SPIDEY_LOAD_ADDRESS was sent
+					   and then send it to UART
+				    */
+					writeUSART(pgm_read_byte(addrfinal+i));
 				}
 				writeUSART(SPIDEY_ACKNOWLEDGE);
 			}
 		}
-		/* If SPIDEY_END_TX is sent terminate the transmission*/
-		else if( ch == SPIDEY_END_TX){
-			ch=readUSART();
-			if(ch==SPIDEY_NODE_ACK)
-			{
-			  writeUSART(SPIDEY_ACKNOWLEDGE);  /* Acknowledge to the Node */
-			  wdt_enable(WDTO_15MS);           /* Set watchdog timer for 15 MS so that the MCU resets within 15MS without further delay*/
-			  while(1);                        /* Wait here for the 15MS period */
+		/* If SPIDEY_END_TX is sent terminate the transmission */
+		else if(ch == SPIDEY_END_TX) {
+			writeUSART(SPIDEY_ACKNOWLEDGE);
+			if(readUSART() == SPIDEY_NODE_ACK) {
+				WATCHDOG_CONFIG(WATCHDOG_16MS);      /* Set watchdog timer for 16ms so that the MCU resets within without further delay */
+				while(1);                            /* Wait here for the 16ms period */
 			}
 		}
 	}
+	return;
 }
 
-/*Function to start execution of application code from 0x00000*/
-void appStart(){  
+/* Function to start execution of application code from 0x00000 */
+void appStart() {  
 	asm("jmp 0x00000");
-}
-/* Function to modify application code by calling the bootloader code */
-void bootLoader(){
-    UART_Setup();     /* Initialise UART for communication with Node*/
-	DDRB = 0xFF;      
-	for(uint8_t i=0;i<5;i++){     /*Blink LED 5 times to signal that bootloader code is being accessed */
-		PORTB ^= 0xFF;
-		_delay_ms(123);          /* Delay is (F_CPU/(8196*16)) */
-	}
-	PORTB = 0x00;                
-	DDRB = 0x00;
-    readcode(); /* Call function that executes the modification of flash page */
+	return;
 }
 
-int main(void)
-{
-   	uint8_t ch = MCUSR;    /* Read MCUSR register to determine Source of Reset */
+/* Function to modify application code by calling the bootloader code */
+void bootLoader() {
+    UART_Setup();                 /* Initialize UART */
+	#if LED_START_FLASHES > 0
+	// Set up Timer 1 for timeout counter
+	#if defined(__AVR_ATtiny261__)||defined(__AVR_ATtiny461__)||defined(__AVR_ATtiny861__)
+	TCCR1B = 0x0E; //div 8196 - we could divide by less since it's a 10-bit counter, but why?
+	#elif defined(__AVR_ATtiny25__)||defined(__AVR_ATtiny45__)||defined(__AVR_ATtiny85__)
+	TCCR1 = 0x0E; //div 8196 - it's an 8-bit timer.
+	#elif defined(__AVR_ATtiny43__)
+	#error "LED flash for Tiny43 not yet supported"
+	#else
+	TCCR1B = _BV(CS12) | _BV(CS10); // div 1024
+	#endif
+	#endif
+	#if (LED_START_FLASHES > 0)
+	/* Set LED pin as output */
+	DDRB |= 0xFF;
+	#endif
+	#if LED_START_FLASHES > 0
+	/* Flash on board LED to signal entering of bootloader */
+	Flash_LED(LED_START_FLASHES * 2);
+	#else
+	#if LED_START_ON
+	/* Turn on LED to indicate starting bootloader (less code!) */
+	PORTB |= 0xFF;
+	#endif
+	#endif
+    readcode();                   /* Call function that executes the modification of flash page */
+}
+
+int main(void) {
+   	uint8_t ch = MCUSR;       /* Read MCUSR register to determine Source of Reset */
    	MCUSR = 0;
-   	wdt_disable();
-   	if ((ch & _BV(EXTRF))){   /* If it was External Reset go to function that calls code in bootloader to modify application code */
+   	WATCHDOG_CONFIG(0);       /* Disable watchdog timer */
+   	if ((ch & _BV(EXTRF))){   /* If it was External Reset, execute bootloader */
 	   	bootLoader();
    	}
-   	else{                     /* If it was any other type of Reset go to function that goes to start of application code */
+   	else{                     /* If it was any other type of Reset, execute application code */
 	   	appStart();
    	}
    	return 0;
 }
+
+#if LED_START_FLASHES > 0
+void Flash_LED(uint8_t count) {
+  do {
+  	#if defined(__AVR_ATtiny261__)||defined(__AVR_ATtiny461__)||defined(__AVR_ATtiny861__) || defined(__AVR_ATtiny25__)||defined(__AVR_ATtiny45__)||defined(__AVR_ATtiny85__)
+  		TCNT1 = -(F_CPU/(8196*16));
+    	TIFR = _BV(TOV1);
+    	while(!(TIFR & _BV(TOV1)));
+	#elif defined(__AVR_ATtiny43__)
+  		#error "LED flash for Tiny43 not yet supported"
+	#else
+  		TCNT1 = -(F_CPU/(1024*16));
+    	TIFR1 = _BV(TOV1);
+    	while(!(TIFR1 & _BV(TOV1)));
+	#endif   
+		PORTB ^= 0xFF;
+	} while (--count);
+}
+#endif

@@ -1,3 +1,8 @@
+/*
+ * bootuart.h
+ * Created: 10/10/2020 12:39:42 Hrs
+ * Author: Aditya Kumar Singh
+*/
 #ifndef _BOOT_UART_H
     #define _BOOT_UART_H
 #include <avr/io.h>
@@ -60,13 +65,6 @@
 extern "C" {
 #endif
 	void  __attribute__((noinline)) __attribute__((leaf)) writeUSART(uint8_t);
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 	uint8_t __attribute__((noinline)) __attribute__((leaf)) readUSART(void);
 #ifdef __cplusplus
 }

@@ -17,7 +17,7 @@
 #define TXD2 17
 
 #define _MAJOR_VERSION_ 0
-#define _MINOR_VERSION_ 1
+#define _MINOR_VERSION_ 8
 #define _SUB_MINOR_VERSION_ 0
 
 struct PROG {

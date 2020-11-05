@@ -9,7 +9,7 @@
 /*
  * Function to reset the WATCHDOG timer
  */
-void WATCHDOG_RST() {
+static inline void WATCHDOG_RST() {
   __asm__ __volatile__ ("wdr\n");
 }
 
@@ -17,7 +17,7 @@ void WATCHDOG_RST() {
  * Function to configure the WATCHDOG timer with a particular
  * time setting
  */
-void WATCHDOG_CONFIG(uint8_t x) {
+void __attribute__((noinline)) WATCHDOG_CONFIG(uint8_t x) {
   #ifdef WDCE                                           // does it have a Watchdog Change Enable?
     #ifdef WDTCSR
       WDTCSR = _BV(WDCE) | _BV(WDE);

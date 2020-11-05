@@ -20,19 +20,6 @@ Discarded input sections
  .text          0x00000000        0x0 Lib/watchdog.o
  .data          0x00000000        0x0 Lib/watchdog.o
  .bss           0x00000000        0x0 Lib/watchdog.o
- .text.WATCHDOG_RST
-                0x00000000        0x4 Lib/watchdog.o
- .text.WATCHDOG_CONFIG
-                0x00000000        0xc Lib/watchdog.o
- .debug_info    0x00000000       0xa4 Lib/watchdog.o
- .debug_abbrev  0x00000000       0x76 Lib/watchdog.o
- .debug_aranges
-                0x00000000       0x28 Lib/watchdog.o
- .debug_ranges  0x00000000       0x18 Lib/watchdog.o
- .debug_line    0x00000000       0xc3 Lib/watchdog.o
- .debug_str     0x00000000      0x18c Lib/watchdog.o
- .comment       0x00000000       0x31 Lib/watchdog.o
- .debug_frame   0x00000000       0x34 Lib/watchdog.o
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
@@ -200,7 +187,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00007c00      0x2c8
+.text           0x00007c00      0x2b2
  *(.vectors)
  .vectors       0x00007c00       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00007c00                __vector_default
@@ -291,26 +278,29 @@ END GROUP
  .text.readUSART
                 0x00007c9e        0xe Lib/bootuart.o
                 0x00007c9e                readUSART
+ .text.WATCHDOG_CONFIG
+                0x00007cac        0xc Lib/watchdog.o
+                0x00007cac                WATCHDOG_CONFIG
  .text.UART_Setup
-                0x00007cac       0x1a main.o
-                0x00007cac                UART_Setup
+                0x00007cb8       0x1a main.o
+                0x00007cb8                UART_Setup
  .text.boot_program_page
-                0x00007cc6       0x7a main.o
-                0x00007cc6                boot_program_page
+                0x00007cd2       0x7a main.o
+                0x00007cd2                boot_program_page
  .text.readcode
-                0x00007d40      0x12c main.o
-                0x00007d40                readcode
+                0x00007d4c      0x110 main.o
+                0x00007d4c                readcode
  .text.bootLoader
-                0x00007e6c       0x2e main.o
-                0x00007e6c                bootLoader
+                0x00007e5c       0x34 main.o
+                0x00007e5c                bootLoader
  .text.startup.main
-                0x00007e9a       0x2a main.o
-                0x00007e9a                main
-                0x00007ec4                . = ALIGN (0x2)
+                0x00007e90       0x1e main.o
+                0x00007e90                main
+                0x00007eae                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00007ec4        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00007ec4                _exit
-                0x00007ec4                exit
+ .fini9         0x00007eae        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00007eae                _exit
+                0x00007eae                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -329,11 +319,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00007ec4        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00007eae        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00007ec8                _etext = .
+                0x00007eb2                _etext = .
 
-.data           0x00800100        0x0 load address 0x00007ec8
+.data           0x00800100        0x0 load address 0x00007eb2
                 [!provide]                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -353,8 +343,8 @@ END GROUP
  COMMON         0x00800100      0x100 main.o
                 0x00800100                prog
                 0x00800200                PROVIDE (__bss_end, .)
-                0x00007ec8                __data_load_start = LOADADDR (.data)
-                0x00007ec8                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00007eb2                __data_load_start = LOADADDR (.data)
+                0x00007eb2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800200        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -404,6 +394,7 @@ END GROUP
  *(.comment)
  .comment       0x00000000       0x30 Lib/bootuart.o
                                  0x31 (size before relaxing)
+ .comment       0x00000030       0x31 Lib/watchdog.o
  .comment       0x00000030       0x31 main.o
 
 .note.gnu.avr.deviceinfo
@@ -426,50 +417,58 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0x70
+.debug_aranges  0x00000000       0x90
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x28 Lib/bootuart.o
  .debug_aranges
-                0x00000028       0x48 main.o
+                0x00000028       0x20 Lib/watchdog.o
+ .debug_aranges
+                0x00000048       0x48 main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0xbf9
+.debug_info     0x00000000      0xbe3
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x5f4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_info    0x000005f4       0xbb Lib/bootuart.o
- .debug_info    0x000006af      0x54a main.o
+ .debug_info    0x000006af       0x8f Lib/watchdog.o
+ .debug_info    0x0000073e      0x4a5 main.o
 
-.debug_abbrev   0x00000000      0x885
+.debug_abbrev   0x00000000      0x877
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_abbrev  0x000005a2       0x8b Lib/bootuart.o
- .debug_abbrev  0x0000062d      0x258 main.o
+ .debug_abbrev  0x0000062d       0x60 Lib/watchdog.o
+ .debug_abbrev  0x0000068d      0x1ea main.o
 
-.debug_line     0x00000000      0x61a
+.debug_line     0x00000000      0x5d1
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x133 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_line    0x00000133       0xd5 Lib/bootuart.o
- .debug_line    0x00000208      0x412 main.o
+ .debug_line    0x00000208       0xad Lib/watchdog.o
+ .debug_line    0x000002b5      0x31c main.o
 
-.debug_frame    0x00000000       0xb8
+.debug_frame    0x00000000       0xe4
  *(.debug_frame)
  .debug_frame   0x00000000       0x34 Lib/bootuart.o
- .debug_frame   0x00000034       0x84 main.o
+ .debug_frame   0x00000034       0x24 Lib/watchdog.o
+ .debug_frame   0x00000058       0x8c main.o
 
-.debug_str      0x00000000      0x471
+.debug_str      0x00000000      0x433
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
- .debug_str     0x00000208      0x150 Lib/bootuart.o
-                                0x184 (size before relaxing)
- .debug_str     0x00000358      0x119 main.o
-                                0x295 (size before relaxing)
+ .debug_str     0x00000208      0x156 Lib/bootuart.o
+                                0x18a (size before relaxing)
+ .debug_str     0x0000035e       0x22 Lib/watchdog.o
+                                0x185 (size before relaxing)
+ .debug_str     0x00000380       0xb3 main.o
+                                0x245 (size before relaxing)
 
-.debug_loc      0x00000000      0x47a
+.debug_loc      0x00000000      0x3f4
  *(.debug_loc)
- .debug_loc     0x00000000      0x47a main.o
+ .debug_loc     0x00000000      0x3f4 main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -489,10 +488,11 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x80
+.debug_ranges   0x00000000       0x90
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x18 Lib/bootuart.o
- .debug_ranges  0x00000018       0x68 main.o
+ .debug_ranges  0x00000018       0x10 Lib/watchdog.o
+ .debug_ranges  0x00000028       0x68 main.o
 
 .debug_macro
  *(.debug_macro)

@@ -24,8 +24,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void WATCHDOG_RST();  /* Function to reset the watchdog timer */
-void WATCHDOG_CONFIG(uint8_t); /* Function to configure the watchdog timer settings */
+static inline  void WATCHDOG_RST();                       /* Function to reset the watchdog timer */
+void __attribute__((noinline))  WATCHDOG_CONFIG(uint8_t); /* Function to configure the watchdog timer settings */
 #ifdef __cplusplus
 }
 #endif

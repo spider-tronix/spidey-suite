@@ -4,19 +4,18 @@
  * Created: 10/20/2020 5:09:09 PM
  *  Author: hp
  */ 
-
-
 #ifndef SPIDEYPROTOCOL_H_
 #define SPIDEYPROTOCOL_H_
-#define spidey_start_tx 0x01
-#define spidey_end_tx  0x04
-#define spidey_load_address  0x05
-#define spidey_start_progmode  0x02
-#define spidey_data_recieved   0x03
-#define spidey_acknowledge   0x06
-#define spidey_getsigbyte 0x07
-#define spidey_check_flash 0x09
-#define spidey_node_ack 0x10      /*Byte to be sent by ESP as the safety signal */
+
+#define SPIDEY_START_TX       0x01
+#define SPIDEY_START_PROGMODE 0x02
+#define SPIDEY_DATA_RECIEVED  0x03
+#define SPIDEY_END_TX         0x04
+#define SPIDEY_LOAD_ADDRESS   0x05
+#define SPIDEY_ACKNOWLEDGE    0x06
+#define SPIDEY_GETSIGBYTES    0x07
+#define SPIDEY_CHECK_FLASH    0x09
+#define SPIDEY_NODE_ACK       0x10      /*Byte to be sent by ESP as the safety signal */
 
 
 
