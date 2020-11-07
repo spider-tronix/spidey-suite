@@ -1,7 +1,7 @@
 /* HexParser.h
  * Created on 1 Nov 2020
  * Author : Miriam
- * Version: 0.5.1
+ * Version: 0.6.1
 */
 
 #ifndef HEX_PARSER_H

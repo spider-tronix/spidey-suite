@@ -5,22 +5,21 @@
 #include <Arduino.h>
 #include "HexParser.h"
 
-uint8_t Ascii2Hex(uint8_t c)
-{
-  if (c >= '0' && c <= '9')
-  { return (uint8_t)(c - '0');  }
-
-  if (c >= 'A' && c <= 'F')
-  {return (uint8_t)(c - 'A' + 10);}
-  if (c >= 'a' && c <= 'f')
-  {return (uint8_t)(c - 'a' + 10);}
-
+uint8_t Ascii2Hex(uint8_t c) {
+  if (c >= '0' && c <= '9') { 
+    return (uint8_t)(c - '0');  
+  }
+  if (c >= 'A' && c <= 'F') {
+    return (uint8_t)(c - 'A' + 10);
+  }
+  if (c >= 'a' && c <= 'f') {
+    return (uint8_t)(c - 'a' + 10);
+  }
   return 0;  
 }
 
 
-void Parser(uint8_t Start[], int Size, size_t * Length, uint8_t prog[])
-{ 
+void Parser(uint8_t Start[], int Size, size_t * Length, uint8_t prog[]) { 
   /* DataB - no of bytes of actual data
    * RecDB - no of  actual data bytes per record
    * U and L - upper and lower nibble of the size field  
@@ -33,7 +32,7 @@ void Parser(uint8_t Start[], int Size, size_t * Length, uint8_t prog[])
   int i;
   ptr=Start;
   for( i=0;i<Size;i++) {
-      if( *(ptr+i) == ':') {  //shows we have encountered a new record
+      if( *(ptr+i) == ':') {   //shows we have encountered a new record
         Records+=1; 
         i++;
         
@@ -42,7 +41,7 @@ void Parser(uint8_t Start[], int Size, size_t * Length, uint8_t prog[])
         
         L=Ascii2Hex(*(ptr+i));
         i++;
-                
+           
         RecDB=(U*16 +L);
         DataB+=RecDB;
   
@@ -55,19 +54,19 @@ void Parser(uint8_t Start[], int Size, size_t * Length, uint8_t prog[])
           i++;                      
      
           // Shift the nibble to upper half
-          hexValue = ((hexValue << 4) & 0xF0);
-                               
+          hexValue = ((hexValue << 4) & 0xF0);                  
+           
           //Put the lower and upper nibbles together.
           hexValue |= (Ascii2Hex(*(ptr+i)));
           i++;
           
           //Store in separate array
           prog[index]=hexValue;                      
-          index++;                
-       }
+          index++;                       
+        }
      }
    }
-   *Length= DataB; // storing the value of the size at address given by Length
+   *Length = DataB; // storing the value of the size at address given by Length
    Serial.println(F("  DONE. OK"));
    return;
 }
