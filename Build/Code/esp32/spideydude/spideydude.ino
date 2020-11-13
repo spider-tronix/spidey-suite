@@ -3,13 +3,13 @@
                        Spideydude for ESP32
                    ================================
    Filename: Spideydude.ino
-   Version: 0.8.0
+   Version: 0.9.0
    Date: October 19, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
 */
-
 // Including essential library files
+#include <stdint.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
@@ -17,6 +17,7 @@
 
 #include "spideydude.h"
 #include "spideyserver.h"
+#include "HexParser.h"
 
 /*
    ==============================================================
@@ -58,6 +59,29 @@ const char* host = "spideydude";                                  // Host name f
 WebServer server(80);                                            // Creating WebServer object on port 80
 
 String resp = "Some error occured. Please re-try";               // Response from spideydude will be stored here 
+uint8_t file[32768] PROGMEM;
+uint8_t prog[32768] PROGMEM;
+int file_index = 0;
+String fileName = "";
+
+void flashProgram(){
+  Serial.print(F("\nUploading Success: "));Serial.print(file_index);Serial.println(F(" bytes transferred.\n"));
+  for(int i=0;i<file_index;i++){
+    Serial.write(file[i]);
+  }
+  // Call the HexParser to parse the file first
+  size_t len=0;
+  Parser(file, file_index, &len, prog);
+  // Call the Spideydude here to upload the file
+  Serial.println(F("\nStarting Spideydude......\n\n"));
+  for(int i=0;i<200;i++){
+    Serial.print(" ");
+  }
+  Spideydude spideydude;
+  uint16_t page = 0x0080;
+  resp = spideydude.begin(fileName, prog, len, page);
+  file_index = 0;
+}
 
 void setup(void) {
   Serial.begin(115200);
@@ -67,19 +91,19 @@ void setup(void) {
       Serial.println("Setting AP (Access Point)..");
       WiFi.softAP(ssid, password);
       IPAddress IP = WiFi.softAPIP();
-      Serial.print("Network SSID: ");Serial.println(ssid);
-      Serial.print("Network Password: ");Serial.println(password);
-      Serial.print("AP IP address: "); Serial.println(IP);
+      Serial.print(F("Network SSID: "));Serial.println(ssid);
+      Serial.print(F("Network Password: "));Serial.println(password);
+      Serial.print(F("AP IP address: ")); Serial.println(IP);
     #elif (OTA_WIFI_MODE == 1)
-      Serial.print("Connecting to WiFi");
+      Serial.print(F("Connecting to WiFi"));
       WiFi.begin(ssid, password);
       while (WiFi.status() != WL_CONNECTED) {
         delay(250);
-        Serial.print(".");
+        Serial.print(F("."));
       }
-      Serial.println("");
-      Serial.print("Connected to "); Serial.println(ssid);
-      Serial.print("IP address: "); Serial.println(WiFi.localIP());
+      Serial.println(F(""));
+      Serial.print(F("Connected to ")); Serial.println(ssid);
+      Serial.print(F("IP address: ")); Serial.println(WiFi.localIP());
     #else
       #error Un-identfied WiFi Mode
     #endif
@@ -88,12 +112,12 @@ void setup(void) {
   #endif
   /* Using mdns for host name resolution */
   if (!MDNS.begin(host)) {                                 
-    Serial.println("Error setting up MDNS responder!");
+    Serial.println(F("Error setting up MDNS responder!"));
     while (1) {
       delay(1000);
     }
   }
-  Serial.print("mDNS responder started.\nServing at http://"); Serial.print(host); Serial.println(".local      on Port 80");
+  Serial.print(F("mDNS responder started.\nServing at http://")); Serial.print(host); Serial.println(F(".local      on Port 80"));
   
   // Route for root / web page
   server.on("/", HTTP_GET, []() {
@@ -107,27 +131,22 @@ void setup(void) {
   });
   // Route to /upload handler for POST Request
   server.on("/upload", HTTP_POST, []() {
+    flashProgram();
     server.sendHeader("Connection", "close");
     server.send(200, "text/plain", resp);
   }, []() {
     HTTPUpload& upload = server.upload();
     if (upload.status == UPLOAD_FILE_START) {
       Serial.printf("\nIncoming file: %s\n", upload.filename.c_str());
+      Serial.println(F("Reading file......"));
     }
     else if (upload.status == UPLOAD_FILE_WRITE) {
-      Serial.println("Reading file......");
+      for (int i = 0; i < upload.currentSize; i++) {
+        file[file_index++] = upload.buf[i];
+      }
     }
     else if (upload.status == UPLOAD_FILE_END) {
-      for (int i = 0; i < upload.totalSize; i++) {
-        Serial.write(upload.buf[i]);
-      }
-      Serial.println("");
-      Serial.printf("\nUploading Success: %d bytes transferred.\n", upload.totalSize);
-      Serial.println("Starting Spideydude......\n\n");
-      // Call the Spideydude here to upload the file
-      Spideydude spideydude;
-      uint16_t page = 0x0080;
-      resp = spideydude.begin(upload.filename, upload.buf, upload.totalSize, page);
+      fileName = upload.filename;
     }
   });
   // Route to handle not found

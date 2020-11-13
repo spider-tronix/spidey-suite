@@ -35,19 +35,19 @@ void Spideydude::sync(){
   Serial2.flush();
   unsigned long startTime = millis();
   while(1){
-    Serial2.write((byte)spidey_start_tx);
-    Serial2.write((byte)spidey_node_ack);
+    Serial2.write((byte)SPIDEY_START_TX);
+    Serial2.write((byte)SPIDEY_NODE_ACK );
     while(!Serial2.available()){
       unsigned long currTime = millis();
       if(currTime-startTime >= 500){
          Serial2.flush();
-         Serial2.write((byte)spidey_start_tx);
-         Serial2.write((byte)spidey_node_ack);
+         Serial2.write((byte)SPIDEY_START_TX);
+         Serial2.write((byte)SPIDEY_NODE_ACK );
          startTime = millis();
       }
     }
     byte res1 = Serial2.read();
-    if(res1 == spidey_acknowledge){
+    if(res1 == SPIDEY_ACKNOWLEDGE){
       Verbose("AVR device initialized and ready to send instructions.");
       readDevice();
     }
@@ -67,12 +67,12 @@ void Spideydude::readDevice(){
   Serial2.flush();
   while(1){
     //Reading Signature
-    Serial2.write((byte)spidey_getsigbyte);
-    Serial2.write((byte)spidey_node_ack);
+    Serial2.write((byte)SPIDEY_GETSIGBYTES);
+    Serial2.write((byte)SPIDEY_NODE_ACK );
     while(!Serial2.available());
     byte res1 = Serial2.read();byte res2 = Serial2.read();
     byte res3 = Serial2.read();byte res4 = Serial2.read();
-    if(res4 == spidey_acknowledge){      // If correct response 
+    if(res4 == SPIDEY_ACKNOWLEDGE){      // If correct response 
       Serial.print(F("########## | 100% ("));
       response += "########## | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
@@ -108,28 +108,29 @@ void Spideydude::writeFlash(){
   uint16_t address = 0x0000;
   Serial.print(F("####"));
   response += "####";
+  int maxPageCount = (details.len / details.pageSize) + ((details.len % details.pageSize) != 0);
   int pageCount = 0;
   Serial2.flush();
   while(1){
     //Load Address
-    byte addrH = (address >> 8) && 0xFF;
+    byte addrH = (address >> 8) & 0xFF;
     byte addrL = address & 0xFF;
-    Serial2.write((byte)spidey_load_address);
-    Serial2.write((byte)spidey_node_ack);
+    Serial2.write((byte)SPIDEY_LOAD_ADDRESS);
+    Serial2.write((byte)SPIDEY_NODE_ACK );
     Serial2.write((byte)addrL);
     Serial2.write((byte)addrH);
     while(!Serial2.available());
     byte res1 = Serial2.read();
-    if(res1 == spidey_acknowledge){
+    if(res1 == SPIDEY_ACKNOWLEDGE){
       Serial.print(F("######"));
       response += "######";
       Serial2.flush();
       while(1){
         // Sending pgm data
-        byte pageSizeH = (pageSize >> 8) && 0xFF;
+        byte pageSizeH = (pageSize >> 8) & 0xFF;
         byte pageSizeL = pageSize & 0xFF;
-        Serial2.write((byte)spidey_start_progmode);
-        Serial2.write((byte)spidey_node_ack);
+        Serial2.write((byte)SPIDEY_START_PROGMODE);
+        Serial2.write((byte)SPIDEY_NODE_ACK );
         Serial2.write((byte)pageSizeL);
         Serial2.write((byte)pageSizeH);
         for(uint16_t i = 0; i<pageSize;i++){
@@ -139,7 +140,7 @@ void Spideydude::writeFlash(){
         byte res1 = Serial2.read();
         while(!Serial2.available());
         byte res2 = Serial2.read();
-        if(res1 ==  spidey_data_recieved && res2 == spidey_acknowledge){
+        if(res1 ==  SPIDEY_DATA_RECIEVED && res2 == SPIDEY_ACKNOWLEDGE){
           pageCount++;
           address += pageSize;
         }
@@ -155,7 +156,7 @@ void Spideydude::writeFlash(){
       Verbose("Error: Can't load address");
       break;
     }
-    if(pageCount>=2){
+    if(pageCount >= maxPageCount){
       Serial.print(F("###### | 100% ("));
       response += "###### | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
@@ -185,28 +186,29 @@ void Spideydude::verifyFlash(){
   uint16_t address = 0x0000;
   Serial.print(F("####"));
   response += "####";
+  int maxPageCount = (details.len / details.pageSize) + ((details.len % details.pageSize) != 0);
   int pageCount = 0;
   Serial2.flush();
   while(1){
     //Load Address
-     byte addrH = (address >> 8) && 0xFF;
+    byte addrH = (address >> 8) & 0xFF;
     byte addrL = address & 0xFF;
-    Serial2.write((byte)spidey_load_address);
-    Serial2.write((byte)spidey_node_ack);
+    Serial2.write((byte)SPIDEY_LOAD_ADDRESS);
+    Serial2.write((byte)SPIDEY_NODE_ACK );
     Serial2.write((byte)addrL);
     Serial2.write((byte)addrH);
     while(!Serial2.available());
     byte res1 = Serial2.read();
-    if(res1 == spidey_acknowledge){
+    if(res1 == SPIDEY_ACKNOWLEDGE){
       Serial.print(F("######"));
       response += "######";
       Serial2.flush();
       while(1){
         // Reading pgm data
-        byte pageSizeH = (pageSize >> 8) && 0xFF;
+        byte pageSizeH = (pageSize >> 8) & 0xFF;
         byte pageSizeL = pageSize & 0xFF;
-        Serial2.write((byte)spidey_check_flash);
-        Serial2.write((byte)spidey_node_ack);
+        Serial2.write((byte)SPIDEY_CHECK_FLASH);
+        Serial2.write((byte)SPIDEY_NODE_ACK );
         Serial2.write((byte)pageSizeL);
         Serial2.write((byte)pageSizeH);
         uint16_t curr = 0;
@@ -220,9 +222,9 @@ void Spideydude::verifyFlash(){
         }
         while(!Serial2.available());
         byte res1 = Serial2.read();
-        if(res1 ==  spidey_acknowledge){
+        if(res1 ==  SPIDEY_ACKNOWLEDGE){
           pageCount++;
-          address += pageSize/2;
+          address += pageSize;
         }
         else{
           //Serial.println(res2,HEX);
@@ -235,7 +237,7 @@ void Spideydude::verifyFlash(){
       Verbose("Error: SPIDEY_LOAD_ADDR. Can't load the address to read from");
       break;
     }
-    if(pageCount>=2){
+    if(pageCount >= maxPageCount){
       Serial.print(F("###### | 100% ("));
       response += "###### | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
@@ -257,11 +259,11 @@ void Spideydude::verifyFlash(){
 
 void Spideydude::endProg(){
   Serial2.flush();
-  Serial2.write((byte)spidey_end_tx);
-  Serial2.write((byte)spidey_node_ack);
-  while(!Serial2.available()){}
+  Serial2.write((byte)SPIDEY_END_TX);
+  Serial2.write((byte)SPIDEY_NODE_ACK);
+  while(!Serial2.available());
   byte res1 = Serial2.read();
-  if(res1 == spidey_acknowledge){
+  if(res1 == SPIDEY_ACKNOWLEDGE){
       Verbose("Exited programming mode. Process complete");
   }
   else{
