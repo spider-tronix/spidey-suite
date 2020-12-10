@@ -29,7 +29,7 @@ void Avrdude::ResetExtDevice() {
 }
 
 /*
- * Prits the verbose output on the monitor/console. 
+ * Prints the verbose output on the monitor/console. 
  * Format is same as the actual avrdude
 */
 void Avrdude::Verbose(const char* msg){
@@ -61,15 +61,15 @@ void Avrdude::Done(){
  * for debugging and verbose output. Serial2 i.e, RX2 and TX2 communicates with the UART 
  * for the connected uC. Appropriate BAUDRATE is selected basd on the uC. 
 */
-String Avrdude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+String Avrdude::begin(long baudRate, String file, uint8_t *pg, size_t len, uint16_t pageLen){
   response = "";
   details.fileName = file;
   details.progData = pg;
   details.len = len;
   details.pageSize = pageLen;
   // Initialising Serial comm. 
-  Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
+  Serial.begin(baudRate);
+  Serial2.begin(baudRate, SERIAL_8N1, RXD2, TXD2);
   // Printing basic info first
   String stmnt = "\navrdude: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);
   Serial.println(F(stmnt.c_str()));
@@ -109,7 +109,7 @@ void Avrdude::syncAVR(){
     byte res1 = Serial2.read();
     byte res2 = Serial2.read();
     if( res1 == STK_INSYNC && res2 == STK_OK){                           // If response is correct 
-      //Confirming the synchronisation for the second time, repeasts the same procedure
+      //Confirming the synchronisation for the second time, repeats the same procedure
       Serial2.flush();
       Serial2.write((byte)STK_GET_SYNC);
       Serial2.write((byte)CRC_EOP);
@@ -133,16 +133,15 @@ void Avrdude::syncAVR(){
           readDevice();
         }
         else{
-          Verbose("Error: AVR Device not in sync(). No in_sync() for 3rd try");
+          Verbose(String("Error: AVR Device not in sync(). No in_sync() for 3rd try. Expected 0x"+hexTOstring(STK_INSYNC)+" and 0x"+hexTOstring(STK_OK)+" but got 0x"+hexTOstring(res1)+" and 0x"+hexTOstring(res2)).c_str());
         }
       }
       else{
-        Verbose("Error: AVR Device not in sync().  No in_sync() for 2nd try");
+        Verbose(String("Error: AVR Device not in sync(). No in_sync() for 2nd try. Expected 0x"+hexTOstring(STK_INSYNC)+" and 0x"+hexTOstring(STK_OK)+" but got 0x"+hexTOstring(res1)+" and 0x"+hexTOstring(res2)).c_str());
       }
     }
     else{
-      Verbose("Error: AVR Device not in sync().  No in_sync() for 1st try");
-      response += String(res1) + "  " + String(res2) + "\n";
+      Verbose(String("Error: AVR Device not in sync(). No in_sync() for 1st try. Expected 0x"+hexTOstring(STK_INSYNC)+" and 0x"+hexTOstring(STK_OK)+" but got 0x"+hexTOstring(res1)+" and 0x"+hexTOstring(res2)).c_str());
     }
     break;
   }
@@ -205,18 +204,24 @@ void Avrdude::readDevice(){
                 byte res3 = Serial2.read();byte res4 = Serial2.read();
                 byte res5 = Serial2.read();
                 if(res1 ==  STK_INSYNC && res5 == STK_OK){      // If correct response 
-                  Serial.print(F("##### | 100% ("));
-                  response += "##### | 100% (";
+                  Serial.print(F("########## | 100% ("));
+                  response += "########## | 100% (";
                   float elapsedTime = (millis() - startTime)/1000;
-                  Serial.print(elapsedTime, 2);
-                  response += String(elapsedTime);
+                  Serial.print(elapsedTime, 3);
+                  response += String(elapsedTime, 3);
                   Serial.println(F("s)\n"));
                   response += "s)\n\n";
-                  Serial.print(F("avrdude: Device Signature 0x"));
-                  response += "avrdude: Device Signature 0x";
-                  showHEX(res2);showHEX(res3);showHEX(res4);// Print the signature 
-                  Serial.print(F("\n"));
-                  response += String(res2) + String(res3) + String(res4) + "\n";
+                  Serial.println("avrdude: Device Signature 0x"+hexTOstring(res2)+hexTOstring(res3)+hexTOstring(res4));
+                  response += "avrdude: Device Signature 0x"+hexTOstring(res2)+hexTOstring(res3)+hexTOstring(res4) + "\n";
+                  byte sig[3] = { res2, res3, res4};
+                  // Check for valid Device Signature
+                  String devName = verifySignature(sig);
+                  if(devName=="Unrecognized device signature."){
+                    Verbose("Error: Can't recognize the device. Unknown device signature.");
+                    return;
+                  }
+                  Serial.print("avrdude: Probably "+devName);
+                  response += "avrdude: Probably "+devName + "\n";
                   // Now proceed to write the Flash data 
                   writeFlash();
                   // Finally, exit the programming mode 
@@ -259,13 +264,14 @@ void Avrdude::writeFlash(){
   RW("Writing");
   uint16_t pageSize = details.pageSize;
   uint16_t address = 0x0000;
-  Serial.print(F("####"));
-  response += "####";
+  Serial.print(F("###########"));
+  response += "###########";
+  int maxPageCount = (details.len / details.pageSize) + ((details.len % details.pageSize) != 0);
   int pageCount = 0;
   Serial2.flush();
   while(1){
     //Load the Address on the device 
-    byte addrH = (address >> 8) && 0xFF;
+    byte addrH = (address >> 8) & 0xFF;
     byte addrL = address & 0xFF;
     Serial2.write((byte)STK_LOAD_ADDRESS);
     Serial2.write((byte)addrL);
@@ -275,12 +281,10 @@ void Avrdude::writeFlash(){
     byte res1 = Serial2.read();
     byte res2 = Serial2.read();
     if(res1 ==  STK_INSYNC && res2 == STK_OK){    // If load address was succesfull 
-      Serial.print(F("######"));
-      response += "######";
       Serial2.flush();
       while(1){
         // Sending programm data
-        byte pageSizeH = (pageSize >> 8) && 0xFF;
+        byte pageSizeH = (pageSize >> 8) & 0xFF;
         byte pageSizeL = pageSize & 0xFF;
         Serial2.write((byte)STK_PROG_PAGE);
         Serial2.write((byte)pageSizeH);
@@ -299,22 +303,21 @@ void Avrdude::writeFlash(){
           address += pageSize/2;
         }
         else{
-          //Serial.println(res1,HEX);Serial.println(res2,HEX);
-          Verbose("Error: STK_PROGRAM_PAGE. Can't write the page properly.");
+          Verbose(String("Error: STK_PROGRAM_PAGE. Can't write the page properly. Expected 0x"+hexTOstring(STK_INSYNC)+" 0x"+hexTOstring(STK_OK)+" but, got 0x"+hexTOstring(res1)+" 0x"+hexTOstring(res2)).c_str());
         }
         break;
       }
     }
     else{
-      Verbose("Error: STK_LOAD_ADDR. Failed to load the address.");
+      Verbose(String("Error: STK_LOAD_ADDR. Failed to load the address. Expected 0x"+hexTOstring(STK_INSYNC)+" 0x"+hexTOstring(STK_OK)+" but, got 0x"+hexTOstring(res1)+" 0x"+hexTOstring(res2)).c_str());
       break;
     }
-    if(pageCount>=2){
-      Serial.print(F("###### | 100% ("));
-      response += "###### | 100% (";
+    if(pageCount >=  maxPageCount){
+      Serial.print(F("################# | 100% ("));
+      response += "################# | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
-      Serial.print(elapsedTime, 2);
-      response += String(elapsedTime);
+      Serial.print(elapsedTime, 3);
+      response += String(elapsedTime, 3);
       Serial.println(F("s)\n"));
       response += "s)\n\n";
       Serial.printf("avrdude: %d bytes of flash written.\n",details.len);
@@ -343,13 +346,14 @@ void Avrdude::verifyFlash(){
   int error = 0;
   uint16_t pageSize = details.pageSize;
   uint16_t address = 0x0000;
-  Serial.print(F("####"));
-  response += "####";
+  Serial.print(F("###########"));
+  response += "###########";
+  int maxPageCount = (details.len / details.pageSize) + ((details.len % details.pageSize) != 0);
   int pageCount = 0;
   Serial2.flush();
   while(1){
     //Load Address
-    byte addrH = (address >> 8) && 0xFF;
+    byte addrH = (address >> 8) & 0xFF;
     byte addrL = address & 0xFF;
     Serial2.write((byte)STK_LOAD_ADDRESS);
     Serial2.write((byte)addrL);
@@ -359,12 +363,10 @@ void Avrdude::verifyFlash(){
     byte res1 = Serial2.read();
     byte res2 = Serial2.read();
     if(res1 ==  STK_INSYNC && res2 == STK_OK){
-      Serial.print(F("######"));
-      response += "######";
       Serial2.flush();
       while(1){
         // Reading pgm data
-        byte pageSizeH = (pageSize >> 8) && 0xFF;
+        byte pageSizeH = (pageSize >> 8) & 0xFF;
         byte pageSizeL = pageSize & 0xFF;
         Serial2.write((byte)STK_READ_PAGE);
         Serial2.write((byte)pageSizeH);
@@ -390,36 +392,34 @@ void Avrdude::verifyFlash(){
             address += pageSize/2;
           }
           else{
-            //Serial.println(res2,HEX);
-            Verbose("Error: STK_READ_PAGE. Can't read the PAGE");
+            Verbose(String("Error: Can't read the PAGE data. Expected 0x"+hexTOstring(STK_OK)+" but got 0x"+hexTOstring(res2)).c_str());
           }
         }
         else{
-          //Serial.println(res1,HEX);
-          Verbose("Error: STK_READ_PAGE. Commanf failed");
+          Verbose(String("Error: STK_READ_PAGE. Command failed. Expected 0x"+hexTOstring(STK_INSYNC)+" but got 0x"+hexTOstring(res1)).c_str());
         }
         break;
       }
     }
     else{
-      Verbose("Error: STK_LOAD_ADDR. Can't load the address to read from");
+      Verbose(String("Error: STK_LOAD_ADDR. Can't load the address to read from. Expected 0x"+hexTOstring(STK_INSYNC)+" 0x"+hexTOstring(STK_OK)+" but, got 0x"+hexTOstring(res1)+" 0x"+hexTOstring(res2)).c_str());
       break;
     }
-    if(pageCount>=2){
-      Serial.print(F("###### | 100% ("));
-      response += "###### | 100% (";
+    if(pageCount >= maxPageCount){
+      Serial.print(F("################# | 100% ("));
+      response += "################# | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
-      Serial.print(elapsedTime, 2);
-      response += String(elapsedTime);
+      Serial.print(elapsedTime, 3);
+      response += String(elapsedTime, 3);
       Serial.println(F("s)\n"));
       response += "s)\n\n";
       Verbose("Verifying.....");
       Serial.printf("avrdude: %d bytes of flash verified. (",details.len);
       response += "avrdude: "+ String(details.len) + " bytes of flash verified. (";
       float perc = (error/180)*100;
-      Serial.print(perc);
+      Serial.print(perc, 3);
       Serial.println("% error) ");
-      response += String(perc) + "% error) \n";
+      response += String(perc, 3) + "% error) \n";
       break;
     }
   }
@@ -441,7 +441,7 @@ void Avrdude::exitPgmMode(){
          //we do nothing
     }
     else{
-      Verbose("Error: STK_LEAVE_PROGMODE. Failed to leave programming mode.");
+      Verbose(String("Error: STK_LEAVE_PROGMODE. Failed to leave programming mode. Expected 0x"+hexTOstring(STK_INSYNC)+" 0x"+hexTOstring(STK_OK)+" but, got 0x"+hexTOstring(res1)+" 0x"+hexTOstring(res2)).c_str());
     }
     break;
   }

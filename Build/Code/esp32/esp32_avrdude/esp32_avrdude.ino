@@ -3,13 +3,13 @@
                        Avrdude for ESP32
                    ================================
    Filename: esp32_avrdude.ino
-   Version: 0.1.0
+   Version: 0.5.0
    Date: October 16, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
 */
-
 // Including essential library files
+#include <stdint.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
@@ -17,15 +17,20 @@
 
 #include "avrdude.h"
 #include "spideyserver.h"
+#include "HexParser.h"
+
 /*
    ==============================================================
                        USER CHANGEABLE AREA START
                 USER SHOULD CHANGE THIS PART OF THE CODE ONLY
 */
 
-// Select the WiFi Mode from Station Mode and Access Point(AP) Mode.
-// 0 -> AP Mode, 1 -> Station Mode
-// Default is AP Mode.
+/*  Select the WiFi Mode from Station Mode and Access Point(AP) Mode.
+ *  In AP Mode, the nod will create its own WiFi hotspot.
+ *  In Station mode, node will get connected to an existing WiFi
+ *  0 -> AP Mode, 1 -> Station Mode
+ *  Default is AP Mode.
+*/
 #define OTA_WIFI_MODE 0
 
 /*
@@ -37,6 +42,19 @@
   const char* ssid = "NETWORK_SSID_HERE";
   const char* password = "NETWORK_PASSWORD_HERE";
 #endif
+
+/*
+ * Microcotroller and its Clock Setting
+ * Please select the appropriate clock frequecy code of the microcontroller
+ * to which this node mcu will be connected
+ * =========================================
+ *            Clock            |      Code 
+ * =========================================
+ *  Greater or equal to 8 MHz         0
+ *  Greater or equal to 1 MHz         1
+ *  Greater or equal to 128 kHz       2
+ */
+#define F_CLK 0
 /*
                       USER CHANGEABLE AREA ENDED
    ==============================================================
@@ -57,10 +75,49 @@ const char* host = "avrdude";                                    // Host name fo
 WebServer server(80);                                            // Creating WebServer object on port 80
 
 String resp = "Some error occured. Please re-try";               // Response from avrdude will be stored here 
+uint8_t file[32768] PROGMEM;
+uint8_t prog[32768] PROGMEM;
+int file_index = 0;
+String fileName = "";
+long baudRate = 1200;
 
+void flashProgram(){
+  Serial.print(F("\nUploading Success: "));Serial.print(file_index);Serial.println(F(" bytes transferred.\n"));
+  for(int i=0;i<file_index;i++){
+    Serial.write(file[i]);
+  }
+  // Call the HexParser to parse the file first
+  size_t len=0;
+  Parser(file, file_index, &len, prog);
+  // Call the Avrdude here to upload the file
+  Serial.println(F("\nStarting Avrdude......\n\n"));
+  for(int i=0;i<200;i++){
+    Serial.print(" ");
+  }
+  Avrdude avrdude;
+  uint16_t page = 0x0080;
+  resp = avrdude.begin(baudRate, fileName, prog, len, page);
+  file_index = 0;
+}
 
 void setup(void) {
-  Serial.begin(115200);
+  // Check whether clock is defined or not.
+  #ifndef F_CLK
+    #error "Please select the appropriate clock value"
+  #else
+    #if (F_CLK==0)
+      Serial.begin(115200);
+      baudRate = 115200;
+    #elif (F_CLK==1)
+      Serial.begin(9600);
+      baudRate = 9600;
+    #elif (F_CLK==2)
+      Serial.begin(4800);
+      baudRate = 4800;
+    #else
+      Serial.begin(1200);
+    #endif
+  #endif 
   Serial.println("");
   #ifdef OTA_WIFI_MODE
     #if (OTA_WIFI_MODE == 0)
@@ -107,27 +164,22 @@ void setup(void) {
   });
   // Route to /upload handler for POST Request
   server.on("/upload", HTTP_POST, []() {
+    flashProgram();
     server.sendHeader("Connection", "close");
     server.send(200, "text/plain", resp);
   }, []() {
     HTTPUpload& upload = server.upload();
     if (upload.status == UPLOAD_FILE_START) {
       Serial.printf("\nIncoming file: %s\n", upload.filename.c_str());
+      Serial.println(F("Reading file......"));
     }
     else if (upload.status == UPLOAD_FILE_WRITE) {
-      Serial.println("Reading file......");
+      for (int i = 0; i < upload.currentSize; i++) {
+        file[file_index++] = upload.buf[i];
+      }
     }
     else if (upload.status == UPLOAD_FILE_END) {
-      for (int i = 0; i < upload.totalSize; i++) {
-        Serial.write(upload.buf[i]);
-      }
-      Serial.println("");
-      Serial.printf("\nUploading Success: %d bytes transferred.\n", upload.totalSize);
-      Serial.println("Starting Spideydude......\n\n");
-      // Call the avrdude here to upload the file
-      Avrdude avrdude;
-      uint16_t page = 0x0080;
-      resp = avrdude.begin(upload.filename, upload.buf, upload.totalSize, page);
+      fileName = upload.filename;
     }
   });
   // Route to handle not found

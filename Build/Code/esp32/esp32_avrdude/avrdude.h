@@ -3,19 +3,23 @@
                        avrdude.h for ESP32
                    ================================
   Library header file based on AVRDUDE for communication with AVR device.  
+  
 ***************************************************************************************
 */
 #ifndef __AVRDUDE_OTA_H__
 #define __AVRDUDE_OTA_H__
 
 #include <Arduino.h>
+#include <stdint.h>
+
+#include "signatures.h"
 #include "stk500.h"
 
 #define RXD2 16
 #define TXD2 17
 
 #define _MAJOR_VERSION_ 0
-#define _MINOR_VERSION_ 1
+#define _MINOR_VERSION_ 5
 #define _SUB_MINOR_VERSION_ 0
 
 struct PROG {
@@ -41,7 +45,7 @@ class Avrdude{
     void verifyFlash();                                       // Verify the written flash for any errors
     void exitPgmMode();                                       // After verifying, exit the programming mode
   public:
-    String begin(String, uint8_t*, size_t, uint16_t);         // initializer. Process starts here
+    String begin(long, String, uint8_t*, size_t, uint16_t);         // initializer. Process starts here
 };
 
 /* Other Uitility functions */
