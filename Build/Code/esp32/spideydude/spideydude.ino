@@ -3,7 +3,7 @@
                        Spideydude for ESP32
                    ================================
    Filename: Spideydude.ino
-   Version: 0.9.0
+   Version: 0.9.2
    Date: October 19, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
@@ -25,9 +25,12 @@
                 USER SHOULD CHANGE THIS PART OF THE CODE ONLY
 */
 
-// Select the WiFi Mode from Station Mode and Access Point(AP) Mode.
-// 0 -> AP Mode, 1 -> Station Mode
-// Default is AP Mode.
+/*  Select the WiFi Mode from Station Mode and Access Point(AP) Mode.
+ *  In AP Mode, the nod will create its own WiFi hotspot.
+ *  In Station mode, node will get connected to an existing WiFi
+ *  0 -> AP Mode, 1 -> Station Mode
+ *  Default is AP Mode.
+*/
 #define OTA_WIFI_MODE 0
 
 /*
@@ -39,6 +42,19 @@
   const char* ssid = "NETWORK_SSID_HERE";
   const char* password = "NETWORK_PASSWORD_HERE";
 #endif
+
+/*
+ * Microcotroller and its Clock Setting
+ * Please select the appropriate clock frequecy code of the microcontroller
+ * to which this node mcu will be connected
+ * =========================================
+ *            Clock            |      Code 
+ * =========================================
+ *  Greater or equal to 8 MHz         0
+ *  Greater or equal to 1 MHz         1
+ *  Greater or equal to 128 kHz       2
+ */
+#define F_CLK 0
 /*
                       USER CHANGEABLE AREA ENDED
    ==============================================================
@@ -63,6 +79,7 @@ uint8_t file[32768] PROGMEM;
 uint8_t prog[32768] PROGMEM;
 int file_index = 0;
 String fileName = "";
+long baudRate = 1200;
 
 void flashProgram(){
   Serial.print(F("\nUploading Success: "));Serial.print(file_index);Serial.println(F(" bytes transferred.\n"));
@@ -79,12 +96,28 @@ void flashProgram(){
   }
   Spideydude spideydude;
   uint16_t page = 0x0080;
-  resp = spideydude.begin(fileName, prog, len, page);
+  resp = spideydude.begin(baudRate, fileName, prog, len, page);
   file_index = 0;
 }
 
 void setup(void) {
-  Serial.begin(115200);
+  // Check whether clock is defined or not.
+  #ifndef F_CLK
+    #error "Please select the appropriate clock value"
+  #else
+    #if (F_CLK==0)
+      Serial.begin(115200);
+      baudRate = 115200;
+    #elif (F_CLK==1)
+      Serial.begin(9600);
+      baudRate = 9600;
+    #elif (F_CLK==2)
+      Serial.begin(4800);
+      baudRate = 4800;
+    #else
+      Serial.begin(1200);
+    #endif
+  #endif 
   Serial.println("");
   #ifdef OTA_WIFI_MODE
     #if (OTA_WIFI_MODE == 0)

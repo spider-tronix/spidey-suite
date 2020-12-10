@@ -52,7 +52,7 @@ void Spideydude::sync(){
       readDevice();
     }
     else{
-      String error = "Failed to sync() with the device, expected=0x06 but got=0x"+String(res1); 
+      String error = "Failed to sync() with the device, expected=0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but got=0x"+hexTOstring(res1); 
       Verbose(error.c_str());
     }
     break;
@@ -73,25 +73,31 @@ void Spideydude::readDevice(){
     byte res1 = Serial2.read();byte res2 = Serial2.read();
     byte res3 = Serial2.read();byte res4 = Serial2.read();
     if(res4 == SPIDEY_ACKNOWLEDGE){      // If correct response 
-      Serial.print(F("########## | 100% ("));
-      response += "########## | 100% (";
+      Serial.print(F("######################## | 100% ("));
+      response += "######################## | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
-      Serial.print(elapsedTime, 2);
-      response += String(elapsedTime);
+      Serial.print(elapsedTime, 3);
+      response += String(elapsedTime,3);
       Serial.println(F("s)\n"));
       response += "s)\n\n";
-      Serial.print(F("spideydude: Device Signature 0x"));
-      response += "spideydude: Device Signature 0x";
-      showHEX(res1);showHEX(res2);showHEX(res3);// Print the signature 
-      Serial.print(F("\n"));
-      response += String(res1) + String(res2) + String(res3) + "\n";
+      Serial.println("spideydude: Device Signature 0x"+hexTOstring(res1)+hexTOstring(res2)+hexTOstring(res3));
+      response += "spideydude: Device Signature 0x"+hexTOstring(res1)+hexTOstring(res2)+hexTOstring(res3) + "\n";
+      byte sig[3] = { res1, res2, res3};
+      // Check for valid Device Signature
+      String devName = verifySignature(sig);
+      if(devName=="Unrecognized device signature."){
+        Verbose("Error: Can't recognize the device. Unknown device signature.");
+        return;
+      }
+      Serial.print("spideydude: Probably "+devName);
+      response += "spideydude: Probably "+devName + "\n";
       // Now proceed to write the Flash data 
       writeFlash();
       // Finally, exit the programming mode 
       endProg();
     }
     else{
-      Verbose("Error: Can't get the device signature. ");
+      Verbose(String("Error: Can't get the device signature. Expected=0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but got=0x"+hexTOstring(res1)).c_str());
     }
     break;
   }
@@ -122,8 +128,6 @@ void Spideydude::writeFlash(){
     while(!Serial2.available());
     byte res1 = Serial2.read();
     if(res1 == SPIDEY_ACKNOWLEDGE){
-      Serial.print(F("######"));
-      response += "######";
       Serial2.flush();
       while(1){
         // Sending pgm data
@@ -145,23 +149,21 @@ void Spideydude::writeFlash(){
           address += pageSize;
         }
         else{
-          Serial.println(res1,HEX);
-          Serial.println(res2,HEX);
-          Verbose("Error: Can't program the page.");
+          Verbose(String("Error: Can't program the page. Expected 0x"+hexTOstring(SPIDEY_DATA_RECIEVED)+" 0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but, got 0x"+hexTOstring(res1)+" 0x"+hexTOstring(res2)).c_str());
         }
         break;
       }
     }
     else{
-      Verbose("Error: Can't load address");
+      Verbose(String("Error: Can't load address. Expected 0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but got 0x"+hexTOstring(res1)).c_str());
       break;
     }
     if(pageCount >= maxPageCount){
-      Serial.print(F("###### | 100% ("));
-      response += "###### | 100% (";
+      Serial.print(F("###################### | 100% ("));
+      response += "###################### | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
-      Serial.print(elapsedTime, 2);
-      response += String(elapsedTime);
+      Serial.print(elapsedTime, 3);
+      response += String(elapsedTime, 3);
       Serial.println(F("s)\n"));
       response += "s)\n\n";
       Serial.printf("spideydude: %d bytes of flash written.\n",details.len);
@@ -200,8 +202,6 @@ void Spideydude::verifyFlash(){
     while(!Serial2.available());
     byte res1 = Serial2.read();
     if(res1 == SPIDEY_ACKNOWLEDGE){
-      Serial.print(F("######"));
-      response += "######";
       Serial2.flush();
       while(1){
         // Reading pgm data
@@ -228,30 +228,30 @@ void Spideydude::verifyFlash(){
         }
         else{
           //Serial.println(res2,HEX);
-          Verbose("Error: SPIDEY_READ_PAGE. Can't read the PAGE");
+          Verbose(String("Error: SPIDEY_READ_PAGE. Can't read the PAGE. Expected 0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but got 0x"+hexTOstring(res1)).c_str());
         }
         break;
       }
     }
     else{
-      Verbose("Error: SPIDEY_LOAD_ADDR. Can't load the address to read from");
+       Verbose(String("Error: Can't load the address to read from. Expected 0x"+hexTOstring(SPIDEY_ACKNOWLEDGE)+" but got 0x"+hexTOstring(res1)).c_str());
       break;
     }
     if(pageCount >= maxPageCount){
-      Serial.print(F("###### | 100% ("));
-      response += "###### | 100% (";
+      Serial.print(F("###################### | 100% ("));
+      response += "###################### | 100% (";
       float elapsedTime = (millis() - startTime)/1000;
-      Serial.print(elapsedTime, 2);
-      response += String(elapsedTime);
+      Serial.print(elapsedTime, 3);
+      response += String(elapsedTime, 3);
       Serial.println(F("s)\n"));
       response += "s)\n\n";
       Verbose("Verifying.....");
       Serial.printf("spideydude: %d bytes of flash verified. (",details.len);
       response += "spideydude: "+ String(details.len) + " bytes of flash verified. (";
       float perc = (error/180)*100;
-      Serial.print(perc);
+      Serial.print(perc,3);
       Serial.println("% error) ");
-      response += String(perc) + "% error) \n";
+      response += String(perc,3) + "% error) \n";
       break;
     }
   }
@@ -267,18 +267,18 @@ void Spideydude::endProg(){
       Verbose("Exited programming mode. Process complete");
   }
   else{
-     Verbose(String(String("Error in exiting PROGRAMMING mode expected=0x06 but got=0x")+String(res1)).c_str());
+     Verbose(String("Error in exiting PROGRAMMING mode expected=0x06 but got=0x"+hexTOstring(res1)).c_str());
   }
 }
 
-String Spideydude::begin(String file, uint8_t *pg, size_t len, uint16_t pageLen){
+String Spideydude::begin(long baudRate, String file, uint8_t *pg, size_t len, uint16_t pageLen){
   response = "";
   details.fileName = file;
   details.progData = pg;
   details.len = len;
   details.pageSize = pageLen;
-  Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
+  Serial.begin(baudRate);
+  Serial2.begin(baudRate, SERIAL_8N1, RXD2, TXD2);
   String stmnt = "\nspideydude: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);
   Serial.println(F(stmnt.c_str()));
   Serial.println(F("            Copyright (c) 2020 Tronix Division"));

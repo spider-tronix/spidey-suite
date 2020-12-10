@@ -12,6 +12,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 
+#include "signatures.h"
 #include "spideyprotocol.h"
 
 #define RXD2 16
@@ -19,7 +20,7 @@
 
 #define _MAJOR_VERSION_ 0
 #define _MINOR_VERSION_ 9
-#define _SUB_MINOR_VERSION_ 0
+#define _SUB_MINOR_VERSION_ 2
 
 struct PROG {
   String fileName;
@@ -42,7 +43,7 @@ class Spideydude{
     void verifyFlash();
     void endProg();
   public:
-    String begin(String, uint8_t*, size_t, uint16_t);
+    String begin(long, String, uint8_t*, size_t, uint16_t);
 };
 
 void showHEX(const byte);   
