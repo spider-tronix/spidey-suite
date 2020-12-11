@@ -12,7 +12,7 @@ spidey suite has 4 products to offer and they are-
 
 ## Contents of this repository
 
-This repository contains the code for the 
+> To be updated
 
 
 ## Bug Reports and Improvements
@@ -20,6 +20,18 @@ This repository contains the code for the
 -  To report a ***bug*** in the software or to request *an enhancement*, create an [*issue*](https://github.com/spider-tronix/spidey-suite/issues) clearly stating the problem. Our team will look into the problem and will fix it as soon as possible.
 
 - To suggest *changes/improvements*, create a [*pull-request*](https://github.com/spider-tronix/spidey-suite/pulls) with the modified files. Upon successfully validating the changes by us, the suggested changes will be added to the repository.
+
+## Website
+
+Click [**here**](https://spider-tronix.github.io/spidey-suite/) to navigate to the website. 
+
+The website is developed and maintained by our team only. It uses a number of web development tech and those are:
+
+* [ReactJS](https://reactjs.org/) - React is an open-source, front end, JavaScript library for building user interfaces or UI components.
+* [Bootstrap](https://getbootstrap.com/) - Bootstrap is a free and open-source CSS framework directed at responsive, mobile-first front-end web development.
+* [jQuery](https://jquery.com/) - jQuery is an open-source, free JavaScript library designed to simplify HTML DOM tree traversal and manipulation, as well as event handling, CSS animation, and Ajax
+
+For more info on the website, click [here](https://github.com/spider-tronix/spidey-suite/tree/master/Build/Code/Web/spidey-suite).
 
 ## Credits
 
