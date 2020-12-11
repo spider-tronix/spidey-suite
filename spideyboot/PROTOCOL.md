@@ -1,8 +1,8 @@
-# PROTOCOL FOR UART COMMUNICATON BETWEEN MCU AND PROGRAMMER
+# PROTOCOL FOR UART COMMUNICATION BETWEEN MCU AND PROGRAMMER
 
-The protocol is inspired from **stk500 v1** protocol. There are 4 major steps in the protocol and those are - ```Handshaking``` > ```Reading devcie signature``` > ```Writing to Flash``` > ```Reading from Flash``` > ```End Communication```  
+The protocol is inspired by **stk500 v1** protocol. There are 4 major steps in the protocol and those are - ```Handshaking``` > ```Reading device signature``` > ```Writing to Flash``` > ```Reading from Flash``` > ```End Communication```  
 
-> Reading from Flash just helps to confirm that whether any error occured during transmission or while writing the flash. Even if error is found, the **bad data** is already written to the flash. The flash should be re-programed again.  
+> Reading from Flash helps in confirming whether any error occurred during transmission or while writing the flash. Even if an error is found, the **bad data** is already written to the flash. The flash should be re-programmed again. 
 
 ### Handshaking:
 
@@ -15,7 +15,7 @@ The MCU responds with :
 
 ### Reading device signature:
 
-For reading the signature bytes of the MCU which helps in its identification, the programmer sends :
+For reading the signature bytes of the MCU, which helps in its identification, the programmer sends :
 - ```SPIDEY_GETSIGBYTES``` character which corresponds to ASCII Character **BEL**.
 - ```SPIDEY_NODE_ACK``` character which corresponds to the ASCII character **BS**.
 
@@ -23,11 +23,11 @@ The MCU responds by :
 - Sending ```first signature``` byte 
 - Sending ```second signature``` byte
 - Sending ```third signature``` byte. And so on ... 
-- Finally, it sends the ```SPIDEY_ACKNOWLEDGE``` character which corresponds to ASCII character **ACK**.
+- Finally, it sends the ```SPIDEY_ACKNOWLEDGE``` character, which corresponds to ASCII character **ACK**.
 
 ### Loading address of the page:
 
-Either for writing or reading from a page, its address is to be loaded first. To do so the programmer sends:
+Either for writing or reading from a page, its address is to be loaded first. To do so, the programmer sends:
 - ```SPIDEY_LOAD_ADDRESS``` character which corresponds to ASCII Character **ENQ**
 - ```SPIDEY_NODE_ACK``` character which corresponds to the ASCII character **BS** 
 - ```Low byte``` of the Address
