@@ -1,12 +1,12 @@
 /*
  * SpideyBoot.c
  * Created: 10/17/2020 12:05:29 AM
- * Version: 0.5.0
+ * Version: 0.7.0
  * Author : Aditya and Arunesh 
 */ 
 
 #ifndef F_CPU
-#define F_CPU 16000000L              // 16 MHz clock speed for ATMEGA328p
+#define F_CPU 16000000L              // 16 MHz clock speed for ATMEGA328p. Set the value as per your clock.
 #endif
 #if !defined(SOFTUART)
 #define SOFTUART 0
@@ -34,7 +34,7 @@
 #define LED_START_FLASHES 3
 #endif
 #if !defined(LED_START_ON)
-#  define LED_START_ON 0
+#define LED_START_ON 0
 #endif
 /* Definition for UART communication */
 #ifndef BAUD_RATE
@@ -88,8 +88,46 @@
 static inline void Flash_LED(uint8_t);
 #endif
 
+typedef union {
+	uint8_t  *bptr;
+	uint16_t *wptr;
+	uint16_t word;
+	uint8_t bytes[2];
+} addr16_t;
+
+/*
+ * We can never load flash with more than 1 page at a time, so we can save
+ * some code space on parts with smaller pagesize by using a smaller int.
+ */
+#if SPM_PAGESIZE > 255
+typedef uint16_t pagelen_t ;
+#define GETLENGTH(len) len = readUSART(); len |= readUSART()<<8
+#else
+typedef uint8_t pagelen_t;
+#define GETLENGTH(len) len = readUSART(); /* skip high byte */(void) readUSART()
+#endif
+
+/*
+ * RAMSTART should be self-explanatory.  It's bigger on parts with a
+ * lot of peripheral registers.  Let 0x100 be the default
+ * Note that RAMSTART (for optiboot) need not be exactly at the start of RAM.
+ */
+#if !defined(RAMSTART)  // newer versions of gcc avr-libc define RAMSTART
+#define RAMSTART 0x100
+#if defined (__AVR_ATmega644P__)
+// correct for a bug in avr-libc
+#undef SIGNATURE_2
+#define SIGNATURE_2 0x0A
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+#undef RAMSTART
+#define RAMSTART (0x200)
+#endif
+#endif
+
+static addr16_t buff = {(uint8_t *)(RAMSTART)};
+
 /*FUNCTION TO INITIALISE UART COMMUNICATION*/
-void UART_Setup() {
+static inline void UART_Setup() {
 	#if (SOFTUART == 0)
 	#if defined(__AVR_ATmega8__) || defined (__AVR_ATmega8515__) ||	\
 	defined (__AVR_ATmega8535__) || defined (__AVR_ATmega16__) ||	\
@@ -121,110 +159,31 @@ void UART_Setup() {
 	#endif // softUART
 }
 
-#define MAX 256     // Maximum number of bytes that can be written to page at a time */
-uint8_t prog[MAX];  //Buffer Array to temporarily hold values received from node through UART*/
-
 /* Function to write values from buffer array to a page in flash
    Parameters to be passed to the function are page address and buffer array */
-void boot_program_page(uint16_t page, uint8_t *buf) {
-	uint16_t i;
-	uint8_t sreg;
-	sreg = SREG;                            /* Copy present state of SREG Register */
-	__asm__ __volatile__ ("cli" ::);        /* Disable Interrupt to avoid any accidental interference during writing */
-	eeprom_busy_wait();                     /* Wait for any ongoing eeprom operation to complete*/
-	boot_page_erase(page);                  /* Erase the page which is going to be re-programmed */     
+static inline void boot_program_page(addr16_t address, addr16_t mybuff, pagelen_t len) {
+	uint16_t addrPtr = address.word;
+	//uint8_t sreg;
+	//sreg = SREG;                            /* Copy present state of SREG Register */
+	//__asm__ __volatile__ ("cli" ::);        /* Disable Interrupt to avoid any accidental interference during writing */
+	//eeprom_busy_wait();                     /* Wait for any ongoing eeprom operation to complete*/
+	boot_page_erase(address.word);          /* Erase the page which is going to be re-programmed */     
 	boot_spm_busy_wait();                   /* Wait for any ongoing SPM operations to terminate */
-	for (i = 0; i < SPM_PAGESIZE; i += 2){  /* i is incremented by 2 to skip 2 bytes(16bits or 1 word) because each time 1 word is written to page*/
-		uint16_t w = *buf++;                             
-		w += (*buf++) << 8;                 /* 2 bytes(1 word) are stored in the 16 bit w variable*/
-		boot_page_fill(page + i, w);        /* This word is flashed to buffer page */    
-	}
-	boot_page_write(page);                  /* Write the buffer page into the actual page in flash */
+	do {
+		boot_page_fill((uint16_t)(void*)addrPtr, *(mybuff.wptr++));
+		addrPtr += 2;
+	} while (len -= 2);
+	boot_page_write(address.word);          /* Write the buffer page into the actual page in flash */
 	boot_spm_busy_wait();                   /* Wait for SPM operation to complete*/
+	#if defined(RWWSRE)
 	boot_rww_enable ();                     /* Enable Read-while-write(RWW) operations*/
-	SREG = sreg;                            /* Restore the state of SREG register as before */
-	return;
-}
-
-/*Function to receive the code via UART and */
-void readcode() {
-	char ch;
-	WATCHDOG_CONFIG(WATCHDOG_2S);                        /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
-	uint16_t addrfinal = 0;
-	/* Infinite for loop. The loop will only terminate when watchdog overflow occurs */ 
-	for(;;) {
-		ch = readUSART();
-		/* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted */
-		if(ch == SPIDEY_START_TX){                 
-			if(readUSART() == SPIDEY_NODE_ACK) {
-				writeUSART(SPIDEY_ACKNOWLEDGE);                 /*  Acknowledge back */
-			}
-		}
-        /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
-		else if(ch == SPIDEY_GETSIGBYTES) {   
-			if(readUSART() == SPIDEY_NODE_ACK) {
-				/* Start for loop for 3 iterations to read the 3 signature bytes*/
-				for(int i=0;i<6;i+=2) {
-					writeUSART(boot_signature_byte_get(i));    /* Read and send signature byte at locations 0 , 2 , 4 */
-				}
-				writeUSART(SPIDEY_ACKNOWLEDGE);                /*  Acknowledge back */
-			}
-		} 
-		/* If SPIDEY_LOAD_ADDRESS is transmitted then code to receive 16 bit address is executed */ 
-		else if(ch == SPIDEY_LOAD_ADDRESS) {
-			if(readUSART() == SPIDEY_NODE_ACK) { 
-				uint8_t addrL = readUSART();		/* Receive HIGH byte of address */
-				uint8_t addrH = readUSART();		/* Receive LOW byte of address */
-				addrfinal = (addrH << 8) | addrL ;   /* Put together high and low bytes */
-				writeUSART(SPIDEY_ACKNOWLEDGE);
-			}
-		}
-		/*If SPIDEY_START_PROGMODE is transmitted then execute code to receive page length followed by code to be written to flash*/
-		else if(ch == SPIDEY_START_PROGMODE) {
-			if(readUSART() == SPIDEY_NODE_ACK) {
-				uint8_t pageL = readUSART();				/* Receive HIGH byte of page length */
-			    uint8_t pageH = readUSART();				/* Receive LOW byte of page Length */
-			    uint16_t pageLen = (pageH << 8) | pageL;    /* Put together high and low bytes */
-			    /* Loop as many times as page length to receive as many bytes of code */
-			    for(uint16_t i=0;i<pageLen;i++) {              
-					prog[i] = readUSART();               /* Store Received code in buffer array */
-			    }
-			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been received correctly */
-			    boot_program_page(addrfinal, prog);    /* Write contents of buffer array into page in flash whose address we earlier received */
-			    writeUSART(SPIDEY_ACKNOWLEDGE);
-			}
-		}
-		/* If SPIDEY_CHECK_FLASH is sent code to receive page length followed by reading a page from flash and sending it to Node is executed */
-		else if(ch == SPIDEY_CHECK_FLASH) {   
-			if(readUSART() == SPIDEY_NODE_ACK) {   
-				uint8_t pageL = readUSART();				/* Receive HIGH byte of page length */
-				uint8_t pageH = readUSART();				/* Receive LOW byte of page Length */
-				uint16_t pageLen = (pageH << 8) | pageL;    /* Put together high and low bytes */
-				/* Loop as many times as page length and send bytes continuously */
-				for(uint16_t i=0;i<pageLen;i++) 
-				{
-					/* Read bytes from the page in flash whose address was passed earlier when SPIDEY_LOAD_ADDRESS was sent
-					   and then send it to UART
-				    */
-					writeUSART(pgm_read_byte(addrfinal+i));
-				}
-				writeUSART(SPIDEY_ACKNOWLEDGE);
-			}
-		}
-		/* If SPIDEY_END_TX is sent terminate the transmission */
-		else if(ch == SPIDEY_END_TX) {
-			writeUSART(SPIDEY_ACKNOWLEDGE);
-			if(readUSART() == SPIDEY_NODE_ACK) {
-				WATCHDOG_CONFIG(WATCHDOG_16MS);      /* Set watchdog timer for 16ms so that the MCU resets within without further delay */
-				while(1);                            /* Wait here for the 16ms period */
-			}
-		}
-	}
+	#endif
+	//SREG = sreg;                            /* Restore the state of SREG register as before */
 	return;
 }
 
 /* Function to start execution of application code from 0x00000 */
-void appStart() {  
+static inline void appStart() {  
 	asm("jmp 0x00000");
 	return;
 }
@@ -257,11 +216,83 @@ void bootLoader() {
 	PORTB |= 0xFF;
 	#endif
 	#endif
-    readcode();                   /* Call function that executes the modification of flash page */
+    char ch;
+    WATCHDOG_CONFIG(WATCHDOG_2S);                        /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
+    register addr16_t address;
+    register pagelen_t Pagelength;
+    /* Infinite for loop. The loop will only terminate when watchdog overflow occurs */
+    for(;;) {
+	    ch = readUSART();
+	    /* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted */
+	    if(ch == SPIDEY_START_TX){
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    writeUSART(SPIDEY_ACKNOWLEDGE);                 /*  Acknowledge back */
+		    }
+	    }
+	    /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
+	    else if(ch == SPIDEY_GETSIGBYTES) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    /* Start for loop for 3 iterations to read the 3 signature bytes*/
+			    for(int i=0;i<6;i+=2) {
+				    writeUSART(boot_signature_byte_get(i));    /* Read and send signature byte at locations 0 , 2 , 4 */
+			    }
+			    writeUSART(SPIDEY_ACKNOWLEDGE);                /*  Acknowledge back */
+		    }
+	    }
+	    /* If SPIDEY_LOAD_ADDRESS is transmitted then code to receive 16 bit address is executed */
+	    else if(ch == SPIDEY_LOAD_ADDRESS) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    address.bytes[0] = readUSART();		/* Receive LOW byte of address */
+			    address.bytes[1] = readUSART();		/* Receive HIGH byte of address */
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    }
+	    }
+	    /*If SPIDEY_START_PROGMODE is transmitted then execute code to receive page length followed by code to be written to flash*/
+	    else if(ch == SPIDEY_START_PROGMODE) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    pagelen_t savelength;
+			    GETLENGTH(Pagelength);                   /*Get Page length*/
+			    savelength = Pagelength;
+			    uint8_t *bufPtr;
+			    /* Loop as many times as page length to receive as many bytes of code */
+			    bufPtr = buff.bptr;
+			    do {
+				    *bufPtr++ = readUSART();
+			    } while (--Pagelength);
+			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been received correctly */
+			    boot_program_page(address, buff, savelength);    /* Write contents of buffer array into page in flash whose address we earlier received */
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    }
+	    }
+	    /* If SPIDEY_CHECK_FLASH is sent code to receive page length followed by reading a page from flash and sending it to Node is executed */
+	    else if(ch == SPIDEY_CHECK_FLASH) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    GETLENGTH(Pagelength);                   /*Get Page length*/
+			    /* Loop as many times as page length and send bytes continuously */
+			    do {
+				    writeUSART(pgm_read_byte(address.word++));
+			    } while (--Pagelength);
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    }
+	    }
+	    /* If SPIDEY_END_TX is sent terminate the transmission */
+	    else if(ch == SPIDEY_END_TX) {
+		    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    WATCHDOG_CONFIG(WATCHDOG_16MS);      /* Set watchdog timer for 16ms so that the MCU resets within without further delay */
+			    while(1);                            /* Wait here for the 16ms period */
+		    }
+	    }
+    }
 }
 
 int main(void) {
-   	uint8_t ch = MCUSR;       /* Read MCUSR register to determine Source of Reset */
+   	uint8_t ch;       /* To store MCUSR register to determine Source of Reset */
+	#if defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__) || defined(__AVR_ATmega16__)   || defined(__AVR_ATmega162__) || defined (__AVR_ATmega128__)
+	ch = MCUCSR;
+	#else
+	ch = MCUSR;
+	#endif
    	MCUSR = 0;
    	WATCHDOG_CONFIG(0);       /* Disable watchdog timer */
    	if ((ch & _BV(EXTRF))){   /* If it was External Reset, execute bootloader */

@@ -3,62 +3,86 @@ SpideyBoot.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  00000326  2**0
+  0 .data         00000000  00800100  00800100  0000025a  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000002b2  00007c00  00007c00  00000074  2**1
+  1 .text         00000206  00007c00  00007c00  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000100  00800100  00800100  00000326  2**0
-                  ALLOC
-  3 .comment      00000030  00000000  00000000  00000326  2**0
+  2 .comment      00000030  00000000  00000000  0000025a  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000358  2**2
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  0000028c  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000090  00000000  00000000  00000398  2**0
+  4 .debug_aranges 00000070  00000000  00000000  000002cc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000be3  00000000  00000000  00000428  2**0
+  5 .debug_info   00000b45  00000000  00000000  0000033c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000877  00000000  00000000  0000100b  2**0
+  6 .debug_abbrev 00000895  00000000  00000000  00000e81  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000005d1  00000000  00000000  00001882  2**0
+  7 .debug_line   00000505  00000000  00000000  00001716  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000e4  00000000  00000000  00001e54  2**2
+  8 .debug_frame  00000094  00000000  00000000  00001c1c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000433  00000000  00000000  00001f38  2**0
+  9 .debug_str    00000452  00000000  00000000  00001cb0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000003f4  00000000  00000000  0000236b  2**0
+ 10 .debug_loc    00000293  00000000  00000000  00002102  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000090  00000000  00000000  0000275f  2**0
+ 11 .debug_ranges 000000a0  00000000  00000000  00002395  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00007c00 <__vectors>:
-    7c00:	0c 94 34 3e 	jmp	0x7c68	; 0x7c68 <__ctors_end>
-    7c04:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c08:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c0c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c10:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c14:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c18:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c1c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c20:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c24:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c28:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c2c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c30:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c34:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c38:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c3c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c40:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c44:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c48:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c4c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c50:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c54:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c58:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c5c:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c60:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
-    7c64:	0c 94 46 3e 	jmp	0x7c8c	; 0x7c8c <__bad_interrupt>
+    7c00:	33 c0       	rjmp	.+102    	; 0x7c68 <__ctors_end>
+    7c02:	00 00       	nop
+    7c04:	39 c0       	rjmp	.+114    	; 0x7c78 <__bad_interrupt>
+    7c06:	00 00       	nop
+    7c08:	37 c0       	rjmp	.+110    	; 0x7c78 <__bad_interrupt>
+    7c0a:	00 00       	nop
+    7c0c:	35 c0       	rjmp	.+106    	; 0x7c78 <__bad_interrupt>
+    7c0e:	00 00       	nop
+    7c10:	33 c0       	rjmp	.+102    	; 0x7c78 <__bad_interrupt>
+    7c12:	00 00       	nop
+    7c14:	31 c0       	rjmp	.+98     	; 0x7c78 <__bad_interrupt>
+    7c16:	00 00       	nop
+    7c18:	2f c0       	rjmp	.+94     	; 0x7c78 <__bad_interrupt>
+    7c1a:	00 00       	nop
+    7c1c:	2d c0       	rjmp	.+90     	; 0x7c78 <__bad_interrupt>
+    7c1e:	00 00       	nop
+    7c20:	2b c0       	rjmp	.+86     	; 0x7c78 <__bad_interrupt>
+    7c22:	00 00       	nop
+    7c24:	29 c0       	rjmp	.+82     	; 0x7c78 <__bad_interrupt>
+    7c26:	00 00       	nop
+    7c28:	27 c0       	rjmp	.+78     	; 0x7c78 <__bad_interrupt>
+    7c2a:	00 00       	nop
+    7c2c:	25 c0       	rjmp	.+74     	; 0x7c78 <__bad_interrupt>
+    7c2e:	00 00       	nop
+    7c30:	23 c0       	rjmp	.+70     	; 0x7c78 <__bad_interrupt>
+    7c32:	00 00       	nop
+    7c34:	21 c0       	rjmp	.+66     	; 0x7c78 <__bad_interrupt>
+    7c36:	00 00       	nop
+    7c38:	1f c0       	rjmp	.+62     	; 0x7c78 <__bad_interrupt>
+    7c3a:	00 00       	nop
+    7c3c:	1d c0       	rjmp	.+58     	; 0x7c78 <__bad_interrupt>
+    7c3e:	00 00       	nop
+    7c40:	1b c0       	rjmp	.+54     	; 0x7c78 <__bad_interrupt>
+    7c42:	00 00       	nop
+    7c44:	19 c0       	rjmp	.+50     	; 0x7c78 <__bad_interrupt>
+    7c46:	00 00       	nop
+    7c48:	17 c0       	rjmp	.+46     	; 0x7c78 <__bad_interrupt>
+    7c4a:	00 00       	nop
+    7c4c:	15 c0       	rjmp	.+42     	; 0x7c78 <__bad_interrupt>
+    7c4e:	00 00       	nop
+    7c50:	13 c0       	rjmp	.+38     	; 0x7c78 <__bad_interrupt>
+    7c52:	00 00       	nop
+    7c54:	11 c0       	rjmp	.+34     	; 0x7c78 <__bad_interrupt>
+    7c56:	00 00       	nop
+    7c58:	0f c0       	rjmp	.+30     	; 0x7c78 <__bad_interrupt>
+    7c5a:	00 00       	nop
+    7c5c:	0d c0       	rjmp	.+26     	; 0x7c78 <__bad_interrupt>
+    7c5e:	00 00       	nop
+    7c60:	0b c0       	rjmp	.+22     	; 0x7c78 <__bad_interrupt>
+    7c62:	00 00       	nop
+    7c64:	09 c0       	rjmp	.+18     	; 0x7c78 <__bad_interrupt>
+	...
 
 00007c68 <__ctors_end>:
     7c68:	11 24       	eor	r1, r1
@@ -67,374 +91,405 @@ Disassembly of section .text:
     7c6e:	d8 e0       	ldi	r29, 0x08	; 8
     7c70:	de bf       	out	0x3e, r29	; 62
     7c72:	cd bf       	out	0x3d, r28	; 61
+    7c74:	b9 d0       	rcall	.+370    	; 0x7de8 <main>
+    7c76:	c5 c0       	rjmp	.+394    	; 0x7e02 <_exit>
 
-00007c74 <__do_clear_bss>:
-    7c74:	22 e0       	ldi	r18, 0x02	; 2
-    7c76:	a0 e0       	ldi	r26, 0x00	; 0
-    7c78:	b1 e0       	ldi	r27, 0x01	; 1
-    7c7a:	01 c0       	rjmp	.+2      	; 0x7c7e <.do_clear_bss_start>
+00007c78 <__bad_interrupt>:
+    7c78:	c3 cf       	rjmp	.-122    	; 0x7c00 <__vectors>
 
-00007c7c <.do_clear_bss_loop>:
-    7c7c:	1d 92       	st	X+, r1
-
-00007c7e <.do_clear_bss_start>:
-    7c7e:	a0 30       	cpi	r26, 0x00	; 0
-    7c80:	b2 07       	cpc	r27, r18
-    7c82:	e1 f7       	brne	.-8      	; 0x7c7c <.do_clear_bss_loop>
-    7c84:	0e 94 48 3f 	call	0x7e90	; 0x7e90 <main>
-    7c88:	0c 94 57 3f 	jmp	0x7eae	; 0x7eae <_exit>
-
-00007c8c <__bad_interrupt>:
-    7c8c:	0c 94 00 3e 	jmp	0x7c00	; 0x7c00 <__vectors>
-
-00007c90 <writeUSART>:
+00007c7a <writeUSART>:
 #include "bootuart.h"
 
 void  __attribute__((noinline)) __attribute__((leaf)) writeUSART(uint8_t ch) {
     #if (SOFTUART == 0)
         #ifndef LINUART
             while (!(UART_SRA & _BV(UDRE0)));
-    7c90:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
-    7c94:	95 ff       	sbrs	r25, 5
-    7c96:	fc cf       	rjmp	.-8      	; 0x7c90 <writeUSART>
+    7c7a:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7c7e:	95 ff       	sbrs	r25, 5
+    7c80:	fc cf       	rjmp	.-8      	; 0x7c7a <writeUSART>
         #else
             while (!(LINSIR & _BV(LTXOK)));
         #endif
     UART_UDR = ch;
-    7c98:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
-    7c9c:	08 95       	ret
+    7c82:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+    7c86:	08 95       	ret
 
-00007c9e <readUSART>:
+00007c88 <readUSART>:
 
 uint8_t __attribute__((noinline)) __attribute__((leaf)) readUSART(void) {
   uint8_t ch;
   #if (SOFTUART == 0)
     #ifndef LINUART
         while(!(UART_SRA & _BV(RXC0)));
-    7c9e:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
-    7ca2:	87 ff       	sbrs	r24, 7
-    7ca4:	fc cf       	rjmp	.-8      	; 0x7c9e <readUSART>
+    7c88:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7c8c:	87 ff       	sbrs	r24, 7
+    7c8e:	fc cf       	rjmp	.-8      	; 0x7c88 <readUSART>
     #else
         while(!(LINSIR & _BV(LRXOK)));
     #endif
     ch = UART_UDR;
-    7ca6:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+    7c90:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
     #endif
   return ch;
 }
-    7caa:	08 95       	ret
+    7c94:	08 95       	ret
 
-00007cac <WATCHDOG_CONFIG>:
+00007c96 <WATCHDOG_CONFIG>:
  * time setting
  */
 void __attribute__((noinline)) WATCHDOG_CONFIG(uint8_t x) {
   #ifdef WDCE                                           // does it have a Watchdog Change Enable?
     #ifdef WDTCSR
       WDTCSR = _BV(WDCE) | _BV(WDE);
-    7cac:	e0 e6       	ldi	r30, 0x60	; 96
-    7cae:	f0 e0       	ldi	r31, 0x00	; 0
-    7cb0:	98 e1       	ldi	r25, 0x18	; 24
-    7cb2:	90 83       	st	Z, r25
+    7c96:	e0 e6       	ldi	r30, 0x60	; 96
+    7c98:	f0 e0       	ldi	r31, 0x00	; 0
+    7c9a:	98 e1       	ldi	r25, 0x18	; 24
+    7c9c:	90 83       	st	Z, r25
     #endif
   #else                                                 // then it must be one of those newfangled ones that use CCP
       CCP = 0xD8;                                       // so write this magic number to CCP
   #endif
   #ifdef WDTCSR
       WDTCSR = x;
-    7cb4:	80 83       	st	Z, r24
-    7cb6:	08 95       	ret
+    7c9e:	80 83       	st	Z, r24
+    7ca0:	08 95       	ret
 
-00007cb8 <UART_Setup>:
-	return;
-}
-
-/* Function to start execution of application code from 0x00000 */
-void appStart() {  
-	asm("jmp 0x00000");
-    7cb8:	82 e0       	ldi	r24, 0x02	; 2
-    7cba:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
-    7cbe:	88 e1       	ldi	r24, 0x18	; 24
-    7cc0:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__DATA_REGION_ORIGIN__+0x61>
-    7cc4:	86 e0       	ldi	r24, 0x06	; 6
-    7cc6:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
-    7cca:	80 e1       	ldi	r24, 0x10	; 16
-    7ccc:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__DATA_REGION_ORIGIN__+0x64>
-    7cd0:	08 95       	ret
-
-00007cd2 <boot_program_page>:
-    7cd2:	1f 93       	push	r17
-    7cd4:	cf 93       	push	r28
-    7cd6:	df 93       	push	r29
-    7cd8:	4f b7       	in	r20, 0x3f	; 63
-    7cda:	f8 94       	cli
-    7cdc:	f9 99       	sbic	0x1f, 1	; 31
-    7cde:	fe cf       	rjmp	.-4      	; 0x7cdc <boot_program_page+0xa>
-    7ce0:	23 e0       	ldi	r18, 0x03	; 3
-    7ce2:	fc 01       	movw	r30, r24
-    7ce4:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
-    7ce8:	e8 95       	spm
-    7cea:	07 b6       	in	r0, 0x37	; 55
-    7cec:	00 fc       	sbrc	r0, 0
-    7cee:	fd cf       	rjmp	.-6      	; 0x7cea <boot_program_page+0x18>
-    7cf0:	eb 01       	movw	r28, r22
-    7cf2:	c0 58       	subi	r28, 0x80	; 128
-    7cf4:	df 4f       	sbci	r29, 0xFF	; 255
-    7cf6:	db 01       	movw	r26, r22
-    7cf8:	51 e0       	ldi	r21, 0x01	; 1
-    7cfa:	bc 01       	movw	r22, r24
-    7cfc:	6a 1b       	sub	r22, r26
-    7cfe:	7b 0b       	sbc	r23, r27
-    7d00:	1c 91       	ld	r17, X
-    7d02:	fb 01       	movw	r30, r22
-    7d04:	ea 0f       	add	r30, r26
-    7d06:	fb 1f       	adc	r31, r27
-    7d08:	11 96       	adiw	r26, 0x01	; 1
-    7d0a:	2c 91       	ld	r18, X
-    7d0c:	11 97       	sbiw	r26, 0x01	; 1
-    7d0e:	30 e0       	ldi	r19, 0x00	; 0
-    7d10:	32 2f       	mov	r19, r18
-    7d12:	22 27       	eor	r18, r18
-    7d14:	21 0f       	add	r18, r17
-    7d16:	31 1d       	adc	r19, r1
-    7d18:	09 01       	movw	r0, r18
-    7d1a:	50 93 57 00 	sts	0x0057, r21	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
-    7d1e:	e8 95       	spm
-    7d20:	11 24       	eor	r1, r1
-    7d22:	12 96       	adiw	r26, 0x02	; 2
-    7d24:	ca 17       	cp	r28, r26
-    7d26:	db 07       	cpc	r29, r27
-    7d28:	59 f7       	brne	.-42     	; 0x7d00 <boot_program_page+0x2e>
-    7d2a:	25 e0       	ldi	r18, 0x05	; 5
-    7d2c:	fc 01       	movw	r30, r24
-    7d2e:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
-    7d32:	e8 95       	spm
-    7d34:	07 b6       	in	r0, 0x37	; 55
-    7d36:	00 fc       	sbrc	r0, 0
-    7d38:	fd cf       	rjmp	.-6      	; 0x7d34 <boot_program_page+0x62>
-    7d3a:	81 e1       	ldi	r24, 0x11	; 17
-    7d3c:	80 93 57 00 	sts	0x0057, r24	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
-    7d40:	e8 95       	spm
-    7d42:	4f bf       	out	0x3f, r20	; 63
-    7d44:	df 91       	pop	r29
-    7d46:	cf 91       	pop	r28
-    7d48:	1f 91       	pop	r17
-    7d4a:	08 95       	ret
-
-00007d4c <readcode>:
-    7d4c:	8f e0       	ldi	r24, 0x0F	; 15
-    7d4e:	0e 94 56 3e 	call	0x7cac	; 0x7cac <WATCHDOG_CONFIG>
-    7d52:	c0 e0       	ldi	r28, 0x00	; 0
-    7d54:	d0 e0       	ldi	r29, 0x00	; 0
-    7d56:	91 e2       	ldi	r25, 0x21	; 33
-    7d58:	d9 2e       	mov	r13, r25
-    7d5a:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7d5e:	81 30       	cpi	r24, 0x01	; 1
-    7d60:	29 f4       	brne	.+10     	; 0x7d6c <readcode+0x20>
-    7d62:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7d66:	80 31       	cpi	r24, 0x10	; 16
-    7d68:	c1 f7       	brne	.-16     	; 0x7d5a <readcode+0xe>
-    7d6a:	65 c0       	rjmp	.+202    	; 0x7e36 <readcode+0xea>
-    7d6c:	87 30       	cpi	r24, 0x07	; 7
-    7d6e:	91 f4       	brne	.+36     	; 0x7d94 <readcode+0x48>
-    7d70:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7d74:	80 31       	cpi	r24, 0x10	; 16
-    7d76:	89 f7       	brne	.-30     	; 0x7d5a <readcode+0xe>
-    7d78:	00 e0       	ldi	r16, 0x00	; 0
-    7d7a:	10 e0       	ldi	r17, 0x00	; 0
-    7d7c:	f8 01       	movw	r30, r16
-    7d7e:	d0 92 57 00 	sts	0x0057, r13	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
-    7d82:	84 91       	lpm	r24, Z
-    7d84:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <writeUSART>
-    7d88:	0e 5f       	subi	r16, 0xFE	; 254
-    7d8a:	1f 4f       	sbci	r17, 0xFF	; 255
-    7d8c:	06 30       	cpi	r16, 0x06	; 6
-    7d8e:	11 05       	cpc	r17, r1
-    7d90:	a9 f7       	brne	.-22     	; 0x7d7c <readcode+0x30>
-    7d92:	51 c0       	rjmp	.+162    	; 0x7e36 <readcode+0xea>
-    7d94:	85 30       	cpi	r24, 0x05	; 5
-    7d96:	61 f4       	brne	.+24     	; 0x7db0 <readcode+0x64>
-    7d98:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7d9c:	80 31       	cpi	r24, 0x10	; 16
-    7d9e:	e9 f6       	brne	.-70     	; 0x7d5a <readcode+0xe>
-    7da0:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7da4:	c8 2f       	mov	r28, r24
-    7da6:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7daa:	d0 e0       	ldi	r29, 0x00	; 0
-    7dac:	d8 2b       	or	r29, r24
-    7dae:	43 c0       	rjmp	.+134    	; 0x7e36 <readcode+0xea>
-    7db0:	82 30       	cpi	r24, 0x02	; 2
-    7db2:	21 f5       	brne	.+72     	; 0x7dfc <readcode+0xb0>
-    7db4:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7db8:	80 31       	cpi	r24, 0x10	; 16
-    7dba:	79 f6       	brne	.-98     	; 0x7d5a <readcode+0xe>
-    7dbc:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7dc0:	08 2f       	mov	r16, r24
-    7dc2:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7dc6:	10 e0       	ldi	r17, 0x00	; 0
-    7dc8:	18 2b       	or	r17, r24
-    7dca:	80 e0       	ldi	r24, 0x00	; 0
-    7dcc:	e8 2e       	mov	r14, r24
-    7dce:	81 e0       	ldi	r24, 0x01	; 1
-    7dd0:	f8 2e       	mov	r15, r24
-    7dd2:	c7 01       	movw	r24, r14
-    7dd4:	80 50       	subi	r24, 0x00	; 0
-    7dd6:	91 40       	sbci	r25, 0x01	; 1
-    7dd8:	80 17       	cp	r24, r16
-    7dda:	91 07       	cpc	r25, r17
-    7ddc:	30 f4       	brcc	.+12     	; 0x7dea <readcode+0x9e>
-    7dde:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7de2:	f7 01       	movw	r30, r14
-    7de4:	81 93       	st	Z+, r24
-    7de6:	7f 01       	movw	r14, r30
-    7de8:	f4 cf       	rjmp	.-24     	; 0x7dd2 <readcode+0x86>
-    7dea:	83 e0       	ldi	r24, 0x03	; 3
-    7dec:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <writeUSART>
-    7df0:	60 e0       	ldi	r22, 0x00	; 0
-    7df2:	71 e0       	ldi	r23, 0x01	; 1
-    7df4:	ce 01       	movw	r24, r28
-    7df6:	0e 94 69 3e 	call	0x7cd2	; 0x7cd2 <boot_program_page>
-    7dfa:	1d c0       	rjmp	.+58     	; 0x7e36 <readcode+0xea>
-    7dfc:	89 30       	cpi	r24, 0x09	; 9
-    7dfe:	f9 f4       	brne	.+62     	; 0x7e3e <readcode+0xf2>
-    7e00:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7e04:	80 31       	cpi	r24, 0x10	; 16
-    7e06:	09 f0       	breq	.+2      	; 0x7e0a <readcode+0xbe>
-    7e08:	a8 cf       	rjmp	.-176    	; 0x7d5a <readcode+0xe>
-    7e0a:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7e0e:	08 2f       	mov	r16, r24
-    7e10:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7e14:	10 e0       	ldi	r17, 0x00	; 0
-    7e16:	18 2b       	or	r17, r24
-    7e18:	e1 2c       	mov	r14, r1
-    7e1a:	f1 2c       	mov	r15, r1
-    7e1c:	e0 16       	cp	r14, r16
-    7e1e:	f1 06       	cpc	r15, r17
-    7e20:	51 f0       	breq	.+20     	; 0x7e36 <readcode+0xea>
-    7e22:	fe 01       	movw	r30, r28
-    7e24:	ee 0d       	add	r30, r14
-    7e26:	ff 1d       	adc	r31, r15
-    7e28:	84 91       	lpm	r24, Z
-    7e2a:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <writeUSART>
-    7e2e:	ff ef       	ldi	r31, 0xFF	; 255
-    7e30:	ef 1a       	sub	r14, r31
-    7e32:	ff 0a       	sbc	r15, r31
-    7e34:	f3 cf       	rjmp	.-26     	; 0x7e1c <readcode+0xd0>
-    7e36:	86 e0       	ldi	r24, 0x06	; 6
-    7e38:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <writeUSART>
-    7e3c:	8e cf       	rjmp	.-228    	; 0x7d5a <readcode+0xe>
-    7e3e:	84 30       	cpi	r24, 0x04	; 4
-    7e40:	09 f0       	breq	.+2      	; 0x7e44 <readcode+0xf8>
-    7e42:	8b cf       	rjmp	.-234    	; 0x7d5a <readcode+0xe>
-    7e44:	86 e0       	ldi	r24, 0x06	; 6
-    7e46:	0e 94 48 3e 	call	0x7c90	; 0x7c90 <writeUSART>
-    7e4a:	0e 94 4f 3e 	call	0x7c9e	; 0x7c9e <readUSART>
-    7e4e:	80 31       	cpi	r24, 0x10	; 16
-    7e50:	09 f0       	breq	.+2      	; 0x7e54 <readcode+0x108>
-    7e52:	83 cf       	rjmp	.-250    	; 0x7d5a <readcode+0xe>
-    7e54:	88 e0       	ldi	r24, 0x08	; 8
-    7e56:	0e 94 56 3e 	call	0x7cac	; 0x7cac <WATCHDOG_CONFIG>
-    7e5a:	ff cf       	rjmp	.-2      	; 0x7e5a <readcode+0x10e>
-
-00007e5c <bootLoader>:
-	return;
-}
-
-/* Function to modify application code by calling the bootloader code */
-void bootLoader() {
-    UART_Setup();                 /* Initialize UART */
-    7e5c:	0e 94 5c 3e 	call	0x7cb8	; 0x7cb8 <UART_Setup>
+00007ca2 <bootLoader>:
+	LINBTR = (1 << LDISR) | (8 << LBT0);
+	LINCR = _BV(LENA) | _BV(LCMD2) | _BV(LCMD1) | _BV(LCMD0);
+	LINDAT=0;
+	#else
+	#if (SINGLESPEED == 0)
+	UART_SRA = _BV(U2X0); //Double speed mode USART0
+    7ca2:	82 e0       	ldi	r24, 0x02	; 2
+    7ca4:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+	#endif
+	UART_SRB = _BV(RXEN0) | _BV(TXEN0);
+    7ca8:	88 e1       	ldi	r24, 0x18	; 24
+    7caa:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__DATA_REGION_ORIGIN__+0x61>
+	UART_SRC = _BV(UCSZ00) | _BV(UCSZ01);
+    7cae:	86 e0       	ldi	r24, 0x06	; 6
+    7cb0:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
+	UART_SRL = (uint8_t)BAUD_SETTING;
+    7cb4:	80 e1       	ldi	r24, 0x10	; 16
+    7cb6:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__DATA_REGION_ORIGIN__+0x64>
 	#elif defined(__AVR_ATtiny25__)||defined(__AVR_ATtiny45__)||defined(__AVR_ATtiny85__)
 	TCCR1 = 0x0E; //div 8196 - it's an 8-bit timer.
 	#elif defined(__AVR_ATtiny43__)
 	#error "LED flash for Tiny43 not yet supported"
 	#else
 	TCCR1B = _BV(CS12) | _BV(CS10); // div 1024
-    7e60:	85 e0       	ldi	r24, 0x05	; 5
-    7e62:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
+    7cba:	85 e0       	ldi	r24, 0x05	; 5
+    7cbc:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
 	#endif
 	#endif
 	#if (LED_START_FLASHES > 0)
 	/* Set LED pin as output */
 	DDRB |= 0xFF;
-    7e66:	84 b1       	in	r24, 0x04	; 4
-    7e68:	8f ef       	ldi	r24, 0xFF	; 255
-    7e6a:	84 b9       	out	0x04, r24	; 4
-    7e6c:	86 e0       	ldi	r24, 0x06	; 6
+    7cc0:	84 b1       	in	r24, 0x04	; 4
+    7cc2:	8f ef       	ldi	r24, 0xFF	; 255
+    7cc4:	84 b9       	out	0x04, r24	; 4
+    7cc6:	86 e0       	ldi	r24, 0x06	; 6
     	TIFR = _BV(TOV1);
     	while(!(TIFR & _BV(TOV1)));
 	#elif defined(__AVR_ATtiny43__)
   		#error "LED flash for Tiny43 not yet supported"
 	#else
   		TCNT1 = -(F_CPU/(1024*16));
-    7e6e:	20 e3       	ldi	r18, 0x30	; 48
-    7e70:	3c ef       	ldi	r19, 0xFC	; 252
+    7cc8:	20 e3       	ldi	r18, 0x30	; 48
+    7cca:	3c ef       	ldi	r19, 0xFC	; 252
     	TIFR1 = _BV(TOV1);
-    7e72:	41 e0       	ldi	r20, 0x01	; 1
+    7ccc:	41 e0       	ldi	r20, 0x01	; 1
     	TIFR = _BV(TOV1);
     	while(!(TIFR & _BV(TOV1)));
 	#elif defined(__AVR_ATtiny43__)
   		#error "LED flash for Tiny43 not yet supported"
 	#else
   		TCNT1 = -(F_CPU/(1024*16));
-    7e74:	30 93 85 00 	sts	0x0085, r19	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
-    7e78:	20 93 84 00 	sts	0x0084, r18	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
+    7cce:	30 93 85 00 	sts	0x0085, r19	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
+    7cd2:	20 93 84 00 	sts	0x0084, r18	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
     	TIFR1 = _BV(TOV1);
-    7e7c:	46 bb       	out	0x16, r20	; 22
+    7cd6:	46 bb       	out	0x16, r20	; 22
     	while(!(TIFR1 & _BV(TOV1)));
-    7e7e:	b0 9b       	sbis	0x16, 0	; 22
-    7e80:	fe cf       	rjmp	.-4      	; 0x7e7e <bootLoader+0x22>
+    7cd8:	b0 9b       	sbis	0x16, 0	; 22
+    7cda:	fe cf       	rjmp	.-4      	; 0x7cd8 <bootLoader+0x36>
 	#endif   
 		PORTB ^= 0xFF;
-    7e82:	95 b1       	in	r25, 0x05	; 5
-    7e84:	90 95       	com	r25
-    7e86:	95 b9       	out	0x05, r25	; 5
-    7e88:	81 50       	subi	r24, 0x01	; 1
+    7cdc:	95 b1       	in	r25, 0x05	; 5
+    7cde:	90 95       	com	r25
+    7ce0:	95 b9       	out	0x05, r25	; 5
+    7ce2:	81 50       	subi	r24, 0x01	; 1
 	} while (--count);
-    7e8a:	a1 f7       	brne	.-24     	; 0x7e74 <bootLoader+0x18>
-	#if LED_START_ON
+    7ce4:	a1 f7       	brne	.-24     	; 0x7cce <bootLoader+0x2c>
 	/* Turn on LED to indicate starting bootloader (less code!) */
 	PORTB |= 0xFF;
 	#endif
 	#endif
-    readcode();                   /* Call function that executes the modification of flash page */
-    7e8c:	0e 94 a6 3e 	call	0x7d4c	; 0x7d4c <readcode>
+    char ch;
+    WATCHDOG_CONFIG(WATCHDOG_2S);                        /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
+    7ce6:	8f e0       	ldi	r24, 0x0F	; 15
+    7ce8:	d6 df       	rcall	.-84     	; 0x7c96 <WATCHDOG_CONFIG>
+	//__asm__ __volatile__ ("cli" ::);        /* Disable Interrupt to avoid any accidental interference during writing */
+	//eeprom_busy_wait();                     /* Wait for any ongoing eeprom operation to complete*/
+	boot_page_erase(address.word);          /* Erase the page which is going to be re-programmed */     
+	boot_spm_busy_wait();                   /* Wait for any ongoing SPM operations to terminate */
+	do {
+		boot_page_fill((uint16_t)(void*)addrPtr, *(mybuff.wptr++));
+    7cea:	ff 24       	eor	r15, r15
+    7cec:	f3 94       	inc	r15
+		addrPtr += 2;
+	} while (len -= 2);
+	boot_page_write(address.word);          /* Write the buffer page into the actual page in flash */
+    7cee:	85 e0       	ldi	r24, 0x05	; 5
+    7cf0:	e8 2e       	mov	r14, r24
+	boot_spm_busy_wait();                   /* Wait for SPM operation to complete*/
+	#if defined(RWWSRE)
+	boot_rww_enable ();                     /* Enable Read-while-write(RWW) operations*/
+    7cf2:	91 e1       	ldi	r25, 0x11	; 17
+    7cf4:	d9 2e       	mov	r13, r25
+	    /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
+	    else if(ch == SPIDEY_GETSIGBYTES) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    /* Start for loop for 3 iterations to read the 3 signature bytes*/
+			    for(int i=0;i<6;i+=2) {
+				    writeUSART(boot_signature_byte_get(i));    /* Read and send signature byte at locations 0 , 2 , 4 */
+    7cf6:	21 e2       	ldi	r18, 0x21	; 33
+    WATCHDOG_CONFIG(WATCHDOG_2S);                        /* Enable watchdog timer for 2 Seconds within which the code is expected to be transferred after which reset occurs */
+    register addr16_t address;
+    register pagelen_t Pagelength;
+    /* Infinite for loop. The loop will only terminate when watchdog overflow occurs */
+    for(;;) {
+	    ch = readUSART();
+    7cf8:	c2 2e       	mov	r12, r18
+    7cfa:	c6 df       	rcall	.-116    	; 0x7c88 <readUSART>
+	    /* If SPIDEY_START_TX (check its hex value in protocol documentation) is sent then handshake signals are transmitted */
+	    if(ch == SPIDEY_START_TX){
+    7cfc:	81 30       	cpi	r24, 0x01	; 1
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7cfe:	21 f4       	brne	.+8      	; 0x7d08 <bootLoader+0x66>
+    7d00:	c3 df       	rcall	.-122    	; 0x7c88 <readUSART>
+    7d02:	80 31       	cpi	r24, 0x10	; 16
+    7d04:	d1 f7       	brne	.-12     	; 0x7cfa <bootLoader+0x58>
+			    writeUSART(SPIDEY_ACKNOWLEDGE);                 /*  Acknowledge back */
+		    }
+	    }
+	    /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
+	    else if(ch == SPIDEY_GETSIGBYTES) {
+    7d06:	1a c0       	rjmp	.+52     	; 0x7d3c <bootLoader+0x9a>
+    7d08:	87 30       	cpi	r24, 0x07	; 7
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7d0a:	79 f4       	brne	.+30     	; 0x7d2a <bootLoader+0x88>
+    7d0c:	bd df       	rcall	.-134    	; 0x7c88 <readUSART>
+    7d0e:	80 31       	cpi	r24, 0x10	; 16
+    7d10:	a1 f7       	brne	.-24     	; 0x7cfa <bootLoader+0x58>
+    7d12:	c0 e0       	ldi	r28, 0x00	; 0
+    7d14:	d0 e0       	ldi	r29, 0x00	; 0
+			    /* Start for loop for 3 iterations to read the 3 signature bytes*/
+			    for(int i=0;i<6;i+=2) {
+				    writeUSART(boot_signature_byte_get(i));    /* Read and send signature byte at locations 0 , 2 , 4 */
+    7d16:	fe 01       	movw	r30, r28
+    7d18:	c0 92 57 00 	sts	0x0057, r12	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d1c:	84 91       	lpm	r24, Z
+    7d1e:	ad df       	rcall	.-166    	; 0x7c7a <writeUSART>
+	    }
+	    /* If SPIDEY_GETSIGBYTES is transmitted, Code to read Signature Bytes is executed */
+	    else if(ch == SPIDEY_GETSIGBYTES) {
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+			    /* Start for loop for 3 iterations to read the 3 signature bytes*/
+			    for(int i=0;i<6;i+=2) {
+    7d20:	22 96       	adiw	r28, 0x02	; 2
+    7d22:	c6 30       	cpi	r28, 0x06	; 6
+    7d24:	d1 05       	cpc	r29, r1
+    7d26:	b9 f7       	brne	.-18     	; 0x7d16 <bootLoader+0x74>
+			    }
+			    writeUSART(SPIDEY_ACKNOWLEDGE);                /*  Acknowledge back */
+		    }
+	    }
+	    /* If SPIDEY_LOAD_ADDRESS is transmitted then code to receive 16 bit address is executed */
+	    else if(ch == SPIDEY_LOAD_ADDRESS) {
+    7d28:	09 c0       	rjmp	.+18     	; 0x7d3c <bootLoader+0x9a>
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7d2a:	85 30       	cpi	r24, 0x05	; 5
+    7d2c:	51 f4       	brne	.+20     	; 0x7d42 <bootLoader+0xa0>
+    7d2e:	ac df       	rcall	.-168    	; 0x7c88 <readUSART>
+			    address.bytes[0] = readUSART();		/* Receive LOW byte of address */
+    7d30:	80 31       	cpi	r24, 0x10	; 16
+    7d32:	19 f7       	brne	.-58     	; 0x7cfa <bootLoader+0x58>
+    7d34:	a9 df       	rcall	.-174    	; 0x7c88 <readUSART>
+			    address.bytes[1] = readUSART();		/* Receive HIGH byte of address */
+    7d36:	18 2f       	mov	r17, r24
+    7d38:	a7 df       	rcall	.-178    	; 0x7c88 <readUSART>
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+    7d3a:	08 2f       	mov	r16, r24
+    7d3c:	86 e0       	ldi	r24, 0x06	; 6
+    7d3e:	9d df       	rcall	.-198    	; 0x7c7a <writeUSART>
+		    }
+	    }
+	    /*If SPIDEY_START_PROGMODE is transmitted then execute code to receive page length followed by code to be written to flash*/
+	    else if(ch == SPIDEY_START_PROGMODE) {
+    7d40:	dc cf       	rjmp	.-72     	; 0x7cfa <bootLoader+0x58>
+    7d42:	82 30       	cpi	r24, 0x02	; 2
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7d44:	09 f0       	breq	.+2      	; 0x7d48 <bootLoader+0xa6>
+    7d46:	30 c0       	rjmp	.+96     	; 0x7da8 <bootLoader+0x106>
+    7d48:	9f df       	rcall	.-194    	; 0x7c88 <readUSART>
+    7d4a:	80 31       	cpi	r24, 0x10	; 16
+			    pagelen_t savelength;
+			    GETLENGTH(Pagelength);                   /*Get Page length*/
+    7d4c:	b1 f6       	brne	.-84     	; 0x7cfa <bootLoader+0x58>
+    7d4e:	9c df       	rcall	.-200    	; 0x7c88 <readUSART>
+    7d50:	b8 2e       	mov	r11, r24
+    7d52:	9a df       	rcall	.-204    	; 0x7c88 <readUSART>
+    7d54:	c0 e0       	ldi	r28, 0x00	; 0
+    7d56:	d1 e0       	ldi	r29, 0x01	; 1
+			    savelength = Pagelength;
+			    uint8_t *bufPtr;
+			    /* Loop as many times as page length to receive as many bytes of code */
+			    bufPtr = buff.bptr;
+			    do {
+				    *bufPtr++ = readUSART();
+    7d58:	97 df       	rcall	.-210    	; 0x7c88 <readUSART>
+    7d5a:	89 93       	st	Y+, r24
+    7d5c:	bc 12       	cpse	r11, r28
+			    } while (--Pagelength);
+    7d5e:	fc cf       	rjmp	.-8      	; 0x7d58 <bootLoader+0xb6>
+    7d60:	83 e0       	ldi	r24, 0x03	; 3
+			    writeUSART(SPIDEY_DATA_RECIEVED);      /* Inform Node that all data as been received correctly */
+    7d62:	8b df       	rcall	.-234    	; 0x7c7a <writeUSART>
+    7d64:	81 2f       	mov	r24, r17
+    7d66:	90 2f       	mov	r25, r16
+    7d68:	23 e0       	ldi	r18, 0x03	; 3
+    7d6a:	fc 01       	movw	r30, r24
+	uint16_t addrPtr = address.word;
+	//uint8_t sreg;
+	//sreg = SREG;                            /* Copy present state of SREG Register */
+	//__asm__ __volatile__ ("cli" ::);        /* Disable Interrupt to avoid any accidental interference during writing */
+	//eeprom_busy_wait();                     /* Wait for any ongoing eeprom operation to complete*/
+	boot_page_erase(address.word);          /* Erase the page which is going to be re-programmed */     
+    7d6c:	20 93 57 00 	sts	0x0057, r18	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d70:	e8 95       	spm
+    7d72:	07 b6       	in	r0, 0x37	; 55
+    7d74:	00 fc       	sbrc	r0, 0
+	boot_spm_busy_wait();                   /* Wait for any ongoing SPM operations to terminate */
+    7d76:	fd cf       	rjmp	.-6      	; 0x7d72 <bootLoader+0xd0>
+    7d78:	a0 e0       	ldi	r26, 0x00	; 0
+    7d7a:	b1 e0       	ldi	r27, 0x01	; 1
+    7d7c:	fc 01       	movw	r30, r24
+    7d7e:	2d 91       	ld	r18, X+
+    7d80:	3d 91       	ld	r19, X+
+	do {
+		boot_page_fill((uint16_t)(void*)addrPtr, *(mybuff.wptr++));
+    7d82:	09 01       	movw	r0, r18
+    7d84:	f0 92 57 00 	sts	0x0057, r15	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d88:	e8 95       	spm
+    7d8a:	11 24       	eor	r1, r1
+    7d8c:	32 96       	adiw	r30, 0x02	; 2
+    7d8e:	ba 12       	cpse	r11, r26
+    7d90:	f6 cf       	rjmp	.-20     	; 0x7d7e <bootLoader+0xdc>
+		addrPtr += 2;
+	} while (len -= 2);
+    7d92:	fc 01       	movw	r30, r24
+	boot_page_write(address.word);          /* Write the buffer page into the actual page in flash */
+    7d94:	e0 92 57 00 	sts	0x0057, r14	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7d98:	e8 95       	spm
+	boot_spm_busy_wait();                   /* Wait for SPM operation to complete*/
+    7d9a:	07 b6       	in	r0, 0x37	; 55
+    7d9c:	00 fc       	sbrc	r0, 0
+	#if defined(RWWSRE)
+	boot_rww_enable ();                     /* Enable Read-while-write(RWW) operations*/
+    7d9e:	fd cf       	rjmp	.-6      	; 0x7d9a <bootLoader+0xf8>
+    7da0:	d0 92 57 00 	sts	0x0057, r13	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+    7da4:	e8 95       	spm
+			    boot_program_page(address, buff, savelength);    /* Write contents of buffer array into page in flash whose address we earlier received */
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    }
+	    }
+	    /* If SPIDEY_CHECK_FLASH is sent code to receive page length followed by reading a page from flash and sending it to Node is executed */
+	    else if(ch == SPIDEY_CHECK_FLASH) {
+    7da6:	ca cf       	rjmp	.-108    	; 0x7d3c <bootLoader+0x9a>
+    7da8:	89 30       	cpi	r24, 0x09	; 9
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7daa:	91 f4       	brne	.+36     	; 0x7dd0 <bootLoader+0x12e>
+    7dac:	6d df       	rcall	.-294    	; 0x7c88 <readUSART>
+    7dae:	80 31       	cpi	r24, 0x10	; 16
+    7db0:	09 f0       	breq	.+2      	; 0x7db4 <bootLoader+0x112>
+			    GETLENGTH(Pagelength);                   /*Get Page length*/
+    7db2:	a3 cf       	rjmp	.-186    	; 0x7cfa <bootLoader+0x58>
+    7db4:	69 df       	rcall	.-302    	; 0x7c88 <readUSART>
+    7db6:	c8 2f       	mov	r28, r24
+    7db8:	67 df       	rcall	.-306    	; 0x7c88 <readUSART>
+			    /* Loop as many times as page length and send bytes continuously */
+			    do {
+				    writeUSART(pgm_read_byte(address.word++));
+    7dba:	e1 2f       	mov	r30, r17
+    7dbc:	f0 2f       	mov	r31, r16
+    7dbe:	cf 01       	movw	r24, r30
+    7dc0:	01 96       	adiw	r24, 0x01	; 1
+    7dc2:	18 2f       	mov	r17, r24
+    7dc4:	09 2f       	mov	r16, r25
+    7dc6:	84 91       	lpm	r24, Z
+    7dc8:	58 df       	rcall	.-336    	; 0x7c7a <writeUSART>
+			    } while (--Pagelength);
+    7dca:	c1 50       	subi	r28, 0x01	; 1
+    7dcc:	b1 f7       	brne	.-20     	; 0x7dba <bootLoader+0x118>
+    7dce:	b6 cf       	rjmp	.-148    	; 0x7d3c <bootLoader+0x9a>
+			    writeUSART(SPIDEY_ACKNOWLEDGE);
+		    }
+	    }
+	    /* If SPIDEY_END_TX is sent terminate the transmission */
+	    else if(ch == SPIDEY_END_TX) {
+    7dd0:	84 30       	cpi	r24, 0x04	; 4
+    7dd2:	09 f0       	breq	.+2      	; 0x7dd6 <bootLoader+0x134>
+    7dd4:	92 cf       	rjmp	.-220    	; 0x7cfa <bootLoader+0x58>
+		    writeUSART(SPIDEY_ACKNOWLEDGE);
+    7dd6:	86 e0       	ldi	r24, 0x06	; 6
+    7dd8:	50 df       	rcall	.-352    	; 0x7c7a <writeUSART>
+    7dda:	56 df       	rcall	.-340    	; 0x7c88 <readUSART>
+		    if(readUSART() == SPIDEY_NODE_ACK) {
+    7ddc:	80 31       	cpi	r24, 0x10	; 16
+    7dde:	09 f0       	breq	.+2      	; 0x7de2 <bootLoader+0x140>
+    7de0:	8c cf       	rjmp	.-232    	; 0x7cfa <bootLoader+0x58>
+    7de2:	88 e0       	ldi	r24, 0x08	; 8
+    7de4:	58 df       	rcall	.-336    	; 0x7c96 <WATCHDOG_CONFIG>
+			    WATCHDOG_CONFIG(WATCHDOG_16MS);      /* Set watchdog timer for 16ms so that the MCU resets within without further delay */
+    7de6:	ff cf       	rjmp	.-2      	; 0x7de6 <bootLoader+0x144>
 
-00007e90 <main>:
-}
-
-int main(void) {
-    7e90:	cf 93       	push	r28
-   	uint8_t ch = MCUSR;       /* Read MCUSR register to determine Source of Reset */
-    7e92:	c4 b7       	in	r28, 0x34	; 52
+00007de8 <main>:
+    7de8:	cf 93       	push	r28
+    7dea:	c4 b7       	in	r28, 0x34	; 52
+    7dec:	14 be       	out	0x34, r1	; 52
+	ch = MCUCSR;
+	#else
+	ch = MCUSR;
+	#endif
    	MCUSR = 0;
-    7e94:	14 be       	out	0x34, r1	; 52
    	WATCHDOG_CONFIG(0);       /* Disable watchdog timer */
-    7e96:	80 e0       	ldi	r24, 0x00	; 0
-    7e98:	0e 94 56 3e 	call	0x7cac	; 0x7cac <WATCHDOG_CONFIG>
+    7dee:	80 e0       	ldi	r24, 0x00	; 0
+    7df0:	52 df       	rcall	.-348    	; 0x7c96 <WATCHDOG_CONFIG>
    	if ((ch & _BV(EXTRF))){   /* If it was External Reset, execute bootloader */
-    7e9c:	c1 fd       	sbrc	r28, 1
 	   	bootLoader();
-    7e9e:	0e 94 2e 3f 	call	0x7e5c	; 0x7e5c <bootLoader>
+    7df2:	c1 fd       	sbrc	r28, 1
+    7df4:	56 df       	rcall	.-340    	; 0x7ca2 <bootLoader>
 	return;
 }
 
 /* Function to start execution of application code from 0x00000 */
-void appStart() {  
+static inline void appStart() {  
 	asm("jmp 0x00000");
-    7ea2:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
+    7df6:	0c 94 00 00 	jmp	0	; 0x0 <__TEXT_REGION_ORIGIN__>
    	}
    	else{                     /* If it was any other type of Reset, execute application code */
 	   	appStart();
    	}
    	return 0;
 }
-    7ea6:	80 e0       	ldi	r24, 0x00	; 0
-    7ea8:	90 e0       	ldi	r25, 0x00	; 0
-    7eaa:	cf 91       	pop	r28
-    7eac:	08 95       	ret
+    7dfa:	80 e0       	ldi	r24, 0x00	; 0
+    7dfc:	90 e0       	ldi	r25, 0x00	; 0
+    7dfe:	cf 91       	pop	r28
+    7e00:	08 95       	ret
 
-00007eae <_exit>:
-    7eae:	f8 94       	cli
+00007e02 <_exit>:
+    7e02:	f8 94       	cli
 
-00007eb0 <__stop_program>:
-    7eb0:	ff cf       	rjmp	.-2      	; 0x7eb0 <__stop_program>
+00007e04 <__stop_program>:
+    7e04:	ff cf       	rjmp	.-2      	; 0x7e04 <__stop_program>
