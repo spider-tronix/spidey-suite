@@ -89,8 +89,14 @@ void Spideydude::readDevice(){
         Verbose("Error: Can't recognize the device. Unknown device signature.");
         return;
       }
-      Serial.print("spideydude: Probably "+devName);
+      details.pageSize = (uint16_t)getPageSize();                 // Get the Page Size
+      Serial.println("spideydude: Probably "+devName);
       response += "spideydude: Probably "+devName + "\n";
+      // Verify that the incoming data will fit in the flash of the device
+      if(details.len > getFlashSize()){
+        Verbose("Error: Given program size exceeds the max flash size of the device.");
+        return;
+      }
       // Now proceed to write the Flash data 
       writeFlash();
       // Finally, exit the programming mode 
@@ -248,7 +254,7 @@ void Spideydude::verifyFlash(){
       Verbose("Verifying.....");
       Serial.printf("spideydude: %d bytes of flash verified. (",details.len);
       response += "spideydude: "+ String(details.len) + " bytes of flash verified. (";
-      float perc = (error/180)*100;
+      float perc = (error/details.len)*100;
       Serial.print(perc,3);
       Serial.println("% error) ");
       response += String(perc,3) + "% error) \n";
@@ -271,12 +277,11 @@ void Spideydude::endProg(){
   }
 }
 
-String Spideydude::begin(long baudRate, String file, uint8_t *pg, size_t len, uint16_t pageLen){
+String Spideydude::begin(long baudRate, String file, uint8_t *pg, size_t len){
   response = "";
   details.fileName = file;
   details.progData = pg;
   details.len = len;
-  details.pageSize = pageLen;
   Serial.begin(baudRate);
   Serial2.begin(baudRate, SERIAL_8N1, RXD2, TXD2);
   String stmnt = "\nspideydude: Version "+String(_MAJOR_VERSION_)+"."+String(_MINOR_VERSION_)+"."+String(_SUB_MINOR_VERSION_);

@@ -61,12 +61,11 @@ void Avrdude::Done(){
  * for debugging and verbose output. Serial2 i.e, RX2 and TX2 communicates with the UART 
  * for the connected uC. Appropriate BAUDRATE is selected basd on the uC. 
 */
-String Avrdude::begin(long baudRate, String file, uint8_t *pg, size_t len, uint16_t pageLen){
+String Avrdude::begin(long baudRate, String file, uint8_t *pg, size_t len){
   response = "";
   details.fileName = file;
   details.progData = pg;
   details.len = len;
-  details.pageSize = pageLen;
   // Initialising Serial comm. 
   Serial.begin(baudRate);
   Serial2.begin(baudRate, SERIAL_8N1, RXD2, TXD2);
@@ -220,8 +219,14 @@ void Avrdude::readDevice(){
                     Verbose("Error: Can't recognize the device. Unknown device signature.");
                     return;
                   }
-                  Serial.print("avrdude: Probably "+devName);
+                  details.pageSize = (uint16_t)getPageSize();                 // Get the Page Size
+                  Serial.println("avrdude: Probably "+devName);
                   response += "avrdude: Probably "+devName + "\n";
+                  // Verify that the incoming data will fit in the flash of the device
+                  if(details.len > getFlashSize()){
+                    Verbose("Error: Given program size exceeds the max flash size of the device.");
+                    return;
+                  }
                   // Now proceed to write the Flash data 
                   writeFlash();
                   // Finally, exit the programming mode 

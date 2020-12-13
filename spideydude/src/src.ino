@@ -3,7 +3,7 @@
                        Spideydude for ESP32
                    ================================
    Filename: Spideydude.ino
-   Version: 0.9.2
+   Version: 0.9.5
    Date: October 19, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
@@ -95,8 +95,7 @@ void flashProgram(){
     Serial.print(" ");
   }
   Spideydude spideydude;
-  uint16_t page = 0x0080;
-  resp = spideydude.begin(baudRate, fileName, prog, len, page);
+  resp = spideydude.begin(baudRate, fileName, prog, len);
   file_index = 0;
 }
 

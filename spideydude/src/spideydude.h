@@ -20,7 +20,7 @@
 
 #define _MAJOR_VERSION_ 0
 #define _MINOR_VERSION_ 9
-#define _SUB_MINOR_VERSION_ 2
+#define _SUB_MINOR_VERSION_ 5
 
 struct PROG {
   String fileName;
@@ -43,7 +43,7 @@ class Spideydude{
     void verifyFlash();
     void endProg();
   public:
-    String begin(long, String, uint8_t*, size_t, uint16_t);
+    String begin(long, String, uint8_t*, size_t);
 };
 
 void showHEX(const byte);   

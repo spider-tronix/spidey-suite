@@ -4,7 +4,7 @@ struct device *D = new device();
 
 String verifySignature(byte b[]) {
   String resp="Unrecognized device signature.";
-  for (int i=0; i < length (signatures); i++) {
+  for (unsigned int i=0; i < length (signatures); i++) {
     if (memcmp (b, signatures[i].sig, sizeof(D->sig)) == 0) {
       resp = signatures[i].desc;
       D->deviceMatchIndex = i;
@@ -17,13 +17,41 @@ String verifySignature(byte b[]) {
 
 void printDetails(){
   int deviceID = D->deviceMatchIndex;
+  if(deviceID == -1){
+    Serial.println("Verify the Device first.");
+    return;
+  }
   Serial.println();
   Serial.println("Signature = 0x"+hexTOstring(D->sig[0])+hexTOstring(D->sig[1])+hexTOstring(D->sig[2]));
   Serial.print("Processor = ");Serial.println(signatures[deviceID].desc);
-  Serial.print("Flash = ");Serial.print(signatures[deviceID].flashSize);Serial.println(" bytes");
+  Serial.print("Flash = ");Serial.print(getFlashSize());Serial.println(" bytes");
+  Serial.print("Max. Bootloader Size = ");Serial.print(getBootloaderSize());Serial.println(" bytes");
+  Serial.print("Page Size = ");Serial.print(getPageSize());Serial.println(" bytes");
 }
 
+unsigned long getFlashSize(){
+  int deviceID = D->deviceMatchIndex;
+  if(deviceID == -1){
+    return -1;
+  }
+  return signatures[deviceID].flashSize;
+}
 
+int getBootloaderSize(){
+  int deviceID = D->deviceMatchIndex;
+  if(deviceID == -1){
+    return -1;
+  }
+  return signatures[deviceID].maxBootSize;
+}
+
+int getPageSize(){
+  int deviceID = D->deviceMatchIndex;
+  if(deviceID == -1){
+    return -1;
+  }
+  return signatures[deviceID].pageLen;
+}
 
 String hexTOstring(byte a){
   int b=a;

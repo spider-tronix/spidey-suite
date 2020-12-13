@@ -3,7 +3,7 @@
                        Avrdude for ESP32
                    ================================
    Filename: esp32_avrdude.ino
-   Version: 0.5.0
+   Version: 0.7.0
    Date: October 16, 2020
    Authors: Aditya Kumar Singh
 ***************************************************************************************
@@ -95,8 +95,7 @@ void flashProgram(){
     Serial.print(" ");
   }
   Avrdude avrdude;
-  uint16_t page = 0x0080;
-  resp = avrdude.begin(baudRate, fileName, prog, len, page);
+  resp = avrdude.begin(baudRate, fileName, prog, len);
   file_index = 0;
 }
 
