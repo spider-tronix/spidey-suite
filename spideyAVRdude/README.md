@@ -47,7 +47,7 @@ const char* password = "NETWORK_PASSWORD_HERE";
 
 - That's it, now the code can be uploaded to your ESP32 board. 
 - After uploading the code, open the Serial Monitor and note down the IP Address printed on the screen. 
-- ![Serial Monitor Image](https://github.com/spider-tronix/spidey-suite/)
+- ![Serial Monitor Image](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/Images/SerialMonitor.png)
 
 ## Circuit Connection 
 
@@ -84,14 +84,14 @@ Now, follow these steps:
    - if ESP is in **Access Point Mode**, you will notice a new WiFi signal named ```Avrdude```. Connect to it by entering ```spider.123``` as password. 
 - Open a browser and then hit URL - ```http://avrdude.local```
 - A page like this should come - 
-    - ![Main page]() 
+    - ![Main page](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/Images/MainPage.png) 
 If the first time page doesn't show up and a DNS error comes up, then try manually once by entering the IP Address which you noted down when code was uploaded to ESP32. This time the page should come. 
 - Then, click on ***Choose File...***. A window like this should pop up. Navigate to the directory where the HEX file is stored. Select it and then click **Open**.
-  - ![File Uploading Window]() 
+  - ![File Uploading Window](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/Images/SelectHexFile.png) 
 - Finally, click on ***Upload*** button and wait for few seconds. The system will update your microcontroller with the code you have provided. 
-  - ![Upload button selected]() 
+  - ![Upload button selected](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/Images/Upload.png) 
 - Once the process finishes, a ***Console Log*** modal box should come up as shown -
-   - ![File Uploading Window]() 
+   - ![File Uploading Window](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/Images/AfterUpload.png) 
    - In this log, you can see whether the process successfully flashed your chip or not.
    - If any error percentage is shown, it's recommended that the user should try flashing again. Error is only detected, not rectified.
    - If any other error comes up, check for the circuit connection, especially Rx, Tx pins, and the Reset pin connectivity. 
