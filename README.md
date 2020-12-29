@@ -5,9 +5,9 @@ spidey suite is the smart choice for Over The Air(OTA) Programming solution for 
 ## Products 
 
 spidey suite has 3 products to offer and they are- 
-- ```spideyboot``` - A small light weight bootloader with just the OTA Programmming functionality. More info [here](https://github.com/spider-tronix/spidey-suite/tree/master/spideyboot#spideyboot)
-- ```spideydude``` - Code uploader for spideyboot. More info [here](https://github.com/spider-tronix/spidey-suite/tree/master/spideydude#spideydude)
-- ```spideyAVRdude``` - OTA code uploader for the boards having Arduino's Optiboot bootloader. More info [here]()
+- ```spideyboot``` - A small light weight bootloader with just the OTA Programmming functionality. More info [here](https://github.com/spider-tronix/spidey-suite/tree/master/spideyboot)
+- ```spideydude``` - Code uploader for spideyboot. More info [here](https://github.com/spider-tronix/spidey-suite/tree/master/spideydude)
+- ```spideyAVRdude``` - OTA code uploader for the boards having Arduino's Optiboot bootloader. More info [here](https://github.com/spider-tronix/spidey-suite/tree/master/spideyAVRdude)
 
 ## Contents of this repository
 

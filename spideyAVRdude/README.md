@@ -98,6 +98,10 @@ If the first time page doesn't show up and a DNS error comes up, then try manual
 
 - ###### NOTE: The flashing process is tested and verified up to 32kb of Flash-only. It's possible that beyond that, few bugs might be there. 
 
+## Sample HEX Codes
+
+> Few sample HEX files (compiled for AVR ATmega328p board, 16 MHz crystal) can be found [here](https://github.com/spider-tronix/spidey-suite/blob/master/spideyAVRdude/HexCodes/)
+
 ## Bug Reports and Improvements
 > Want to contribute? Great!
 
@@ -107,6 +111,4 @@ If the first time page doesn't show up and a DNS error comes up, then try manual
 
 ## Future Updates
  - Support EEPROM programming. 
- - Support lfash update of more than 32kb.
-
-### Product under testing phase
+ - Support flash update of more than 32kb.
