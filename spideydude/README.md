@@ -1,6 +1,6 @@
 # spideydude
 
-spideydude is an ESP32 based over the air (OTA) code uploader for AVR microcontrollers with a [spideyboot]() bootloader. It provides the following features:
+spideydude is an ESP32 based over the air (OTA) code uploader for AVR microcontrollers with a [spideyboot](https://github.com/spider-tronix/spidey-suite/tree/master/spideyboot) bootloader. It provides the following features:
   - Can be used with any Atmel AVR or Arduino device having a spideyboot bootloader.
   - Easy to use code upload interface. 
   - Can connect to an already existing WiFi network or can create its own WiFi station.
