@@ -4,7 +4,7 @@ spideyAVRdude is an ESP32 based over the air (OTA) code uploader for AVR microco
   - Can be used with any Atmel AVR or Arduino device having a bootloader. 
   - Easy to use code upload interface. 
   - Can connect to an already existing WiFi network or can create its own WiFi station.
-  - Works on Intel's **HEX** file system. 
+  - Works on Intel's **HEX** file format. 
   - Easy to integrate code for converting your existing system into OTA updates compatible, without taking down the serial programming feature. 
 
 ##### NOTE:
@@ -19,7 +19,7 @@ spideyAVRdude is an ESP32 based over the air (OTA) code uploader for AVR microco
 
 After setting up the Arduino IDE for ESP32 programming, now follow these steps:
 
-- Download the [src]() folder and open the *src.ino* file. 
+- Download the [src](https://github.com/spider-tronix/spidey-suite/tree/master/spideyAVRdude/src) folder and open the *src.ino* file. 
 - Navigate to line no 34 and select the appropriate mode. **Default is AP mode**.
 ```
 #define OTA_WIFI_MODE 0
@@ -43,7 +43,7 @@ const char* password = "NETWORK_PASSWORD_HERE";
 | Greater or equal to 1 MHz  | 1 |
 | Greater or equal to 128 kHz | 2 |
 
-**Make sure you choose the correct code value for F_CPU because based on this value only, the BAUD_RATE will be set to communicate with your AVR device. Any random value might lead to failure during the code flashing process**
+**Make sure you choose the correct code value for F_CLK because based on this value only, the BAUD_RATE will be set to communicate with your AVR device. Any random value might lead to failure during the code flashing process**
 
 - That's it, now the code can be uploaded to your ESP32 board. 
 - After uploading the code, open the Serial Monitor and note down the IP Address printed on the screen. 
