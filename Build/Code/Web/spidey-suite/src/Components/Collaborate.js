@@ -21,7 +21,7 @@ class Collab extends React.Component{
                                 </div>                
                                 <div className="link-column col-md-4">
                                     <div className="link-box text-center">
-                                        <a href="https://github.com/spider-tronix/OTA_Programming_Module" className="btn-style-one" title="Visit Github Repository">Explore <i className="fas fa-external-link-alt"></i></a>
+                                        <a href="https://github.com/spider-tronix/spidey-suite" className="btn-style-one" title="Visit Github Repository">Explore Repo<i className="fas fa-external-link-alt"></i></a>
                                     </div>
                                 </div>
                             </div>

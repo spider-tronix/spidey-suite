@@ -33,8 +33,9 @@ class Footer extends React.Component{
                                         <h2 className="widget-title">Downloads</h2>
                                         <div className="widget-container">
                                             <ul className="list">
-                                                <li><a href="#">spideydude</a></li>
-                                                <li><a href="#">spideyboot</a></li>  
+                                                <li><a href="#spideyboot">spideyboot</a></li>
+                                                <li><a href="#spideydude">spideydude</a></li>  
+                                                <li><a href="#spideyAVRdude">spideyAVRdude</a></li>  
                                             </ul>
                                         </div>
                                     </div>
@@ -45,7 +46,6 @@ class Footer extends React.Component{
                                         <div className="widget-container">
                                             <ul className="list">
                                                 <li><a href="mailto:nitt.spider@gmail.com">nitt.spider@gmail.com</a></li>
-                                                <li><a href="#">(+91) 9470186194</a></li>  
                                             </ul>
                                         </div>
                                     </div>
@@ -56,7 +56,7 @@ class Footer extends React.Component{
                     <div className="footer-bottom">
                         <div className="sec_container">
                             <div className="outer-box">
-                                <div className="copyright-text">© 2020 All Rights Reserved</div>
+                                <div className="copyright-text">© 2021 All Rights Reserved</div>
                                 <ul className="privacy">
                                     <li className="menu-item">Made with <a title="Privacy Policy" href="https://fontawesome.com/">Font Awesome</a> and loads of <label style={{"color": "red","marginLeft":"4px"}}>❤</label></li>
                                 </ul>

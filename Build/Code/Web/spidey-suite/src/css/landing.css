@@ -1,3 +1,11 @@
+header{
+    position: absolute;
+    top:0;left:0;
+    width:100%;
+    z-index:1002;
+    font-family: 'PopM';
+    background: transparent;
+}
 section{
     position: relative;
 }
@@ -84,12 +92,38 @@ section{
 .action-wrap button{
     margin:0px;
 }
-@media(max-width:992px){
+#landerHeader{
+    transition: all 0.5s;
+    min-width:100%;
+}
+#landerHeader.bg-white .navbar-brand{
+    color:#4c4754  !important;
+    text-shadow: none;
+}
+#landerHeader .navbar-brand{
+    font-family: 'PopB';
+    color:#fff !important;
+    font-size:35px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+}
+.navbar-nav {
+    font-size:18px;
+}
+@media(max-width:991px){
+    #landerHeader .navbar-brand{
+        color:#4c4754 !important;
+        font-size:25px;
+        text-shadow: none;
+    }
+    #landerHeader{
+        background-color: #fff !important;
+        box-shadow: 2px 0px 15px 0px rgba(0,0,0,0.4);
+    }
     .order-2{
         order: unset;
     }
     .ldg_wrapper {
-        padding-top: 40px;
+        padding-top: 80px;
     }
     .ldg_img_box {
         position: relative;
